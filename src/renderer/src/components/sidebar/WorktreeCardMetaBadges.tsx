@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { LinearIcon } from '@/components/icons/LinearIcon'
 import { JiraIcon } from '@/components/icons/JiraIcon'
 import { MetaIconBadge } from './WorktreeCardMetadataControls'
-import { getReviewLabel } from './worktree-review-helpers'
+import { getReviewLabel, ReviewIcon } from './worktree-review-helpers'
 import type {
   WorktreeCardMetaBadgesProps,
   WorktreeCardMetaBadgesRootProps
@@ -29,6 +29,11 @@ function ReviewNumberBadge({
   )
   const className =
     'h-4 rounded-full border-worktree-sidebar-border bg-worktree-sidebar-accent/55 px-1.5 py-0 font-mono text-[10px] leading-none text-muted-foreground shadow-none hover:bg-worktree-sidebar-accent hover:text-foreground focus-visible:ring-1 focus-visible:ring-worktree-sidebar-ring'
+  const content = (
+    <>
+      <ReviewIcon review={review} className="size-3 shrink-0" />#{review.number}
+    </>
+  )
 
   if (review.url) {
     return (
@@ -41,7 +46,7 @@ function ReviewNumberBadge({
           data-worktree-review-number=""
           onClick={(event) => event.stopPropagation()}
         >
-          #{review.number}
+          {content}
         </a>
       </Badge>
     )
@@ -54,7 +59,7 @@ function ReviewNumberBadge({
       aria-label={label}
       data-worktree-review-number=""
     >
-      #{review.number}
+      {content}
     </Badge>
   )
 }
