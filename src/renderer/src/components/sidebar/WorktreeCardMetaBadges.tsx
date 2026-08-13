@@ -1,10 +1,11 @@
 import React from 'react'
 import { CalendarClock, CircleDot, Link2, SquareTerminal, StickyNote } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { LinearIcon } from '@/components/icons/LinearIcon'
 import { JiraIcon } from '@/components/icons/JiraIcon'
 import { MetaIconBadge } from './WorktreeCardMetadataControls'
-import { getReviewLabel, ReviewIcon } from './worktree-review-helpers'
+import { getReviewLabel } from './worktree-review-helpers'
 import type {
   WorktreeCardMetaBadgesProps,
   WorktreeCardMetaBadgesRootProps
@@ -14,6 +15,48 @@ import { WorktreeReferenceStack } from './WorktreeReferenceStack'
 
 function hasComment(comment: string | null): boolean {
   return (comment ?? '').trim().length > 0
+}
+
+function ReviewNumberBadge({
+  review
+}: {
+  review: NonNullable<WorktreeCardMetaBadgesProps['review']>
+}) {
+  const label = translate(
+    'auto.components.sidebar.WorktreeCardMeta.3ea2702e62',
+    'Linked {{value0}} #{{value1}}',
+    { value0: getReviewLabel(review), value1: review.number }
+  )
+  const className =
+    'h-4 rounded-full border-worktree-sidebar-border bg-worktree-sidebar-accent/55 px-1.5 py-0 font-mono text-[10px] leading-none text-muted-foreground shadow-none hover:bg-worktree-sidebar-accent hover:text-foreground focus-visible:ring-1 focus-visible:ring-worktree-sidebar-ring'
+
+  if (review.url) {
+    return (
+      <Badge asChild variant="outline" className={className}>
+        <a
+          href={review.url}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={label}
+          data-worktree-review-number=""
+          onClick={(event) => event.stopPropagation()}
+        >
+          #{review.number}
+        </a>
+      </Badge>
+    )
+  }
+
+  return (
+    <Badge
+      variant="outline"
+      className={className}
+      aria-label={label}
+      data-worktree-review-number=""
+    >
+      #{review.number}
+    </Badge>
+  )
 }
 
 export function hasWorktreeCardDetails({
@@ -188,17 +231,7 @@ export const WorktreeCardMetaBadges = React.forwardRef<
           </MetaIconBadge>
         )
       )}
-      {!reviewItems.length && review && (
-        <MetaIconBadge
-          label={translate(
-            'auto.components.sidebar.WorktreeCardMeta.3ea2702e62',
-            'Linked {{value0}} #{{value1}}',
-            { value0: getReviewLabel(review), value1: review.number }
-          )}
-        >
-          <ReviewIcon review={review} />
-        </MetaIconBadge>
-      )}
+      {review && <ReviewNumberBadge review={review} />}
     </div>
   )
 })
