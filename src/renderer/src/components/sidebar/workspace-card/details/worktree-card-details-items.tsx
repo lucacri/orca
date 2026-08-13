@@ -38,7 +38,7 @@ export function renderWorktreeCardIndicators(
           issue={card.metaIssue}
           linearIssue={card.metaLinearIssue}
           jiraIssue={card.metaJiraIssue}
-          review={reviewInStatusLane ? null : card.metaReview}
+          review={card.metaReview}
           comment={card.metaComment}
           automationProvenance={card.metaAutomationProvenance}
           cliProvenance={card.metaCliProvenance}
