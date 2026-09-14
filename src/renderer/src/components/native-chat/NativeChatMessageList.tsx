@@ -256,10 +256,13 @@ export function NativeChatMessageList({
             // Named so measurement can find the scroll root without depending on
             // which utility class happens to make it scroll.
             data-native-chat-scroll
-            // `overflow-anchor:none`: the transcript decides whether an offset
-            // it did not write is the reader moving, so the engine adjusting
-            // scrollTop under a settling row would read as a departure. The
-            // virtualizer does its own end anchoring, so this is redundant here.
+            // `overflow-anchor:none` is structural, not cosmetic. This pane decides
+            // whether an offset it did not write is the reader moving, and it
+            // attributes its own writes through the virtualizer's `scrollToFn`
+            // adapter. The engine's anchoring writes never pass through that
+            // adapter, so they would arrive unmarked and read as a departure from
+            // the end. Measured with anchoring left on: block-flow content growing
+            // above the absolutely positioned rows moved scrollTop by +1000px.
             className="scrollbar-sleek relative h-full overflow-y-auto [overflow-anchor:none] [scrollbar-gutter:stable_both-edges]"
             // Why: `zoom` scales the chat transcript's text and layout together,
             // scoped to this pane so the rest of the app is untouched. It sits on
