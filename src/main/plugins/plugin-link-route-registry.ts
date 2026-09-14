@@ -17,6 +17,8 @@ export type PluginLinkRouteRegistration = {
   hostname: string
   destination: LinkRouteDestination
   description?: string
+  /** Set when another approved plugin claims the same hostname, so this route is not published. */
+  conflict?: string
 }
 
 /**
@@ -32,7 +34,6 @@ export class PluginLinkRouteRegistry {
   private active: NormalizedLinkRoute[] = []
   private activeRegistrations: PluginLinkRouteRegistration[] = []
   private readonly declaredByPlugin = new Map<string, PluginLinkRouteRegistration[]>()
-  private readonly conflictsByPlugin = new Map<string, string[]>()
 
   /** Approved, conflict-filtered and ranked. First match wins. */
   list(): readonly NormalizedLinkRoute[] {
@@ -50,7 +51,9 @@ export class PluginLinkRouteRegistry {
 
   /** Non-fatal, per-route diagnostics. Never promoted to an activation error. */
   conflicts(pluginKey: string): readonly string[] {
-    return this.conflictsByPlugin.get(pluginKey) ?? []
+    return (this.declaredByPlugin.get(pluginKey) ?? []).flatMap((route) =>
+      route.conflict ? [route.conflict] : []
+    )
   }
 
   reconcile(
@@ -58,7 +61,6 @@ export class PluginLinkRouteRegistry {
     isApproved: (plugin: ValidDiscoveredPlugin) => boolean
   ): void {
     this.declaredByPlugin.clear()
-    this.conflictsByPlugin.clear()
 
     const candidates = discovered.filter(
       (plugin): plugin is ValidDiscoveredPlugin =>
@@ -110,10 +112,13 @@ export class PluginLinkRouteRegistry {
     for (const [hostname, hostOwners] of owners) {
       if (hostOwners.size > 1) {
         contestedHostnames.add(hostname)
-        for (const pluginKey of hostOwners) {
-          const existing = this.conflictsByPlugin.get(pluginKey) ?? []
-          existing.push(`link route "${hostname}" is also contributed by another plugin`)
-          this.conflictsByPlugin.set(pluginKey, existing)
+      }
+    }
+    // Annotate in place so a conflict is always read from the route it belongs to, never by index.
+    for (const registrations of this.declaredByPlugin.values()) {
+      for (const registration of registrations) {
+        if (contestedHostnames.has(registration.hostname)) {
+          registration.conflict = `also contributed by another plugin, so this route is not active`
         }
       }
     }
