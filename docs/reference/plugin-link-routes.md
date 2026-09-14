@@ -103,8 +103,10 @@ accepted, not a bug to "fix" with an await.
 
 Each of these is a decision. None is an oversight.
 
-- **Desktop IPC only.** `src/renderer/src/web/web-preload-api.ts` has no `plugins` key, so
-  `window.api.plugins` is undefined on web/serve and routes never apply there. No RPC method was
+- **Desktop IPC only.** `src/renderer/src/web/web-preload-api.ts` declares no `plugins` key. It is
+  not literally undefined at runtime — `withFallback` hands back a proxy — but that proxy resolves
+  `list*` calls to an empty result, so the route table on web/serve is always empty and routes never
+  apply there. No RPC method was
   added; the host already publishes declared `linkRoutes` inside `plugins.list`, so there is no new
   wire surface to negotiate.
 - **Mobile untouched.** Mobile has no link-destination logic and no plugin client.
@@ -115,10 +117,17 @@ Each of these is a decision. None is an oversight.
   terminal and chat — editor markdown links, markdown preview, checks-panel review links — none of
   which compute `HttpLinkActionDestinations`. The same URL can open differently depending on where
   it was clicked.
-- **Attribution covers one of three activation gestures.** "via &lt;plugin&gt;" shows in the link
-  action popover only. Modifier-click takes the direct-activation branch, and the popover can be
-  disabled outright (`terminalLinkActionPopoverEnabled`); both open a routed link with no
-  attribution.
+- **A routed link is not attributed at click time.** Nothing in the popover, the hint or the opened
+  tab says which plugin sent the link where it went. The only place a user sees a plugin's routes is
+  the consent dialog, before approval. Attribution was considered and deliberately not built in this
+  phase: the popover is only one of three activation gestures — modifier-click takes the direct
+  branch and the popover can be disabled outright (`terminalLinkActionPopoverEnabled`) — so a badge
+  there would have covered a third of the cases while reading as though it covered all of them.
+- **The trust-tier warning copy is imprecise for a route-only plugin.** A plugin contributing only
+  link routes is correctly classed as instructional, but the accompanying sentence reads "Review the
+  instructions and commands below" — and it has neither. The declared hostnames are shown directly
+  beneath it, so the disclosure itself is correct; only the lead-in is wrong. A fourth warning arm
+  would fix it.
 - **The hover hint lies.** `getUrlOpenLinkHint` takes no URL, so a routed link still hovers as
   "⌘+click to open, or ⇧⌘+click for system browser". Known; out of scope for this phase.
 - **Nothing is logged.** The plugin subsystem has no audit log at all today — consent, kill and route
