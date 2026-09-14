@@ -250,7 +250,7 @@ describe('buildPluginList consent identity', () => {
             pluginName: 'Demo',
             hostname: '*-contested.test',
             destination: 'orca-browser',
-            conflict: 'also contributed by another plugin, so this route is not active'
+            conflict: true
           }
         ]
       }),
@@ -262,7 +262,7 @@ describe('buildPluginList consent identity', () => {
       {
         hostname: '*-contested.test',
         destination: 'orca-browser',
-        conflict: 'also contributed by another plugin, so this route is not active'
+        conflict: true
       }
     ])
   })

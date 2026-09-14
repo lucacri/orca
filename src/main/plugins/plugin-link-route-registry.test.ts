@@ -44,6 +44,13 @@ function hostnames(registry: PluginLinkRouteRegistry): string[] {
   return registry.list().map((route) => formatRoutePattern(route.pattern))
 }
 
+function conflicted(registry: PluginLinkRouteRegistry, pluginKey: string): string[] {
+  return registry
+    .declared(pluginKey)
+    .filter((route) => route.conflict)
+    .map((route) => route.hostname)
+}
+
 describe('PluginLinkRouteRegistry', () => {
   it('publishes approved routes', () => {
     const registry = new PluginLinkRouteRegistry()
@@ -73,8 +80,8 @@ describe('PluginLinkRouteRegistry', () => {
     )
 
     expect(hostnames(registry).toSorted()).toEqual(['*-alpha-only.test', '*-bravo-only.test'])
-    expect(registry.conflicts('orca-samples.a')).toHaveLength(1)
-    expect(registry.conflicts('orca-samples.b')).toHaveLength(1)
+    expect(conflicted(registry, 'orca-samples.a')).toEqual(['*-sharedhost.test'])
+    expect(conflicted(registry, 'orca-samples.b')).toEqual(['*-sharedhost.test'])
   })
 
   it('ranks routes deterministically regardless of discovery order', () => {
@@ -108,5 +115,24 @@ describe('PluginLinkRouteRegistry', () => {
     registry.reconcile(plugins, approveAll)
 
     expect(hostnames(registry)).toEqual(first)
+  })
+
+  it('warns a pending plugin that its route collides with an approved one', () => {
+    // The consent-time case: b is being reviewed right now, so this warning is the only chance the
+    // user has to see that the route will not take effect. Computing conflicts from approved routes
+    // alone would leave b's card silently clean.
+    const registry = new PluginLinkRouteRegistry()
+    registry.reconcile(
+      [
+        routePlugin('a', [{ hostname: '*-sharedhost.test' }]),
+        routePlugin('b', [{ hostname: '*-sharedhost.test' }])
+      ],
+      (plugin) => plugin.pluginKey === 'orca-samples.a'
+    )
+
+    expect(conflicted(registry, 'orca-samples.b')).toEqual(['*-sharedhost.test'])
+    expect(conflicted(registry, 'orca-samples.a')).toEqual(['*-sharedhost.test'])
+    // a is the only approved claimant, so its route still publishes.
+    expect(hostnames(registry)).toEqual(['*-sharedhost.test'])
   })
 })

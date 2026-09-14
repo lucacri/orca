@@ -69,7 +69,7 @@ export type PluginHostListEntry = {
     hostname: string
     destination: 'orca-browser' | 'system-browser'
     description?: string
-    conflict?: string
+    conflict?: true
   }[]
   restarts: number
   blockedByKillList?: { reason: string; advisoryUrl?: string }

@@ -76,7 +76,8 @@ export type PluginListEntry = {
     hostname: string
     destination: 'orca-browser' | 'system-browser'
     description?: string
-    conflict?: string
+    /** Another plugin claims this hostname; the renderer owns the wording. */
+    conflict?: true
   }[]
   restarts: number
   blockedByKillList?: { reason: string; advisoryUrl?: string }
