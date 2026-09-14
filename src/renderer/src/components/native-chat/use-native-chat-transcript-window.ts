@@ -26,9 +26,7 @@ import type { NativeChatTranscriptSlot } from './native-chat-transcript-slots'
 export const NATIVE_CHAT_WINDOW_OVERSCAN = 6
 
 const FALLBACK_ROW_PX = 48
-/** No finite distance sits at or below this. It retires the virtualizer's two
- *  end-following behaviours without giving up the prepend anchoring that shares
- *  their option. */
+// Disable resize end-following without disabling key-based prepend anchoring.
 const NEVER_FOLLOWS_END_PX = Number.NEGATIVE_INFINITY
 /** Retired keys are harmless to layout but otherwise accumulate for the pane's
  *  lifetime as a capped transcript advances. Compact them well before the stale
@@ -139,14 +137,8 @@ export function useNativeChatTranscriptWindow({
     gap: NATIVE_CHAT_ROW_GAP_PX,
     scrollMargin,
     anchorTo: 'end',
-    // Prepend anchoring only. Both of the virtualizer's end behaviours measure the
-    // distance to the bottom as the spacer's own height minus a container-absolute
-    // offset, which is short by everything outside the spacer — the top gutter, the
-    // "load earlier" block, the trailing chrome. A reader ~100px up still measured
-    // as "at the end", so a row settling below them compensated `scrollTop` by its
-    // growth and dragged them along. Following the end is this transcript's job
-    // anyway: it measures the container, and it re-pins once the growth is in the
-    // document rather than before, where the library's own write gets clamped.
+    // The transcript owns end-following; the library's resize path omits the
+    // gutter and trailing chrome when deciding whether the reader is at the end.
     followOnAppend: false,
     scrollEndThreshold: NEVER_FOLLOWS_END_PX,
     // Every virtualizer write uses this public adapter, including measurement
@@ -175,6 +167,11 @@ export function useNativeChatTranscriptWindow({
       }
     }
   })
+  // Preserve rows above the reader, never compensate growth within the visible
+  // row — including its first measurement, which may follow an exact estimate.
+  virtualizer.shouldAdjustScrollPositionOnItemSizeChange = (item, _delta, instance) =>
+    item.end <= (instance.scrollOffset ?? 0) &&
+    (instance.scrollDirection !== 'backward' || !instance.itemSizeCache.has(item.key))
 
   const finishReaderTakeover = useCallback(() => {
     if (readerTakeoverFrameRef.current !== null) {

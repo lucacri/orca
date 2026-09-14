@@ -78,9 +78,6 @@ describe('native chat transcript virtualizer contract', () => {
 
     expect(virtualizerMock.options.current).toMatchObject({
       anchorTo: 'end',
-      // Both end behaviours are retired by a threshold no finite distance can
-      // meet: they measure from the spacer, and only the container knows where
-      // the document actually ends.
       followOnAppend: false,
       scrollEndThreshold: Number.NEGATIVE_INFINITY
     })
