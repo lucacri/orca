@@ -1,0 +1,52 @@
+import type { HostedReviewProvider } from './hosted-review'
+import { isLinkedIssueNumber } from './source-control-ai-action-variables'
+import type { WorkspaceLinkedItem } from './worktree/types'
+
+export type PullRequestLinkedIssueMeta = {
+  linkedIssue?: number | null
+  linkedGitLabIssue?: number | null
+  linkedWorkItem?: WorkspaceLinkedItem | null
+}
+
+export function inferIssueProvider(
+  meta: PullRequestLinkedIssueMeta,
+  provider?: HostedReviewProvider | null
+): 'github' | 'gitlab' | null {
+  if (provider === 'github' || provider === 'gitlab') {
+    return provider
+  }
+  if (provider) {
+    return null
+  }
+  if (meta.linkedWorkItem?.type === 'issue') {
+    if (meta.linkedWorkItem.provider === 'github' || meta.linkedWorkItem.provider === 'gitlab') {
+      return meta.linkedWorkItem.provider
+    }
+  }
+  const hasGitHub = isLinkedIssueNumber(meta.linkedIssue)
+  const hasGitLab = isLinkedIssueNumber(meta.linkedGitLabIssue)
+  return hasGitHub === hasGitLab ? null : hasGitHub ? 'github' : 'gitlab'
+}
+
+export type IssueLinkSlots = PullRequestLinkedIssueMeta & {
+  linkedLinearIssue?: string | null
+  linkedGitLabMR?: number | null
+}
+
+/** Which provider the issue field shows for a workspace's persisted links.
+ *  Delegates the forge-slot decision to inferIssueProvider so the dialog's chip
+ *  and {linkedIssue} can never disagree; the shared rule deliberately returns
+ *  null on genuine ambiguity, and only this UI layer adds a total default. */
+export function inferIssueLinkProvider(links: IssueLinkSlots): 'github' | 'gitlab' | 'linear' {
+  const forge = inferIssueProvider(links)
+  if (forge) {
+    return forge
+  }
+  if (links.linkedLinearIssue) {
+    return 'linear'
+  }
+  // Why: an empty (or ambiguous) field on a workspace that already tracks a
+  // GitLab MR is a GitLab repo; defaulting to GitHub would file the next number
+  // into the wrong forge.
+  return typeof links.linkedGitLabMR === 'number' ? 'gitlab' : 'github'
+}

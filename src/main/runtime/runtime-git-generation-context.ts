@@ -8,7 +8,7 @@ import {
 import type { SourceControlAiOperation } from '../../shared/source-control-ai-types'
 import type { CommitMessageAgentRuntimeTarget } from '../text-generation/commit-message-agent-environment'
 import type { CommitMessageGenerationTarget } from '../text-generation/commit-message-text-generation'
-import type { PullRequestLinkedIssueMeta } from '../source-control/pull-request-linked-issue'
+import type { PullRequestLinkedIssueMeta } from '../../shared/linked-issue-provider'
 import {
   localGitOptionsForTarget,
   type RuntimeGitCommandHost,
