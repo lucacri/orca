@@ -50,3 +50,19 @@ export function inferIssueLinkProvider(links: IssueLinkSlots): 'github' | 'gitla
   // into the wrong forge.
   return typeof links.linkedGitLabMR === 'number' ? 'gitlab' : 'github'
 }
+
+/** The forge issue number {linkedIssue} should expand to, or null when no host
+ *  issue is linked or the two forge slots are ambiguous. Two numbers with nothing
+ *  to break the tie is ambiguous, and a wrong "Fixes #n" is worse than none. */
+export function linkedIssueNumberForTemplate(
+  meta: PullRequestLinkedIssueMeta | null | undefined,
+  provider?: HostedReviewProvider | null
+): number | null {
+  if (!meta) {
+    return null
+  }
+  const resolved = inferIssueProvider(meta, provider)
+  const number =
+    resolved === 'github' ? meta.linkedIssue : resolved === 'gitlab' ? meta.linkedGitLabIssue : null
+  return isLinkedIssueNumber(number) ? number : null
+}
