@@ -1,4 +1,6 @@
+import type { RepoSlug } from './github/links'
 import type { HostedReviewProvider } from './hosted-review'
+import type { ProjectSlug } from './new-workspace/gitlab-links'
 import { isLinkedIssueNumber } from './source-control-ai-action-variables'
 import type { WorkspaceLinkedItem } from './worktree/types'
 
@@ -66,3 +68,10 @@ export function linkedIssueNumberForTemplate(
     resolved === 'github' ? meta.linkedIssue : resolved === 'gitlab' ? meta.linkedGitLabIssue : null
   return isLinkedIssueNumber(number) ? number : null
 }
+
+/** Where a bare `#123` in a workspace's text resolves: which forge, and on which
+ *  host. The slug shapes differ because the forges do — GitHub namespaces are two
+ *  segments, GitLab project paths nest arbitrarily deep. */
+export type IssueReferenceTarget =
+  | { provider: 'github'; slug: RepoSlug }
+  | { provider: 'gitlab'; slug: ProjectSlug }

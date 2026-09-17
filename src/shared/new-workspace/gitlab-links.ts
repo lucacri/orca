@@ -126,6 +126,17 @@ export function parseGitLabIssueOrMRLink(input: string): {
   }
 }
 
+/** The canonical web URL for a GitLab issue. The host comes from the project slug,
+ *  never a default — self-hosted is the normal case, not the exception. Path segments
+ *  are encoded individually so nested group paths keep their separators. */
+export function buildGitLabIssueUrl(slug: ProjectSlug, number: number): string | null {
+  if (!slug.host || !slug.path) {
+    return null
+  }
+  const path = slug.path.split('/').map(encodeURIComponent).join('/')
+  return `https://${slug.host}/${path}/-/issues/${number}`
+}
+
 /**
  * Normalize link-picker input so both raw issue/MR numbers and full
  * GitLab URLs resolve to a usable query + direct-number lookup.
