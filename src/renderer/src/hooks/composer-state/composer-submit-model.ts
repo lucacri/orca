@@ -67,6 +67,8 @@ export type QuickSubmitSource = {
 export type PreparedQuickSubmit = QuickSubmitSource & {
   effectiveSetupDecision: SetupDecision
   issueCommand: WorktreeCreationRequest['issueCommand']
+  /** Rendered issue-command template used as the agent draft when the user typed no note; empty otherwise. */
+  linkedOnlyTemplatePrompt: string
   linkedLinearIssue: string | undefined
   linkedLinearIssueWorkspaceId: string | undefined
   linkedLinearIssueOrganizationUrlKey: string | undefined

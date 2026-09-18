@@ -14,7 +14,10 @@ import {
 } from '@/lib/ensure-hooks-confirmed'
 import { useAppStore } from '@/store'
 import type { SetupDecision } from '../../../../shared/worktree/create-types'
-import { buildTrustedComposerIssueCommand } from '@/lib/composer-issue-command'
+import {
+  buildTrustedComposerIssueCommand,
+  resolveLinkedOnlyTemplatePrompt
+} from '@/lib/composer-issue-command'
 import { resolveComposerBranchNameOverrideForCreate } from '../composer-branch-selection'
 import { resolveWorktreeCreateBaseBranch } from '@/runtime/worktree-create-base'
 import type { TuiAgent } from '../../../../shared/tui-agent'
@@ -179,6 +182,14 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
         })
       }
 
+      const linkedOnlyTemplatePrompt = resolveLinkedOnlyTemplatePrompt({
+        trustDecision: issueCommandTrustDecision,
+        note,
+        issueNumber: submitLinkedIssueNumber,
+        artifactUrl: submitLinkedWorkItem?.url ?? null,
+        template: submitIssueCommandTemplate
+      })
+
       const issueCommandInput = {
         enabled: enableIssueAutomation && selectedRepoIsGit,
         provider: submitLinkedWorkItemProvider,
@@ -189,7 +200,7 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
 
       const issueCommand = buildTrustedComposerIssueCommand({
         ...issueCommandInput,
-        trustDecision: issueCommandTrustDecision
+        trustDecision: linkedOnlyTemplatePrompt ? 'skip' : issueCommandTrustDecision
       })
 
       const linkedLinearIssue =
@@ -250,6 +261,7 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
       return Object.assign(source, {
         effectiveSetupDecision,
         issueCommand,
+        linkedOnlyTemplatePrompt,
         linkedLinearIssue,
         linkedLinearIssueWorkspaceId,
         linkedLinearIssueOrganizationUrlKey,

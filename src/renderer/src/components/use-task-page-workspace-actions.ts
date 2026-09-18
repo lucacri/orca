@@ -102,6 +102,7 @@ export function useTaskPageWorkspaceActions(model: TaskPageSearchActionsModel) {
         ),
         prefilledName: getGitLabWorkItemWorkspaceSeed(item),
         initialRepoId: item.repoId,
+        enableIssueAutomation: item.type === 'issue',
         telemetrySource: 'sidebar'
       })
     },
