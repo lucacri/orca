@@ -30,6 +30,20 @@ const SCRIPT_KIND_TRIGGER: Record<ScriptKind, string> = {
   vmRecipe: 'before provisioning a VM'
 }
 
+// Why: a review command is only ever a prompt. Telling the user it "runs" would be false and
+// would hide the real risk — repo text steering an autonomous agent.
+const SCRIPT_KIND_ACTION: Record<ScriptKind, { verb: string; effect: string; preview: string }> = {
+  setup: { verb: 'Run', effect: 'runs on your machine', preview: 'script' },
+  archive: { verb: 'Run', effect: 'runs on your machine', preview: 'script' },
+  issueCommand: { verb: 'Run', effect: 'runs on your machine', preview: 'script' },
+  vmRecipe: { verb: 'Run', effect: 'runs on your machine', preview: 'script' },
+  reviewCommand: {
+    verb: 'Use',
+    effect: 'becomes the prompt Orca sends the agent',
+    preview: 'prompt'
+  }
+}
+
 const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
   const activeModal = useAppStore((s) => s.activeModal)
   const modalData = useAppStore((s) => s.modalData)
@@ -60,9 +74,11 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
       ? 'archive'
       : modalData.scriptKind === 'issueCommand'
         ? 'issueCommand'
-        : modalData.scriptKind === 'vmRecipe'
-          ? 'vmRecipe'
-          : 'setup'
+        : modalData.scriptKind === 'reviewCommand'
+          ? 'reviewCommand'
+          : modalData.scriptKind === 'vmRecipe'
+            ? 'vmRecipe'
+            : 'setup'
   const scriptContent = typeof modalData.scriptContent === 'string' ? modalData.scriptContent : ''
   const contentHash = typeof modalData.contentHash === 'string' ? modalData.contentHash : ''
   const previouslyApproved = modalData.previouslyApproved === true
@@ -117,8 +133,12 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
                 )
               : translate(
                   'auto.components.sidebar.OrcaYamlTrustDialog.e4a51dc4b3',
-                  'Run {{value0}} from {{value1}}?',
-                  { value0: SCRIPT_KIND_LABEL[scriptKind], value1: repoName }
+                  '{{value2}} {{value0}} from {{value1}}?',
+                  {
+                    value0: SCRIPT_KIND_LABEL[scriptKind],
+                    value1: repoName,
+                    value2: SCRIPT_KIND_ACTION[scriptKind].verb
+                  }
                 )}
           </DialogTitle>
           <DialogDescription className="text-xs">
@@ -142,11 +162,7 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
                 <code>
                   {translate('auto.components.sidebar.OrcaYamlTrustDialog.79afc6772b', 'orca.yaml')}
                 </code>{' '}
-                {translate(
-                  'auto.components.sidebar.OrcaYamlTrustDialog.831f2cd9f0',
-                  'runs on your machine'
-                )}{' '}
-                {SCRIPT_KIND_TRIGGER[scriptKind]}
+                {SCRIPT_KIND_ACTION[scriptKind].effect} {SCRIPT_KIND_TRIGGER[scriptKind]}
                 {translate(
                   'auto.components.sidebar.OrcaYamlTrustDialog.bf800b7e04',
                   '. Only run if you trust'
@@ -163,13 +179,13 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
               {previouslyApproved
                 ? translate(
                     'auto.components.sidebar.OrcaYamlTrustDialog.9e52effffd',
-                    'New {{value0}} script',
-                    { value0: scriptKind }
+                    'New {{value0}} {{value1}}',
+                    { value0: scriptKind, value1: SCRIPT_KIND_ACTION[scriptKind].preview }
                   )
                 : translate(
                     'auto.components.sidebar.OrcaYamlTrustDialog.95bf974a1a',
-                    '{{value0}} script',
-                    { value0: scriptKind }
+                    '{{value0}} {{value1}}',
+                    { value0: scriptKind, value1: SCRIPT_KIND_ACTION[scriptKind].preview }
                   )}
             </div>
             <pre className="max-h-48 overflow-auto whitespace-pre-wrap break-all font-mono text-xs text-foreground scrollbar-sleek">
