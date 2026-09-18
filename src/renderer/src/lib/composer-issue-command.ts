@@ -1,9 +1,12 @@
 import type { WorktreeCreationRequest } from '@/lib/pending-worktree-creation'
 import {
   canUseIssueCommandForLinkedItemProvider,
-  renderIssueCommandTemplate,
-  DEFAULT_ISSUE_COMMAND_TEMPLATE
+  renderIssueCommandTemplate
 } from '@/lib/new-workspace'
+import {
+  DEFAULT_REPO_COMMAND_TEMPLATE,
+  type RepoCommandKind
+} from '../../../shared/repo-command-kind'
 import type { FolderWorkspaceLinkedTask } from '../../../shared/folder-workspace-types'
 
 type ComposerIssueCommandInput = {
@@ -37,24 +40,26 @@ export function buildTrustedComposerIssueCommand(
   }
 }
 
-// Why: issues only — a merge request keeps the plain linked-URL draft. An untouched note means the template *is* the agent prompt, so the shell split is suppressed.
+// Why: an untouched note means the template *is* the agent prompt, so the caller suppresses the
+// shell issue-command split.
 export function resolveLinkedOnlyTemplatePrompt(input: {
   trustDecision: 'run' | 'skip'
   note: string
-  issueNumber: number | null
+  kind: RepoCommandKind
+  number: number | null
   artifactUrl: string | null
   template: string
 }): string {
-  if (
-    input.trustDecision !== 'run' ||
-    input.note.trim() ||
-    input.artifactUrl === null ||
-    input.issueNumber === null
-  ) {
+  if (input.trustDecision !== 'run' || input.note.trim() || input.artifactUrl === null) {
     return ''
   }
-  return renderIssueCommandTemplate(input.template.trim() || DEFAULT_ISSUE_COMMAND_TEMPLATE, {
-    issueNumber: input.issueNumber,
-    artifactUrl: input.artifactUrl
-  })
+  // Why: a legacy issue template's {{issue}} is meaningless without a number; a review template
+  // leans on {{artifact_url}}, and a PR picked by URL can arrive without one.
+  if (input.kind === 'issue' && input.number === null) {
+    return ''
+  }
+  return renderIssueCommandTemplate(
+    input.template.trim() || DEFAULT_REPO_COMMAND_TEMPLATE[input.kind],
+    { issueNumber: input.number, artifactUrl: input.artifactUrl }
+  )
 }

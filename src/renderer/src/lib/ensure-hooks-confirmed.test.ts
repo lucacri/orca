@@ -627,7 +627,7 @@ describe('review command trust', () => {
     })
     const { state, pending } = createTestState({
       trustedOrcaHooks: { 'repo-1': { issueCommand: { contentHash: hash, approvedAt: 1 } } }
-    } as unknown as Partial<AppState>)
+    })
     const promise = readAndConfirmRuntimeIssueCommand(state, 'repo-1', 'local', undefined, 'review')
     await vi.waitFor(() => expect(pending).toHaveLength(1))
     pending[0].resolve('skip')
@@ -646,7 +646,7 @@ describe('review command trust', () => {
     })
     const { state, pending } = createTestState({
       trustedOrcaHooks: { 'repo-1': { reviewCommand: { contentHash: hash, approvedAt: 1 } } }
-    } as unknown as Partial<AppState>)
+    })
     await expect(
       readAndConfirmRuntimeIssueCommand(state, 'repo-1', 'local', undefined, 'review')
     ).resolves.toMatchObject({ trustDecision: 'run' })

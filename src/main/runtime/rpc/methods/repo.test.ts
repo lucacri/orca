@@ -277,6 +277,7 @@ describe('repo RPC methods', () => {
   })
 
   it('routes repository hook operations to the runtime server', async () => {
+    // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: a test double carrying only the repo-hook methods this dispatch test calls.
     const runtime = {
       getRuntimeId: () => 'test-runtime',
       getRepoHooks: vi.fn().mockResolvedValue({

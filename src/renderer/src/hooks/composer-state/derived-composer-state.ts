@@ -13,10 +13,13 @@ import {
   getLinkedWorkItemProvider,
   canUseIssueCommandForLinkedItemProvider,
   getWorkspaceSeedName,
-  DEFAULT_ISSUE_COMMAND_TEMPLATE,
   renderIssueCommandTemplate
 } from '@/lib/new-workspace'
 import type { SetupRunPolicy } from '../../../../shared/orca-yaml-hook-types'
+import {
+  DEFAULT_REPO_COMMAND_TEMPLATE,
+  getRepoCommandKindForLinkedItemType
+} from '../../../../shared/repo-command-kind'
 import type { SparsePreset } from '../../../../shared/worktree/create-types'
 import { useRetiredWorktreeNames } from '@/hooks/useRetiredWorktreeNames'
 import { getSuggestedCreatureName } from '@/components/sidebar/worktree-name-suggestions'
@@ -29,6 +32,7 @@ export function useDerivedComposerState(input: DerivedComposerStateInput) {
     enableIssueAutomation,
     hasLoadedIssueCommand,
     issueCommandTemplate,
+    reviewCommandTemplate,
     linkDebouncedQuery,
     linkDirectItem,
     linkItems,
@@ -199,12 +203,13 @@ export function useDerivedComposerState(input: DerivedComposerStateInput) {
     if (!shouldApplyLinkedOnlyTemplate || !linkedWorkItem) {
       return ''
     }
-    const template = issueCommandTemplate.trim() || DEFAULT_ISSUE_COMMAND_TEMPLATE
-    return renderIssueCommandTemplate(template, {
-      issueNumber: linkedWorkItem.type === 'issue' ? linkedWorkItem.number : null,
+    const kind = getRepoCommandKindForLinkedItemType(linkedWorkItem.type)
+    const template = (kind === 'review' ? reviewCommandTemplate : issueCommandTemplate).trim()
+    return renderIssueCommandTemplate(template || DEFAULT_REPO_COMMAND_TEMPLATE[kind], {
+      issueNumber: linkedWorkItem.number,
       artifactUrl: linkedWorkItem.url
     })
-  }, [issueCommandTemplate, linkedWorkItem, shouldApplyLinkedOnlyTemplate])
+  }, [issueCommandTemplate, reviewCommandTemplate, linkedWorkItem, shouldApplyLinkedOnlyTemplate])
 
   const normalizedLinkQuery = useMemo(
     () => normalizeGitHubLinkQuery(linkDebouncedQuery),
