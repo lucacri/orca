@@ -10280,20 +10280,12 @@
             "distro": "distro",
             "agentRuntime": "agent runtime",
             "skillRuntime": "skill runtime",
-            "review-command": "review command",
-            "pull-request-command": "pull request command",
-            "merge-request-command": "merge request command",
-            "orca-review-command": ".orca/review-command"
-          },
-          "git": {
-            "hooks": {
-              "search": {
-                "entries": {
-                  "4b87da14ac": "Custom Review Command",
-                  "22948e9325": "File-based pull/merge request prompt configured via orca.yaml reviewCommand and an optional local override."
-                }
-              }
-            }
+            "8f907858c1": "review command",
+            "477e8c36fb": "pull request command",
+            "b23c9163a8": "merge request command",
+            "4b1f01c96f": ".orca/review-command",
+            "4b87da14ac": "Custom Review Command",
+            "22948e9325": "File-based pull/merge request prompt configured via orca.yaml reviewCommand and an optional local override."
           }
         },
         "runtime": {
@@ -11975,7 +11967,8 @@
         },
         "RepositoryIssueCommandSetting": {
           "e21e26b8ea": "Custom Review Command",
-          "66af9e725a": "Review {{artifact_url}}"
+          "66af9e725a": "Review {{artifact_url}}",
+          "1d56d3faed": "for the linked pull or merge request URL."
         }
       },
       "right": {

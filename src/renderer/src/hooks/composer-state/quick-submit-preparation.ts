@@ -192,8 +192,7 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
         )
       }
 
-      // Why: the read gate is what decides a linked-only template applies; the trust decision then
-      // only speaks for repository-supplied text, so a failed or skipped read keeps the default.
+      // Why: the read gate decides the template applies; trust only speaks for repository text.
       const linkedOnlyTemplatePrompt = shouldReadIssueCommand
         ? resolveLinkedOnlyTemplatePrompt({
             trustDecision: issueCommandTrustDecision,

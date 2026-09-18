@@ -40,8 +40,7 @@ export function buildTrustedComposerIssueCommand(
   }
 }
 
-// Why: an untouched note means the template *is* the agent prompt, so the caller suppresses the
-// shell issue-command split. Callers gate on whether a linked-only template applies at all.
+// Why: an untouched note means the template *is* the agent prompt, so callers suppress the shell split.
 export function resolveLinkedOnlyTemplatePrompt(input: {
   trustDecision: 'run' | 'skip'
   note: string
@@ -51,8 +50,7 @@ export function resolveLinkedOnlyTemplatePrompt(input: {
   template: string
 }): string {
   const template = input.template.trim()
-  // Why: the trust gate guards repository-supplied text only — an absent template leaves the
-  // built-in default, a local constant that is never worth denying.
+  // Why: the trust gate guards repository text only; an absent template leaves the built-in default.
   if (
     (template && input.trustDecision !== 'run') ||
     input.note.trim() ||
@@ -60,8 +58,7 @@ export function resolveLinkedOnlyTemplatePrompt(input: {
   ) {
     return ''
   }
-  // Why: a legacy issue template's {{issue}} is meaningless without a number; a review template
-  // leans on {{artifact_url}}, and a PR picked by URL can arrive without one.
+  // Why: {{issue}} is meaningless without a number; review templates lean on {{artifact_url}}.
   if (input.kind === 'issue' && input.number === null) {
     return ''
   }

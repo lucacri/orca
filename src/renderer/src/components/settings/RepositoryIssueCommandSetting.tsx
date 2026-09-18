@@ -41,9 +41,13 @@ export function RepositoryIssueCommandSetting({
       ),
       placeholder: translate(
         'auto.components.settings.RepositoryIssueCommandSetting.66af9e725a',
-        'Review {{artifact_url}}'
+        'Review {{artifact_url}}',
+        { artifact_url: ARTIFACT_URL_TEMPLATE_TOKEN }
       ),
-      hint: 'for the linked pull or merge request URL.'
+      hint: translate(
+        'auto.components.settings.RepositoryIssueCommandSetting.1d56d3faed',
+        'for the linked pull or merge request URL.'
+      )
     }
   }
   const copy = COPY[kind]

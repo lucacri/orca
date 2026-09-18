@@ -36,8 +36,7 @@ import { getRepoCommandKindForLinkedItemType } from '../../../../shared/repo-com
 import { getLinkedWorkItemPromptContext } from '@/lib/linked-work-item-context'
 import type { PendingSmartGitHubSubmitResolution } from './source-selection-decisions'
 
-// Why: the template becomes the agent's draft prompt, so unconfirmed *repository* text is dropped
-// here rather than anywhere downstream; the built-in default is a local constant and always stands.
+// Why: unconfirmed *repository* text is dropped here, not downstream; the built-in default stands.
 export function resolveTrustedStartupPrompt(input: {
   applyTemplate: boolean
   templateIsRepoText: boolean

@@ -32,6 +32,13 @@ type HostRuntimeEffectsInput = Pick<
 
 import { useEffect, useCallback } from 'react'
 import type { IssueCommandReadResult } from '@/runtime/runtime-hooks-client'
+import { filterEnabledTuiAgents, isTuiAgentEnabled } from '../../../../shared/tui-agent-selection'
+import { getAgentCatalog } from '@/lib/agent-catalog'
+import { readRuntimeIssueCommand } from '@/runtime/runtime-hooks-client'
+import { useAppStore } from '@/store'
+import { isSshConnectInProgress } from '@/lib/new-workspace-ssh-gate'
+import { toast } from 'sonner'
+import { translate } from '@/i18n/i18n'
 
 const ERRORED_REPO_COMMAND_READ: IssueCommandReadResult = {
   status: 'error',
@@ -41,13 +48,6 @@ const ERRORED_REPO_COMMAND_READ: IssueCommandReadResult = {
   localFilePath: '',
   source: 'none'
 }
-import { filterEnabledTuiAgents, isTuiAgentEnabled } from '../../../../shared/tui-agent-selection'
-import { getAgentCatalog } from '@/lib/agent-catalog'
-import { readRuntimeIssueCommand } from '@/runtime/runtime-hooks-client'
-import { useAppStore } from '@/store'
-import { isSshConnectInProgress } from '@/lib/new-workspace-ssh-gate'
-import { toast } from 'sonner'
-import { translate } from '@/i18n/i18n'
 
 export function useHostRuntimeEffects(input: HostRuntimeEffectsInput) {
   const {

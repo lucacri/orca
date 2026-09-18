@@ -60,4 +60,15 @@ describe('OrcaYamlTrustDialog', () => {
     expect(text).toContain('runs on your machine')
     expect(text).toContain('Run setup script from Repo One?')
   })
+
+  // Why: the effect and trigger fragments sit on one JSX line and have lost their separating space before.
+  it('keeps whitespace between the adjacent description fragments', async () => {
+    for (const scriptKind of ['setup', 'issueCommand', 'reviewCommand']) {
+      await renderTrustDialog({ scriptKind, scriptContent: 'x' })
+      const text = document.body.textContent ?? ''
+      expect(text).not.toContain("repository'sorca.yaml")
+      expect(text).not.toContain('trustorca')
+      expect(text).not.toContain('inorca')
+    }
+  })
 })

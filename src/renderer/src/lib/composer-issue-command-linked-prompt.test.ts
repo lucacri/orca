@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { resolveLinkedOnlyTemplatePrompt } from './composer-issue-command'
+import {
+  buildTrustedComposerIssueCommand,
+  resolveLinkedOnlyTemplatePrompt
+} from './composer-issue-command'
 import type { RepoCommandKind } from '../../../shared/repo-command-kind'
 
 type PromptInput = {
@@ -101,5 +104,36 @@ describe('resolveLinkedOnlyTemplatePrompt', () => {
 
   it('stays empty without a linked URL', () => {
     expect(resolveLinkedOnlyTemplatePrompt({ ...review, artifactUrl: null })).toBe('')
+  })
+})
+
+describe('buildTrustedComposerIssueCommand', () => {
+  const trusted = {
+    enabled: true,
+    template: 'Complete {{artifact_url}}',
+    trustDecision: 'run' as const
+  }
+
+  // Why: the shell runner is issue-only — an MR pick carries no issue number, so nothing is queued.
+  it('queues nothing for a merge request', () => {
+    expect(
+      buildTrustedComposerIssueCommand({
+        ...trusted,
+        provider: 'gitlab',
+        issueNumber: null,
+        artifactUrl: 'https://gitlab.example.com/g/p/-/merge_requests/3'
+      })
+    ).toBeUndefined()
+  })
+
+  it('queues nothing for a provider without an issue command', () => {
+    expect(
+      buildTrustedComposerIssueCommand({
+        ...trusted,
+        provider: 'linear',
+        issueNumber: 3,
+        artifactUrl: 'https://linear.app/x/issue/STA-3'
+      })
+    ).toBeUndefined()
   })
 })
