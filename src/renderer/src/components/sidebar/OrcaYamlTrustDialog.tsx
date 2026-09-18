@@ -132,7 +132,7 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
                   { value0: repoName, value1: SCRIPT_KIND_LABEL[scriptKind] }
                 )
               : translate(
-                  'auto.components.sidebar.OrcaYamlTrustDialog.e4a51dc4b3',
+                  'auto.components.sidebar.OrcaYamlTrustDialog.6e0466e18e',
                   '{{value2}} {{value0}} from {{value1}}?',
                   {
                     value0: SCRIPT_KIND_LABEL[scriptKind],
@@ -178,12 +178,12 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
             <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               {previouslyApproved
                 ? translate(
-                    'auto.components.sidebar.OrcaYamlTrustDialog.9e52effffd',
+                    'auto.components.sidebar.OrcaYamlTrustDialog.bd9b312c45',
                     'New {{value0}} {{value1}}',
                     { value0: scriptKind, value1: SCRIPT_KIND_ACTION[scriptKind].preview }
                   )
                 : translate(
-                    'auto.components.sidebar.OrcaYamlTrustDialog.95bf974a1a',
+                    'auto.components.sidebar.OrcaYamlTrustDialog.c6101b508a',
                     '{{value0}} {{value1}}',
                     { value0: scriptKind, value1: SCRIPT_KIND_ACTION[scriptKind].preview }
                   )}

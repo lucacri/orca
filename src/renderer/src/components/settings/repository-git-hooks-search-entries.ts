@@ -168,6 +168,39 @@ export function getRepositoryGitHooksSearchEntries(repo: Repo): SettingsSearchEn
           '.orca/issue-command'
         )
       ]
+    },
+    {
+      title: translate(
+        'auto.components.settings.repository.git.hooks.search.entries.4b87da14ac',
+        'Custom Review Command'
+      ),
+      description: translate(
+        'auto.components.settings.repository.git.hooks.search.entries.22948e9325',
+        'File-based pull/merge request prompt configured via orca.yaml reviewCommand and an optional local override.'
+      ),
+      keywords: [
+        repo.displayName,
+        ...translateSearchKeyword(
+          'auto.components.settings.repository.search.review-command',
+          'review command'
+        ),
+        ...translateSearchKeyword(
+          'auto.components.settings.repository.search.pull-request-command',
+          'pull request command'
+        ),
+        ...translateSearchKeyword(
+          'auto.components.settings.repository.search.merge-request-command',
+          'merge request command'
+        ),
+        ...translateSearchKeyword(
+          'auto.components.settings.repository.search.603c68b68c',
+          'orca.yaml'
+        ),
+        ...translateSearchKeyword(
+          'auto.components.settings.repository.search.orca-review-command',
+          '.orca/review-command'
+        )
+      ]
     }
   ]
 }
