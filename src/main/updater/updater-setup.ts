@@ -136,6 +136,14 @@ export class UpdaterSetup extends UpdaterDownloadInstall {
       return
     }
 
+    // LOCAL ONLY (lucacri/local-only): the feed is hardcoded to stablyai/orca and
+    // compares versions only, so a differently-named fork is offered official
+    // releases that Squirrel then refuses to install over its own signature.
+    // Only the app that owns that feed should poll it.
+    if (app.getName() !== 'Orca') {
+      return
+    }
+
     const autoUpdater = this.getAutoUpdater()
     autoUpdater.autoDownload = false
     if (this.activeUpdateSource === 'release') {
