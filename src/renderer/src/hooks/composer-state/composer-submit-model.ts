@@ -8,6 +8,7 @@ import type { AgentStartedTelemetry } from '@/lib/worktree-startup-payload'
 import type { LinkedWorkItemSummary } from '@/lib/new-workspace'
 import type { WorktreeCreationRequest } from '@/lib/pending-worktree-creation'
 import type { PendingSmartGitHubSubmitResolution } from './source-selection-decisions'
+import type { RepoCommandKind } from '../../../../shared/repo-command-kind'
 
 type SmartCreateNames = {
   workspaceName: string
@@ -28,6 +29,11 @@ export type FullSubmitSource = {
   submitPushTarget: GitPushTarget | undefined
   submitBranchNameOverride: string | undefined
   submitLinkedWorkItemProvider: LinkedWorkItemSummary['provider'] | null
+  submitCommandKind: RepoCommandKind
+  submitShouldApplyLinkedOnlyTemplate: boolean
+  submitLinkedOnlyTemplateIsRepoText: boolean
+  submitStartupPromptWithoutTemplate: string
+  submitStartupPromptWithTemplate: string
   submitStartupPrompt: string
   submitShouldRunIssueAutomation: boolean
 }

@@ -14,6 +14,7 @@ import {
 } from '@/lib/ensure-hooks-confirmed'
 import { useAppStore } from '@/store'
 import type { SetupDecision } from '../../../../shared/worktree/create-types'
+import { getRepoCommandKindForLinkedItemType } from '../../../../shared/repo-command-kind'
 import {
   buildTrustedComposerIssueCommand,
   resolveLinkedOnlyTemplatePrompt
@@ -42,7 +43,7 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
     selectedRepoHookContextKey,
     selectedRepoIsGit,
     setAdvancedOpen,
-    setLoadedIssueCommand,
+    setLoadedRepoCommand,
     settings,
     setupConfig,
     setupDecision,
@@ -145,10 +146,17 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
         ? getLinkedWorkItemProvider(submitLinkedWorkItem)
         : null
 
+      const submitCommandKind = getRepoCommandKindForLinkedItemType(submitLinkedWorkItem?.type)
+      // Why: issues key off the typed/parsed issue number; PRs and MRs key off the linked item.
+      const submitLinkedTemplateNumber =
+        submitCommandKind === 'issue'
+          ? submitLinkedIssueNumber
+          : (submitLinkedWorkItem?.number ?? null)
+
       const shouldReadIssueCommand =
         enableIssueAutomation &&
         selectedRepoIsGit &&
-        submitLinkedIssueNumber !== null &&
+        submitLinkedTemplateNumber !== null &&
         canUseIssueCommandForLinkedItemProvider(submitLinkedWorkItemProvider)
 
       let submitIssueCommandTemplate = ''
@@ -166,7 +174,8 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
             useAppStore.getState(),
             repoId,
             selectedRepoExecutionHostId,
-            isSubmissionCancelled
+            isSubmissionCancelled,
+            submitCommandKind
           ),
           isSubmissionCancelled
         )
@@ -176,25 +185,32 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
         const confirmedIssueCommand = issueCommandSettlement.value
         submitIssueCommandTemplate = confirmedIssueCommand.template
         issueCommandTrustDecision = confirmedIssueCommand.trustDecision
-        setLoadedIssueCommand({
-          contextKey: selectedRepoHookContextKey,
-          result: confirmedIssueCommand.result
-        })
+        setLoadedRepoCommand(
+          selectedRepoHookContextKey,
+          submitCommandKind,
+          confirmedIssueCommand.result
+        )
       }
 
-      const linkedOnlyTemplatePrompt = resolveLinkedOnlyTemplatePrompt({
-        trustDecision: issueCommandTrustDecision,
-        note,
-        issueNumber: submitLinkedIssueNumber,
-        artifactUrl: submitLinkedWorkItem?.url ?? null,
-        template: submitIssueCommandTemplate
-      })
+      // Why: the read gate is what decides a linked-only template applies; the trust decision then
+      // only speaks for repository-supplied text, so a failed or skipped read keeps the default.
+      const linkedOnlyTemplatePrompt = shouldReadIssueCommand
+        ? resolveLinkedOnlyTemplatePrompt({
+            trustDecision: issueCommandTrustDecision,
+            note,
+            kind: submitCommandKind,
+            number: submitLinkedTemplateNumber,
+            artifactUrl: submitLinkedWorkItem?.url ?? null,
+            template: submitIssueCommandTemplate
+          })
+        : ''
 
       const issueCommandInput = {
         enabled: enableIssueAutomation && selectedRepoIsGit,
         provider: submitLinkedWorkItemProvider,
         issueNumber: submitLinkedIssueNumber,
-        template: submitIssueCommandTemplate,
+        // Why: a review template must never reach the shell runner, even if the gating changes.
+        template: submitCommandKind === 'issue' ? submitIssueCommandTemplate : '',
         artifactUrl: submitLinkedWorkItem?.url ?? null
       }
 
@@ -289,7 +305,7 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
       selectedRepoHookContextKey,
       selectedRepoIsGit,
       setAdvancedOpen,
-      setLoadedIssueCommand,
+      setLoadedRepoCommand,
       settings,
       setupConfig,
       setupDecision,
