@@ -40,6 +40,7 @@ describe('useFullCreationExecution cancellation', () => {
       submitLinkedWorkItemProvider: null,
       submitCommandKind: 'issue' as const,
       submitShouldApplyLinkedOnlyTemplate: false,
+      submitLinkedOnlyTemplateIsRepoText: false,
       submitStartupPromptWithoutTemplate: '',
       submitStartupPromptWithTemplate: '',
       submitStartupPrompt: '',

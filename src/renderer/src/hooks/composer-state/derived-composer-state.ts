@@ -12,14 +12,11 @@ import {
   getSetupConfig,
   getLinkedWorkItemProvider,
   canUseIssueCommandForLinkedItemProvider,
-  getWorkspaceSeedName,
-  renderIssueCommandTemplate
+  getWorkspaceSeedName
 } from '@/lib/new-workspace'
+import { resolveLinkedOnlyTemplatePrompt } from '@/lib/composer-issue-command'
 import type { SetupRunPolicy } from '../../../../shared/orca-yaml-hook-types'
-import {
-  DEFAULT_REPO_COMMAND_TEMPLATE,
-  getRepoCommandKindForLinkedItemType
-} from '../../../../shared/repo-command-kind'
+import { getRepoCommandKindForLinkedItemType } from '../../../../shared/repo-command-kind'
 import type { SparsePreset } from '../../../../shared/worktree/create-types'
 import { useRetiredWorktreeNames } from '@/hooks/useRetiredWorktreeNames'
 import { getSuggestedCreatureName } from '@/components/sidebar/worktree-name-suggestions'
@@ -204,10 +201,14 @@ export function useDerivedComposerState(input: DerivedComposerStateInput) {
       return ''
     }
     const kind = getRepoCommandKindForLinkedItemType(linkedWorkItem.type)
-    const template = (kind === 'review' ? reviewCommandTemplate : issueCommandTemplate).trim()
-    return renderIssueCommandTemplate(template || DEFAULT_REPO_COMMAND_TEMPLATE[kind], {
-      issueNumber: linkedWorkItem.number,
-      artifactUrl: linkedWorkItem.url
+    // Why: the preview shows what a repo template would say; submit re-derives it behind the gate.
+    return resolveLinkedOnlyTemplatePrompt({
+      trustDecision: 'run',
+      note: '',
+      kind,
+      number: linkedWorkItem.number,
+      artifactUrl: linkedWorkItem.url,
+      template: kind === 'review' ? reviewCommandTemplate : issueCommandTemplate
     })
   }, [issueCommandTemplate, reviewCommandTemplate, linkedWorkItem, shouldApplyLinkedOnlyTemplate])
 

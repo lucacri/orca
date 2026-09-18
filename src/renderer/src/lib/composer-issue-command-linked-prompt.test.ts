@@ -82,9 +82,21 @@ describe('resolveLinkedOnlyTemplatePrompt', () => {
     expect(resolveLinkedOnlyTemplatePrompt({ ...review, note: '  do the thing ' })).toBe('')
   })
 
-  it('stays empty when the template is untrusted', () => {
-    expect(resolveLinkedOnlyTemplatePrompt({ ...review, trustDecision: 'skip' })).toBe('')
-    expect(resolveLinkedOnlyTemplatePrompt({ ...issue, trustDecision: 'skip' })).toBe('')
+  it('stays empty when repository text is untrusted', () => {
+    const shared = { template: 'Do as {{artifact_url}} says', trustDecision: 'skip' as const }
+    expect(resolveLinkedOnlyTemplatePrompt({ ...review, ...shared })).toBe('')
+    expect(resolveLinkedOnlyTemplatePrompt({ ...issue, ...shared })).toBe('')
+  })
+
+  // A failed read or a repo with no template leaves the built-in default: a local constant, so
+  // there is nothing to distrust and denying it would silently drop the draft prompt entirely.
+  it('still uses the built-in default when the decision is skip', () => {
+    expect(resolveLinkedOnlyTemplatePrompt({ ...review, trustDecision: 'skip' })).toBe(
+      'Review https://gitlab.example.com/g/p/-/merge_requests/3'
+    )
+    expect(resolveLinkedOnlyTemplatePrompt({ ...issue, trustDecision: 'skip' })).toBe(
+      'Complete https://gitlab.example.com/g/p/-/issues/7'
+    )
   })
 
   it('stays empty without a linked URL', () => {

@@ -57,7 +57,7 @@ export function useComposerSubmitOrchestration(
     fallbackCreatureName: target.derivedComposerState.fallbackCreatureName,
     hasLoadedIssueCommand: target.asyncComposerState.hasLoadedIssueCommand,
     issueCommandTemplate: target.asyncComposerState.issueCommandTemplate,
-    currentRepoCommands: target.asyncComposerState.currentRepoCommands,
+    reviewCommandTemplate: target.asyncComposerState.reviewCommandTemplate,
     lastAutoNameRef: target.asyncComposerState.lastAutoNameRef,
     linkedGitLabMR: target.workspaceIdentityState.linkedGitLabMR,
     linkedWorkItem: target.sourceContextState.linkedWorkItem,

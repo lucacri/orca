@@ -82,6 +82,7 @@ export function useFullSubmitPreparation(input: FullSubmitPreparationInput) {
         submitLinkedWorkItemProvider,
         submitCommandKind,
         submitShouldApplyLinkedOnlyTemplate,
+        submitLinkedOnlyTemplateIsRepoText,
         submitStartupPromptWithoutTemplate,
         submitStartupPromptWithTemplate,
         submitShouldRunIssueAutomation
@@ -112,11 +113,10 @@ export function useFullSubmitPreparation(input: FullSubmitPreparationInput) {
           ? 'skip'
           : ((resolvedSetupDecision ?? 'inherit') as SetupDecision)
 
-      // Why: on the linked-only path the template becomes the agent's draft prompt, so it starts
-      // untrusted and is only promoted by an explicit confirmation — matching quick-submit.
-      let issueCommandTrustDecision: 'run' | 'skip' = submitShouldApplyLinkedOnlyTemplate
-        ? 'skip'
-        : 'run'
+      // Why: repository text on the linked-only path becomes the agent's draft prompt, so it
+      // starts untrusted and is only promoted by an explicit confirmation — matching quick-submit.
+      let issueCommandTrustDecision: 'run' | 'skip' =
+        submitShouldApplyLinkedOnlyTemplate && submitLinkedOnlyTemplateIsRepoText ? 'skip' : 'run'
 
       let confirmedIssueCommandTemplate = issueCommandTemplate
 
@@ -154,6 +154,7 @@ export function useFullSubmitPreparation(input: FullSubmitPreparationInput) {
 
       const submitStartupPrompt = resolveTrustedStartupPrompt({
         applyTemplate: submitShouldApplyLinkedOnlyTemplate,
+        templateIsRepoText: submitLinkedOnlyTemplateIsRepoText,
         trustDecision: issueCommandTrustDecision,
         templatePrompt: submitStartupPromptWithTemplate,
         plainPrompt: submitStartupPromptWithoutTemplate

@@ -192,14 +192,18 @@ export function useQuickSubmitPreparation(input: QuickSubmitPreparationInput) {
         )
       }
 
-      const linkedOnlyTemplatePrompt = resolveLinkedOnlyTemplatePrompt({
-        trustDecision: issueCommandTrustDecision,
-        note,
-        kind: submitCommandKind,
-        number: submitLinkedTemplateNumber,
-        artifactUrl: submitLinkedWorkItem?.url ?? null,
-        template: submitIssueCommandTemplate
-      })
+      // Why: the read gate is what decides a linked-only template applies; the trust decision then
+      // only speaks for repository-supplied text, so a failed or skipped read keeps the default.
+      const linkedOnlyTemplatePrompt = shouldReadIssueCommand
+        ? resolveLinkedOnlyTemplatePrompt({
+            trustDecision: issueCommandTrustDecision,
+            note,
+            kind: submitCommandKind,
+            number: submitLinkedTemplateNumber,
+            artifactUrl: submitLinkedWorkItem?.url ?? null,
+            template: submitIssueCommandTemplate
+          })
+        : ''
 
       const issueCommandInput = {
         enabled: enableIssueAutomation && selectedRepoIsGit,

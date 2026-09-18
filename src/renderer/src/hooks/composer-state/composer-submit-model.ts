@@ -31,6 +31,7 @@ export type FullSubmitSource = {
   submitLinkedWorkItemProvider: LinkedWorkItemSummary['provider'] | null
   submitCommandKind: RepoCommandKind
   submitShouldApplyLinkedOnlyTemplate: boolean
+  submitLinkedOnlyTemplateIsRepoText: boolean
   submitStartupPromptWithoutTemplate: string
   submitStartupPromptWithTemplate: string
   submitStartupPrompt: string

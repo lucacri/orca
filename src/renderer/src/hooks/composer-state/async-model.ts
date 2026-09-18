@@ -14,7 +14,6 @@ export type ComposerAsyncModel = {
   setYamlHooks: React.Dispatch<React.SetStateAction<OrcaHooks | null>>
   checkedHooksContextKey: string | null
   setCheckedHooksContextKey: React.Dispatch<React.SetStateAction<string | null>>
-  currentRepoCommands: Partial<Record<RepoCommandKind, IssueCommandReadResult>> | null
   setLoadedRepoCommand: (
     contextKey: string,
     kind: RepoCommandKind,

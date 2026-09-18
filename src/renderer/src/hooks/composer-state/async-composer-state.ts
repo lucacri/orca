@@ -243,7 +243,6 @@ export function useComposerAsyncState(input: ComposerAsyncStateInput) {
     setYamlHooks,
     checkedHooksContextKey,
     setCheckedHooksContextKey,
-    currentRepoCommands,
     setLoadedRepoCommand,
     currentIssueCommand,
     currentReviewCommand,
