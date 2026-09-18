@@ -18,6 +18,7 @@ const SCRIPT_KIND_LABEL: Record<ScriptKind, string> = {
   setup: 'setup script',
   archive: 'archive script',
   issueCommand: 'issue command',
+  reviewCommand: 'review command',
   vmRecipe: 'VM recipe'
 }
 
@@ -25,6 +26,7 @@ const SCRIPT_KIND_TRIGGER: Record<ScriptKind, string> = {
   setup: 'when this workspace is created',
   archive: 'when this workspace is removed',
   issueCommand: 'when this workspace launches with a linked issue',
+  reviewCommand: 'when this workspace launches with a linked pull or merge request',
   vmRecipe: 'before provisioning a VM'
 }
 
