@@ -18,6 +18,29 @@ when you ask for it with `APP_NAME=Beluga`. That work stays on
 `lucacri/local-only` and is kept rebased, so returning to it is one command
 rather than an archaeology exercise.
 
+## Two checkouts, two jobs
+
+| Checkout | Job |
+| --- | --- |
+| `~/Sites/dev-tools/my-orca/lucacri` | **Where you write code.** Clone of your fork: `origin` is `lucacri/orca`, `upstream` is `stablyai/orca`. Make a worktree per change here. |
+| `~/orca/workspaces/orca/beluga` | **Where the app gets built.** Holds the throwaway `lucacri/daily` and the untracked `local/` tooling. Never edit features here — `integrate.sh` rebuilds `daily` from scratch every run and refuses a dirty tree. |
+
+They are separate clones, so a branch made in one is invisible to the other
+until it goes through the fork. `integrate.sh` merges `fork/<branch>`, not the
+local branch, which means **pushing from the work clone is all that is needed**
+— nothing has to be checked out or created in the build clone. A purely local
+branch still works as a fallback, so a quick experiment does not have to be
+published before you can build it.
+
+### Adding a change
+
+1. In the work clone: `git worktree add -b lucacri/<name> <path> upstream/main`
+2. Commit, then `git push -u origin lucacri/<name>`
+3. Add `lucacri/<name>` to `local/branches.sh` in the build clone
+4. `orca-update`
+
+Step 3 is the one people forget; without it the build never carries the change.
+
 ## The three scripts
 
 | Script | What it does |
