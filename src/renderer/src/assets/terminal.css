@@ -502,15 +502,29 @@
   border-color: var(--ring);
 }
 
-/* One unsplit terminal is capped and centered instead of stretching a wide window.
-   The lone pane is the root's only child, so splitting lifts the cap by itself.
-   Scoped to the tab-group host so other pane hosts are not letterboxed. */
-[data-retained-pane-host] [data-terminal-tab-id]:not([data-terminal-chat-view]) > .pane:only-child {
+/* One unsplit tab area is capped and centered instead of stretching a wide window.
+   :only-child lifts the cap on a split inside the terminal tab; data-tab-area-unsplit
+   lifts it when the tab area itself gains a split group.
+   Chat view is left out: its transcript already centers itself at max-w-4xl. */
+[data-retained-pane-host][data-tab-area-unsplit]
+  [data-terminal-tab-id]:not([data-terminal-chat-view])
+  > .pane:only-child {
   box-sizing: border-box;
   max-width: var(--pane-single-max-width, 1100px);
   margin-inline: auto;
   /* The gutter is painted in the terminal's own background, so without edges the
      terminal looks like it runs on. Same line as a split divider. */
+  border-inline: var(--pane-single-edge-width, 1px) solid
+    var(--orca-terminal-divider-color, transparent);
+}
+
+/* Content with no internal splits of its own: browser, editor, markdown preview.
+   Same shared width and the same edge lines as a lone terminal. Diff,
+   conflict-review and check-details deliberately opt out — see TabGroupPanel. */
+[data-tab-area-unsplit] .pane-single-cap {
+  box-sizing: border-box;
+  max-width: var(--pane-single-max-width, 1100px);
+  margin-inline: auto;
   border-inline: var(--pane-single-edge-width, 1px) solid
     var(--orca-terminal-divider-color, transparent);
 }
