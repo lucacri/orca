@@ -10,12 +10,3 @@ BRANCHES=(
   lucacri/own-bundle-id
   lucacri/terminal-size
 )
-
-# Applied ONLY by local/build-beluga.sh. These rename the app into a separate
-# side-by-side install; a dev run needs none of them and is actively harmed by
-# them. Kept on its own branch so the history survives without touching the tree.
-#
-# Never send these upstream. See LOCAL-ONLY.md on that branch.
-BELUGA_ONLY_BRANCHES=(
-  lucacri/local-only
-)

@@ -39,8 +39,7 @@ push_to_fork() {
 }
 
 blocked=()
-# Beluga-only branches are rebased too, so switching back later stays painless.
-for branch in "${BRANCHES[@]}" "${BELUGA_ONLY_BRANCHES[@]}"; do
+for branch in "${BRANCHES[@]}"; do
   base="$(git merge-base "$branch" origin/main)"
   if [[ "$(git rev-list --count "$base"..origin/main)" == "0" ]]; then
     echo "  $branch: already current"

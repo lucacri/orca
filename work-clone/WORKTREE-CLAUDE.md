@@ -41,7 +41,7 @@ As of 2026-09-21:
 | `lucacri/own-bundle-id` | #22052 | Reads macOS app identity from the running bundle |
 | `lucacri/sqlite-builtin` | #22051 | Treats `node:sqlite` as a builtin in the packaging guard |
 | `lucacri/swift-multiarch` | #22050 | Builds the macOS computer-use helper as one multi-arch binary |
-| `lucacri/local-only` | — | Never upstreamed. Old side-by-side rename, kept for history. |
+| `lucacri/local-only` | — | Retired. Old side-by-side rename, kept on the fork for history only. |
 
 ## Opening a pull request from here
 
@@ -70,7 +70,7 @@ call, not yours. The options are to branch from that branch, or to merge it in.
 
 ## Where the app gets built
 
-Not here. `~/orca/workspaces/orca/beluga` holds the build tooling in an
+Not here. `~/Sites/dev-tools/my-orca/build` holds the build tooling in an
 untracked `local/` directory, and the throwaway `lucacri/daily` branch. Never
 edit features there. A new branch reaches the built app by being pushed to the
 fork and added to `local/branches.sh`; see `local/UPSTREAM-SYNC.md`.

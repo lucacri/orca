@@ -12,18 +12,21 @@ all**, only the four MR branches. The official update card still appears; that i
 deliberate, and it is how you learn a release is out. It can never overwrite your
 build: `autoDownload` is off, and the signature differs, so the swap is refused.
 
-`local/branches.sh` holds two lists. `BRANCHES` is the merge requests, applied to
-every build. `BELUGA_ONLY_BRANCHES` is the old side-by-side rename, applied only
-when you ask for it with `APP_NAME=Beluga`. That work stays on
-`lucacri/local-only` and is kept rebased, so returning to it is one command
-rather than an archaeology exercise.
+`local/branches.sh` lists the merge requests applied to every build. The old
+side-by-side rename is retired; that work survives on `lucacri/local-only` on the
+fork if it is ever wanted again, but nothing local depends on it.
 
 ## Two checkouts, two jobs
 
 | Checkout | Job |
 | --- | --- |
 | `~/Sites/dev-tools/my-orca/lucacri` | **Where you write code.** Clone of your fork: `origin` is `lucacri/orca`, `upstream` is `stablyai/orca`. Make a worktree per change here. |
-| `~/orca/workspaces/orca/beluga` | **Where the app gets built.** Holds the throwaway `lucacri/daily` and the untracked `local/` tooling. Never edit features here — `integrate.sh` rebuilds `daily` from scratch every run and refuses a dirty tree. |
+| `~/Sites/dev-tools/my-orca/build` | **Where the app gets built.** Holds the throwaway `lucacri/daily` and the untracked `local/` tooling. Never edit features here — `integrate.sh` rebuilds `daily` from scratch every run and refuses a dirty tree. |
+
+The build worktree belongs to the **original** clone, whose `origin` is
+upstream. It must stay that way: in the fork clone `origin` is the integrated
+branch, so `integrate.sh` rebuilding `daily` from `origin/main` would feed on its
+own output.
 
 They are separate clones, so a branch made in one is invisible to the other
 until it goes through the fork. `integrate.sh` merges `fork/<branch>`, not the
@@ -58,9 +61,9 @@ opens a pull request whose diff contains every other unmerged feature.
 | `local/update.sh` | All of the above, quitting and reopening the app around the swap. |
 | `local/dev.sh` | Optional: `pnpm dev` instead of a packaged app. Not the daily path. |
 
-`local/app.sh` picks which app the three build scripts act on. Default `Orca`
-replaces the official install. `APP_NAME=Beluga local/build.sh` builds the old
-side-by-side fork instead.
+The app is built unrenamed, with upstream's own identity, and replaces the
+official install. `local/electron-builder.arm64.cjs` narrows packaging to arm64
+and skips notarization; nothing else about the build differs from upstream.
 
 `local/integrate.sh` is the shared middle step: it rebuilds `lucacri/daily` as
 `origin/main` with every branch merged on top. It is disposable and recreated

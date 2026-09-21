@@ -3,8 +3,7 @@
 # local/branches.sh merged on top. This is the branch you build or run.
 #
 # Extra branch names may be passed as arguments and are merged after the shared
-# list — that is how build-beluga.sh adds its separate-app identity patches
-# without a dev run ever seeing them.
+# list, for a one-off build without editing local/branches.sh.
 #
 # Merging (not rebasing) is deliberate here: daily is disposable and rebuilt from
 # scratch each run, so its history does not matter, and a merge leaves the MR

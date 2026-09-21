@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install the freshly built $APP_NAME.app into /Applications.
+# Install the freshly built Orca.app into /Applications.
 #
 # Never delete the installed app before copying the new one: a failed copy over
 # the hole you just made leaves you with no app at all — including the one you
@@ -11,20 +11,19 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$REPO/local/branches.sh"
-source "$REPO/local/app.sh"
 
-SRC="$(find "$REPO/dist" -maxdepth 2 -name "$APP_NAME.app" -print -quit)"
-DEST="/Applications/$APP_NAME.app"
-STAGE="/Applications/.$APP_NAME.app.incoming"
-PREVIOUS="/Applications/.$APP_NAME.app.previous"
+SRC="$(find "$REPO/dist" -maxdepth 2 -name "Orca.app" -print -quit)"
+DEST="/Applications/Orca.app"
+STAGE="/Applications/.Orca.app.incoming"
+PREVIOUS="/Applications/.Orca.app.previous"
 
 if [[ -z "$SRC" ]]; then
-  echo "error: no built $APP_NAME.app under $REPO/dist — run local/build.sh first." >&2
+  echo "error: no built Orca.app under $REPO/dist — run local/build.sh first." >&2
   exit 1
 fi
 
-if pgrep -x "$APP_NAME" >/dev/null; then
-  echo "error: quit $APP_NAME before replacing it." >&2
+if pgrep -x Orca >/dev/null; then
+  echo "error: quit Orca before replacing it." >&2
   exit 1
 fi
 
