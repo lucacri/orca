@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom'
+import { useAppStore } from '@/store'
 import TerminalSearch from '@/components/TerminalSearch'
 import { DaemonActionDialog } from '@/components/shared/useDaemonActions'
 import { AgentSessionContinuationDialog } from '@/components/agent-session-continuation/AgentSessionContinuationDialog'
@@ -120,6 +121,10 @@ export function TerminalPaneSurface({
     worktreeId
   } = controller
   const singlePaneMaxWidth = settings?.terminalSinglePaneMaxWidth ?? DEFAULT_SINGLE_PANE_MAX_WIDTH
+  // Same predicate WorktreeSplitSurface uses; its effective-layout fallback can only
+  // produce a leaf (split-group-mount.ts:7-23), so reading the raw map agrees. Read
+  // here rather than threaded: this component is three prop hops from the layout owner.
+  const tabAreaUnsplit = useAppStore((s) => s.layoutByWorktree[worktreeId]?.type !== 'split')
 
   return (
     <>
@@ -306,6 +311,7 @@ export function TerminalPaneSurface({
         />
       ) : null}
       {singlePaneMaxWidth > 0 &&
+      tabAreaUnsplit &&
       paneCount === 1 &&
       terminalContentVisible &&
       !(effectiveChatViewMode && activePaneIsChatLeaf) ? (
