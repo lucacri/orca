@@ -8807,8 +8807,6 @@
           "1afcc1d973": "Vertical Padding",
           "25e2f8e8e1": "Horizontal padding around the terminal grid in pixels.",
           "36b8402015": "Horizontal Padding",
-          "7e06e46f18": "Single Terminal Width",
-          "07bdfea18e": "Maximum width for a tab with no splits, centered between the sidebars. Set 0 for full width.",
           "53ce336e15": "Restart Orca to apply the window blur change.",
           "c65bb9ce63": "Restart required",
           "97950bb087": "Apply background blur to the terminal window. Requires restart.",
@@ -9262,7 +9260,19 @@
               "close": "close",
               "notification": "notification area",
               "background": "background"
-            }
+            },
+            "singlePaneWidth": "Single Pane Width",
+            "singlePaneWidthSummary": "Maximum width for a tab with no splits — terminal, browser, editor or preview — centered in the window.",
+            "kwWidth": "width",
+            "kwMaxWidth": "max width",
+            "kwCentered": "centered",
+            "kwSingle": "single",
+            "kwWide": "wide",
+            "kwUnsplit": "unsplit",
+            "kwPane": "pane",
+            "kwBrowser": "browser",
+            "kwEditor": "editor",
+            "kwTerminal": "terminal"
           }
         },
         "auto": {
@@ -10480,13 +10490,6 @@
             "692c4ad032": "Vertical Padding",
             "75691e4911": "Horizontal padding around the terminal grid in pixels.",
             "b4f182f24d": "Horizontal Padding",
-            "964714e664": "Single Terminal Width",
-            "de90748edb": "Maximum width for a tab with no splits, centered between the sidebars.",
-            "296e5e5b6f": "width",
-            "52818ec5aa": "max width",
-            "ff8cbec8bc": "centered",
-            "cdbc212ac9": "single",
-            "b3d2c84b6a": "wide",
             "6c2f9f05c8": "vibrancy",
             "4f7f8f28ca": "transparency",
             "f6dd9ff606": "background",
@@ -12053,6 +12056,9 @@
         "TerminalRenderingSection": {
           "6d4c55bacc": "Inline Images",
           "fffab5890b": "Display images directly in the terminal using SIXEL, iTerm2 (IIP), and Kitty graphics protocols."
+        },
+        "SinglePaneWidthSetting": {
+          "title": "Single Pane Width"
         }
       },
       "right": {
