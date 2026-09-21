@@ -33,6 +33,7 @@ export function useNativeChatFileLinkClick(
         worktreeId: context.worktreeId,
         worktreePath: context.worktreePath,
         runtimeEnvironmentId: context.runtimeEnvironmentId,
+        sourceTabId: context.terminalTabId,
         openWithSystemDefault: event.shiftKey,
         // Why: an underlined link must answer every click, so a miss says why.
         onOpenFailure: (failure) =>

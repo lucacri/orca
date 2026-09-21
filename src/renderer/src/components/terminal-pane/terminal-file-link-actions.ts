@@ -19,6 +19,8 @@ export type TerminalFileLinkActionDeps = {
   worktreePath: string
   runtimeEnvironmentId?: string | null
   wslDistro?: string | null
+  /** The terminal or chat tab the click came from; lets the file open beside it. */
+  sourceTabId?: string
 }
 
 export function handleTerminalFileLink(
