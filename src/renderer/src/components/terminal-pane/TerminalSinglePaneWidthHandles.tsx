@@ -66,9 +66,10 @@ export function TerminalSinglePaneWidthHandles({
   onCommit
 }: TerminalSinglePaneWidthHandlesProps): React.JSX.Element | null {
   const [containerWidth, setContainerWidth] = useState(0)
-  // The cap rule is scoped to the retained pane host, so outside one (floating
-  // panel, onboarding, settings preview) the pane fills the tab and these handles
-  // would sit invisibly on the terminal's own content edges.
+  // Outside a retained pane host — floating panel, onboarding, settings preview —
+  // the pane fills the tab and these handles would sit invisibly on the terminal's
+  // own content edges. Whether the tab AREA is split is a live fact, so
+  // TerminalPaneSurface gates that half on the store instead.
   const [inCapHost, setInCapHost] = useState(false)
   const [draftWidth, setDraftWidth] = useState<number | null>(null)
   const dragRef = useRef<DragState | null>(null)

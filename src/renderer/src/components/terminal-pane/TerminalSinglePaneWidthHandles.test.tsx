@@ -1,7 +1,9 @@
 // @vitest-environment happy-dom
-import { createRef } from 'react'
+import { createRef, useEffect } from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { TabGroupLayoutNode } from '../../../../shared/tab-types'
+import { useAppStore } from '@/store'
 import { TerminalSinglePaneWidthHandles } from './TerminalSinglePaneWidthHandles'
 
 afterEach(() => {
@@ -191,5 +193,77 @@ describe('review follow-ups', () => {
     fireEvent.keyDown(right, { key: 'Enter' })
     fireEvent.keyDown(right, { key: 'ArrowUp' })
     expect(onCommit).not.toHaveBeenCalled()
+  })
+})
+
+// TerminalPaneSurface needs a whole controller to render, so its store gate is
+// exercised here through the identical selector. What matters is that the handles
+// leave and return while the surrounding host stays MOUNTED.
+let sentinelMounts = 0
+
+function MountSentinel(): null {
+  useEffect(() => {
+    sentinelMounts += 1
+  }, [])
+  return null
+}
+
+function GateHost({
+  worktreeId,
+  containerRef
+}: {
+  worktreeId: string
+  containerRef: React.RefObject<HTMLDivElement | null>
+}): React.JSX.Element {
+  const tabAreaUnsplit = useAppStore((s) => s.layoutByWorktree[worktreeId]?.type !== 'split')
+  return (
+    <>
+      <MountSentinel />
+      {tabAreaUnsplit ? (
+        <TerminalSinglePaneWidthHandles
+          containerRef={containerRef}
+          maxWidth={1000}
+          dividerStyle={{}}
+          onCommit={vi.fn()}
+        />
+      ) : null}
+    </>
+  )
+}
+
+describe('the unsplit gate TerminalPaneSurface applies to the handles', () => {
+  const setLayout = (node: TabGroupLayoutNode): void => {
+    act(() => {
+      useAppStore.setState({ layoutByWorktree: { 'wt-1': node } })
+    })
+  }
+
+  it('hides the handles on a split tab area and brings them back without remounting', () => {
+    const host = document.createElement('div')
+    host.setAttribute('data-retained-pane-host', '')
+    const container = document.createElement('div')
+    container.getBoundingClientRect = () => new DOMRect(0, 0, 1600, 800)
+    host.append(container)
+    document.body.append(host)
+    const ref = createRef<HTMLDivElement>()
+    ref.current = container
+
+    sentinelMounts = 0
+    setLayout({ type: 'leaf', groupId: 'g1' })
+    render(<GateHost worktreeId="wt-1" containerRef={ref} />)
+    expect(screen.getAllByRole('separator')).toHaveLength(2)
+
+    setLayout({
+      type: 'split',
+      direction: 'horizontal',
+      first: { type: 'leaf', groupId: 'g1' },
+      second: { type: 'leaf', groupId: 'g2' },
+      ratio: 0.5
+    })
+    expect(screen.queryAllByRole('separator')).toHaveLength(0)
+
+    setLayout({ type: 'leaf', groupId: 'g1' })
+    expect(screen.getAllByRole('separator')).toHaveLength(2)
+    expect(sentinelMounts).toBe(1)
   })
 })
