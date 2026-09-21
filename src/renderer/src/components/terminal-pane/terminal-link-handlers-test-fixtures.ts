@@ -63,20 +63,20 @@ export function createTerminalLinkTestDoubles(): TerminalLinkTestDoubles {
   const createEmptySplitGroupMock = vi.fn(() => 'g2')
 
   const deps = { worktreeId: 'wt-1', worktreePath: '/tmp' }
-  const storeState = {
-    settings: undefined as TerminalLinkStoreSettings | undefined,
+  const storeState: TerminalLinkStoreState = {
+    settings: undefined,
     setActiveWorktree: setActiveWorktreeMock,
     createBrowserTab: createBrowserTabMock,
     openFile: openFileMock,
     setPendingEditorReveal: setPendingEditorRevealMock,
     setMarkdownViewMode: setMarkdownViewModeMock,
-    activeFileIdByWorktree: {} as Record<string, string | null>,
-    openFiles: [] as { filePath: string; worktreeId: string }[],
-    worktreesByRepo: {} as Record<string, { id: string; path: string }[]>,
-    folderWorkspaces: [] as [],
-    layoutByWorktree: {} as Record<string, TabGroupLayoutNode | undefined>,
-    activeGroupIdByWorktree: {} as Record<string, string | undefined>,
-    groupsByWorktree: {} as Record<string, { id: string }[]>,
+    activeFileIdByWorktree: {},
+    openFiles: [],
+    worktreesByRepo: {},
+    folderWorkspaces: [],
+    layoutByWorktree: {},
+    activeGroupIdByWorktree: {},
+    groupsByWorktree: {},
     createEmptySplitGroup: createEmptySplitGroupMock
   }
 

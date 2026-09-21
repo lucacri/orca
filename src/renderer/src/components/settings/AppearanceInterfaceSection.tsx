@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { UIZoomControl } from './UIZoomControl'
 import { SearchableSetting } from './SearchableSetting'
 import { AppearanceAdvancedDisclosure } from './AppearanceAdvancedDisclosure'
+import { SinglePaneWidthSetting } from './SinglePaneWidthSetting'
 import { useAppStore } from '../../store'
 import { useShortcutKeyComboDetails } from '@/hooks/useShortcutLabel'
 import { ShortcutHintList } from './AppearanceShortcutHintList'
@@ -194,6 +195,8 @@ export function AppearanceInterfaceSection({
           }
         />
       </SearchableSetting>
+
+      <SinglePaneWidthSetting settings={settings} updateSettings={updateSettings} />
 
       {showAdvanced ? (
         <AppearanceAdvancedDisclosure showTopBorder={false}>
