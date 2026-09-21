@@ -12,6 +12,8 @@ export type NativeChatFileLinkContext = {
   worktreeId: string
   worktreePath: string
   runtimeEnvironmentId: string | null
+  /** The terminal tab hosting this chat; lets a file open beside it. */
+  terminalTabId: string
 }
 
 export type NativeChatResolvedFileLink = {
@@ -102,7 +104,8 @@ export function resolveNativeChatFileLinkContext(
   return {
     worktreeId,
     worktreePath,
-    runtimeEnvironmentId: getRuntimeEnvironmentIdForWorktree(state, worktreeId)
+    runtimeEnvironmentId: getRuntimeEnvironmentIdForWorktree(state, worktreeId),
+    terminalTabId
   }
 }
 
