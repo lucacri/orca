@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# Rebase every branch in local/branches.sh onto the latest upstream main and say
-# plainly which ones a human still has to touch. Changes no worktree files.
+# Rebase every branch in local/branches.sh onto the latest upstream main, push the
+# result to your fork, and say plainly which ones a human still has to touch.
+# Changes no worktree files.
+#
+# `origin` is upstream (stablyai) and `fork` is yours — backwards from the usual
+# GitHub convention, but it means "origin/main" means what it says everywhere.
 #
 # Run this first, whenever upstream has moved. Integration (local/integrate.sh)
 # merges these branches, so a branch left behind here is a conflict later.
@@ -24,12 +28,23 @@ started_on="$(git branch --show-current)"
 echo "==> Fetching upstream"
 git fetch origin main || exit 1
 
+# Why --force-with-lease and not --force: a rebase rewrites history the fork
+# already has, so a plain push is refused; --force-with-lease still refuses if
+# someone else moved the branch since you last fetched it.
+push_to_fork() {
+  local branch="$1"
+  git remote get-url fork >/dev/null 2>&1 || return 0
+  git push --force-with-lease -q fork "$branch:$branch" 2>/dev/null && return 0
+  echo "    (push to fork failed — back this up before you lose it)"
+}
+
 blocked=()
 # Beluga-only branches are rebased too, so switching back later stays painless.
 for branch in "${BRANCHES[@]}" "${BELUGA_ONLY_BRANCHES[@]}"; do
   base="$(git merge-base "$branch" origin/main)"
   if [[ "$(git rev-list --count "$base"..origin/main)" == "0" ]]; then
     echo "  $branch: already current"
+    push_to_fork "$branch"
     continue
   fi
 
@@ -44,6 +59,7 @@ for branch in "${BRANCHES[@]}" "${BELUGA_ONLY_BRANCHES[@]}"; do
     echo "  $branch: rebasing in its own worktree ($host)"
     if git -C "$host" -c core.hooksPath=/dev/null rebase origin/main >/dev/null 2>&1; then
       echo "    ok"
+      push_to_fork "$branch"
     else
       git -C "$host" rebase --abort >/dev/null 2>&1
       blocked+=("$branch (in $host)")
@@ -55,6 +71,7 @@ for branch in "${BRANCHES[@]}" "${BELUGA_ONLY_BRANCHES[@]}"; do
   git checkout -q "$branch" 2>/dev/null || { blocked+=("$branch (cannot check out)"); continue; }
   if git -c core.hooksPath=/dev/null rebase origin/main >/dev/null 2>&1; then
     echo "  $branch: rebased"
+    push_to_fork "$branch"
   else
     echo "  $branch: CONFLICT on:"
     git diff --name-only --diff-filter=U | sed 's/^/      /'
