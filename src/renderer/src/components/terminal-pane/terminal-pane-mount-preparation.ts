@@ -157,6 +157,7 @@ export function prepareTerminalPaneMount(
   const linkDeps: LinkHandlerDeps = {
     worktreeId: deps.worktreeId,
     worktreePath,
+    sourceTabId: deps.tabId,
     startupCwd,
     getPaneLinkCwd,
     terminalHomePath,

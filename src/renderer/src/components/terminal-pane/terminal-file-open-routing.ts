@@ -26,6 +26,8 @@ type TerminalFileOpenDeps = {
   runtimeEnvironmentId?: string | null
   wslDistro?: string | null
   openWithSystemDefault?: boolean
+  /** The terminal or chat tab the click came from; lets the file open beside it. */
+  sourceTabId?: string
 }
 
 export function isHtmlFilePath(filePath: string): boolean {

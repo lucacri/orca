@@ -45,7 +45,8 @@ function state(overrides: Partial<AppState> = {}): AppState {
 const context: NativeChatFileLinkContext = {
   worktreeId: 'wt-1',
   worktreePath: '/repo/worktree',
-  runtimeEnvironmentId: null
+  runtimeEnvironmentId: null,
+  terminalTabId: 'tab-1'
 }
 
 describe('resolveNativeChatFileLinkContext', () => {
@@ -60,7 +61,8 @@ describe('resolveNativeChatFileLinkContext', () => {
     ).toEqual({
       worktreeId: 'wt-1',
       worktreePath: '/repo/worktree',
-      runtimeEnvironmentId: 'env-1'
+      runtimeEnvironmentId: 'env-1',
+      terminalTabId: 'tab-1'
     })
   })
 
@@ -92,7 +94,7 @@ describe('resolveNativeChatFileLinkContext', () => {
         }),
         structuredTab.id
       )
-    ).toEqual(context)
+    ).toEqual({ ...context, terminalTabId: structuredTab.id })
   })
 
   it('falls back to repo-scoped worktrees when a known worktree has no path', () => {
@@ -109,7 +111,8 @@ describe('resolveNativeChatFileLinkContext', () => {
     ).toEqual({
       worktreeId: 'wt-1',
       worktreePath: '/repo/fallback',
-      runtimeEnvironmentId: null
+      runtimeEnvironmentId: null,
+      terminalTabId: 'tab-1'
     })
   })
 
@@ -130,7 +133,8 @@ describe('resolveNativeChatFileLinkContext', () => {
     ).toEqual({
       worktreeId: folderKey,
       worktreePath: '/workspace/platform',
-      runtimeEnvironmentId: null
+      runtimeEnvironmentId: null,
+      terminalTabId: folderTab.id
     })
   })
 })

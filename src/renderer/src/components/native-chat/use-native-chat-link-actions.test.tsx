@@ -48,7 +48,12 @@ vi.mock('@/components/ui/popover', () => ({
   PopoverContent: ({ children }: { children: ReactNode }) => <div>{children}</div>
 }))
 
-const context = { worktreeId: 'wt-1', worktreePath: '/repo', runtimeEnvironmentId: null }
+const context = {
+  worktreeId: 'wt-1',
+  worktreePath: '/repo',
+  runtimeEnvironmentId: null,
+  terminalTabId: 'tab-1'
+}
 
 function Transcript({
   markdown,
