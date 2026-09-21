@@ -22,6 +22,7 @@ const StructuredAgentSessionOverlaySlot = memo(function StructuredAgentSessionOv
   isActive,
   isFocusedGroup,
   target,
+  tabAreaUnsplit = false,
   onFocusOwningGroup
 }: {
   tab: StructuredAgentSessionTab
@@ -29,6 +30,7 @@ const StructuredAgentSessionOverlaySlot = memo(function StructuredAgentSessionOv
   isActive: boolean
   isFocusedGroup: boolean
   target: RuntimeClientTarget
+  tabAreaUnsplit?: boolean
   onFocusOwningGroup: ((groupId: string) => void) | undefined
 }): React.JSX.Element {
   return (
@@ -36,6 +38,7 @@ const StructuredAgentSessionOverlaySlot = memo(function StructuredAgentSessionOv
       groupId={groupId}
       isVisible={isActive}
       data-structured-agent-session-overlay-tab-id={tab.id}
+      data-tab-area-unsplit={tabAreaUnsplit ? '' : undefined}
       onFocusOwningGroup={onFocusOwningGroup}
     >
       <NativeChatView
@@ -55,10 +58,12 @@ const StructuredAgentSessionOverlaySlot = memo(function StructuredAgentSessionOv
 const StructuredAgentSessionPaneOverlayLayer = memo(
   function StructuredAgentSessionPaneOverlayLayer({
     worktreeId,
-    isWorktreeActive
+    isWorktreeActive,
+    tabAreaUnsplit = false
   }: {
     worktreeId: string
     isWorktreeActive: boolean
+    tabAreaUnsplit?: boolean
   }): React.JSX.Element {
     const { unifiedTabs, groups, runtimeEnvironmentId, activeGroupId } = useAppStore(
       useShallow((state) => ({
@@ -105,6 +110,7 @@ const StructuredAgentSessionPaneOverlayLayer = memo(
               tab.groupId === activeGroupId
             )}
             target={target}
+            tabAreaUnsplit={tabAreaUnsplit}
             onFocusOwningGroup={focusOwningGroup}
           />
         ))}
