@@ -96,7 +96,6 @@ export const WorktreeSplitSurface = React.memo(function WorktreeSplitSurface({
       <StructuredAgentSessionPaneOverlayLayer
         worktreeId={worktreeId}
         isWorktreeActive={isVisible}
-        tabAreaUnsplit={tabAreaUnsplit}
       />
       <AiVaultSessionDropLayer worktreeId={worktreeId} enabled={isVisible} />
     </div>

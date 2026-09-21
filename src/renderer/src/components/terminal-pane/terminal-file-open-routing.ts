@@ -9,7 +9,7 @@ import {
   canClientOsOpenWorkspaceFile
 } from '@/lib/workspace-file-host-routing'
 import { resolveRightSplitTargetGroupId } from '@/lib/right-split-target-group'
-import { resolveOpenBesideGroupId } from './open-file-beside-capped-pane'
+import { cappedPaneHasGutter } from './open-file-beside-capped-pane'
 import {
   isMissingRuntimePathError,
   statRuntimePath,
@@ -279,12 +279,11 @@ export function openDetectedFilePath(
     // changed while the file was resolving. Why same-worktree only: a sibling route
     // lands in another workspace whose layout this click never saw.
     const besideGroupId =
-      deps.sourceTabId !== undefined && targetWorktreeId === worktreeId
-        ? resolveOpenBesideGroupId(deps.sourceTabId, {
-            // Unfocused: a host snapshot reads an activated empty group as a terminal pane.
-            resolveTargetGroupId: () =>
-              resolveRightSplitTargetGroupId(store, targetWorktreeId, null, { activate: false })
-          })
+      deps.sourceTabId !== undefined &&
+      targetWorktreeId === worktreeId &&
+      cappedPaneHasGutter(deps.sourceTabId)
+        ? // Unfocused: a host snapshot reads an activated empty group as a terminal pane.
+          resolveRightSplitTargetGroupId(store, targetWorktreeId, null, { activate: false })
         : null
 
     const language = detectLanguage(mappedFilePath)

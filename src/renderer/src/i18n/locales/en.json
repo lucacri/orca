@@ -12348,9 +12348,6 @@
           "hostOnly": "Change the plan site and API key in the desktop app on the computer running Orca.",
           "detailsUnavailable": "Plan credential details are only readable on the computer running Orca.",
           "siteUnavailable": "Host plan site unavailable"
-        },
-        "SinglePaneWidthSetting": {
-          "title": "Single Pane Width"
         }
       },
       "right": {

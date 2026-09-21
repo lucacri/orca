@@ -5,20 +5,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { UIZoomControl } from './UIZoomControl'
 import { SearchableSetting } from './SearchableSetting'
 import { AppearanceAdvancedDisclosure } from './AppearanceAdvancedDisclosure'
-import { SinglePaneWidthSetting } from './SinglePaneWidthSetting'
 import { useAppStore } from '../../store'
 import { useShortcutKeyComboDetails } from '@/hooks/useShortcutLabel'
 import { ShortcutHintList } from './AppearanceShortcutHintList'
 import {
   FontAutocomplete,
+  NumberField,
   SettingsRow,
   SettingsSegmentedControl,
   SettingsSwitchRow
 } from './SettingsFormControls'
 import { DEFAULT_APP_FONT_FAMILY } from '../../../../shared/constants'
 import {
+  DEFAULT_SINGLE_PANE_MAX_WIDTH,
+  MIN_SINGLE_PANE_WIDTH
+} from '../terminal-pane/TerminalSinglePaneWidthHandles'
+import {
   getLanguageEntries,
   getMenuBarIconEntries,
+  getSinglePaneWidthEntries,
   getSystemTrayEntries,
   getThemeEntries,
   getTitlebarEntries,
@@ -64,6 +69,7 @@ export function AppearanceInterfaceSection({
   const languageEntry = getLanguageEntries()[0]
   const menuBarIconEntry = getMenuBarIconEntries({ showMenuBarIcon: true })[0]
   const systemTrayEntry = getSystemTrayEntries({ showSystemTray: true })[0]
+  const singlePaneWidthEntry = getSinglePaneWidthEntries()[0]
   const themeEntry = getThemeEntries()[0]
   const themeLabel = translate('auto.components.settings.AppearancePane.932ff1fbff', 'Theme')
   const titlebarEntry = getTitlebarEntries()[0]
@@ -196,7 +202,29 @@ export function AppearanceInterfaceSection({
         />
       </SearchableSetting>
 
-      <SinglePaneWidthSetting settings={settings} updateSettings={updateSettings} />
+      <SearchableSetting
+        title={singlePaneWidthEntry.title}
+        description={singlePaneWidthEntry.description}
+        keywords={singlePaneWidthEntry.keywords}
+      >
+        <NumberField
+          label={singlePaneWidthEntry.title}
+          description=""
+          value={settings.terminalSinglePaneMaxWidth ?? DEFAULT_SINGLE_PANE_MAX_WIDTH}
+          defaultValue={DEFAULT_SINGLE_PANE_MAX_WIDTH}
+          min={0}
+          max={4000}
+          step={10}
+          suffix="px"
+          onChange={(value) =>
+            updateSettings({
+              // Below the drag floor the first drag would silently snap the value
+              // back up, so refuse the width the drag cannot hold.
+              terminalSinglePaneMaxWidth: value <= 0 ? 0 : Math.max(MIN_SINGLE_PANE_WIDTH, value)
+            })
+          }
+        />
+      </SearchableSetting>
 
       {showAdvanced ? (
         <AppearanceAdvancedDisclosure showTopBorder={false}>
