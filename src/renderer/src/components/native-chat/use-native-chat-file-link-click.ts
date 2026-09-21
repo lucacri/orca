@@ -18,7 +18,6 @@ export function useNativeChatFileLinkClick(
         worktreeId: context.worktreeId,
         worktreePath: context.worktreePath,
         runtimeEnvironmentId: context.runtimeEnvironmentId,
-        sourceTabId: context.terminalTabId,
         openWithSystemDefault: event.shiftKey
       })
     },

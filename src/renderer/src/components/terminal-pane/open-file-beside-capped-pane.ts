@@ -16,11 +16,3 @@ export function cappedPaneHasGutter(sourceTabId: string): boolean {
   }
   return false
 }
-
-/** The group a file should open into so it lands beside a capped terminal, not over it. */
-export function resolveOpenBesideGroupId(
-  sourceTabId: string,
-  deps: { resolveTargetGroupId: () => string | null }
-): string | null {
-  return cappedPaneHasGutter(sourceTabId) ? deps.resolveTargetGroupId() : null
-}

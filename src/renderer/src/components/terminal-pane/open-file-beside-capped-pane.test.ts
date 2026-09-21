@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { cappedPaneHasGutter, resolveOpenBesideGroupId } from './open-file-beside-capped-pane'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { cappedPaneHasGutter } from './open-file-beside-capped-pane'
 import { mountTerminalHost } from './terminal-capped-host-test-dom'
 
 beforeEach(() => {
@@ -58,19 +58,5 @@ describe('cappedPaneHasGutter', () => {
     Object.defineProperty(host, 'clientWidth', { value: 1600 })
     document.body.appendChild(host)
     expect(cappedPaneHasGutter('t1')).toBe(false)
-  })
-})
-
-describe('resolveOpenBesideGroupId', () => {
-  it('returns null with no gutter, so today’s behaviour is kept', () => {
-    mountTerminalHost({ unsplit: true, hostWidth: 900, paneWidth: 898, panes: 1 })
-    expect(resolveOpenBesideGroupId('t1', { resolveTargetGroupId: () => 'never' })).toBeNull()
-  })
-
-  it('delegates to the shared right-split resolver when there is gutter', () => {
-    mountTerminalHost({ unsplit: true, hostWidth: 1600, paneWidth: 1100, panes: 1 })
-    const resolveTargetGroupId = vi.fn(() => 'gNew')
-    expect(resolveOpenBesideGroupId('t1', { resolveTargetGroupId })).toBe('gNew')
-    expect(resolveTargetGroupId).toHaveBeenCalledOnce()
   })
 })
