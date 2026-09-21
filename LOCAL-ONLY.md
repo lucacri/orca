@@ -9,8 +9,16 @@ one does, read the entry before resolving.
 
 ## 1. `config/electron-builder.beluga.cjs` (new file)
 
-Re-exports upstream's electron-builder config with three keys replaced: `appId`
-(`com.lucacri.beluga`), `productName` (`Beluga`), and the URL scheme.
+Re-exports upstream's electron-builder config with four keys replaced: `appId`
+(`com.lucacri.beluga`), `productName` (`Beluga`), the URL scheme, and `mac.target`
+narrowed to arm64.
+
+The arm64 narrowing is not cosmetic. Upstream pins `arch: ['x64', 'arm64']` on
+every mac target, and a target's own arch list outranks the `--arm64` CLI flag,
+so packaging always attempted an x64 pass and failed on native variants that a
+host-only `pnpm install` never fetches. This build runs on one Apple Silicon Mac,
+so the second slice was only ever cost. If you ever do need a universal or Intel
+build, restore upstream's arch list here and run `pnpm install:release` first.
 
 Deliberately an overlay rather than an edit, so `config/electron-builder.config.cjs`
 stays byte-identical to upstream and can never conflict. **A new file cannot
