@@ -34,12 +34,19 @@ published before you can build it.
 
 ### Adding a change
 
-1. In the work clone: `git worktree add -b lucacri/<name> <path> upstream/main`
-2. Commit, then `git push -u origin lucacri/<name>`
-3. Add `lucacri/<name>` to `local/branches.sh` in the build clone
-4. `orca-update`
+1. Create the worktree in Orca as usual. It comes off the fork's `main`, which
+   `integrate.sh` republishes on every build as upstream plus every branch in
+   `BRANCHES` — so the new worktree already contains all of them.
+2. Commit your work.
+3. `orca-mr` — replays only your commits onto `upstream/main` so the pull
+   request shows one change, then prints the push and `gh pr create` lines.
+4. Add `lucacri/<name>` to `local/branches.sh` in the build clone.
+5. `orca-update`.
 
-Step 3 is the one people forget; without it the build never carries the change.
+Step 4 is the one people forget; without it the build never carries the change.
+
+The cost of step 1 giving you everything is step 3 being required. Skipping it
+opens a pull request whose diff contains every other unmerged feature.
 
 ## The three scripts
 

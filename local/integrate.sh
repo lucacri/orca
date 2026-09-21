@@ -64,5 +64,15 @@ for branch in "${BRANCHES[@]}" "$@"; do
   fi
 done
 
+# Why publish it: new worktrees are created from the fork's main, so main has to
+# BE the integrated state or every new branch starts without Luca's features.
+# Force is correct here — daily is rebuilt from scratch each run, so this branch
+# is a snapshot, never a history. No pull request uses main as its head; a branch
+# opened from here must be rebased onto upstream/main first (see orca-mr).
+if git remote get-url fork >/dev/null 2>&1; then
+  echo "==> Publishing integrated state to fork/main"
+  git push -q --force fork "lucacri/daily:main" || echo "  (push failed — new worktrees will start from a stale main)"
+fi
+
 echo "==> Installing dependencies"
 pnpm install
