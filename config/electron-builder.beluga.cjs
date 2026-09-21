@@ -25,7 +25,13 @@ const notarize = process.env.BELUGA_NOTARIZE === '1' ? base.mac.notarize : false
 
 module.exports = {
   ...base,
-  mac: { ...base.mac, notarize },
+  // One machine, one architecture. Upstream's mac.target pins ['x64', 'arm64'],
+  // which outranks --arm64 and demands x64 natives this build never ships.
+  mac: {
+    ...base.mac,
+    notarize,
+    target: base.mac.target.map((entry) => ({ ...entry, arch: ['arm64'] }))
+  },
   appId: 'com.lucacri.beluga',
   productName: 'Beluga',
   // Own scheme so beluga:// links never steal the installed Orca's.
