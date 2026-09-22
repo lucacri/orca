@@ -2,10 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { activateAndRevealWorkspace, activateAndRevealWorktree } from '@/lib/worktree-activation'
 import { openDetectedFilePath } from './terminal-link-handlers'
-import {
-  createTerminalLinkTestDoubles,
-  mountTerminalHost
-} from './terminal-link-handlers-test-fixtures'
+import { createTerminalLinkTestDoubles } from './terminal-link-handlers-test-fixtures'
 import {
   createDeferred,
   flushAsyncWork,
@@ -24,7 +21,6 @@ const {
   createBrowserTabMock,
   setPendingEditorRevealMock,
   setMarkdownViewModeMock,
-  createEmptySplitGroupMock,
   statMock
 } = doubles
 
@@ -321,64 +317,19 @@ describe('handleOscLink', () => {
   })
 })
 
-describe('opening a file beside a capped lone terminal', () => {
+describe('placement of a clicked file', () => {
   beforeEach(() => {
-    createEmptySplitGroupMock.mockClear()
     openFileMock.mockClear()
     statMock.mockResolvedValue({ isDirectory: false })
     storeState.openFiles = []
-    storeState.layoutByWorktree = { 'wt-1': { type: 'leaf', groupId: 'g1' } }
-    storeState.activeGroupIdByWorktree = { 'wt-1': 'g1' }
-    storeState.groupsByWorktree = { 'wt-1': [{ id: 'g1' }] }
-    mountTerminalHost({ unsplit: true, hostWidth: 1600, paneWidth: 1100, panes: 1 })
   })
 
-  it('opens the editor tab in a new right split when the cap leaves gutter', async () => {
+  it('names no target group: the store decides beside-or-tab from the layout', async () => {
     openDetectedFilePath('/tmp/src/a.ts', 12, 3, { ...deps, sourceTabId: 't1' })
     await flushAsyncWork()
-    expect(createEmptySplitGroupMock).toHaveBeenCalledWith('wt-1', 'g1', 'right', {
-      activate: false
-    })
     expect(openFileMock).toHaveBeenCalledWith(
       expect.objectContaining({ filePath: '/tmp/src/a.ts', mode: 'edit' }),
-      expect.objectContaining({ targetGroupId: 'g2', forceContentReload: true })
+      { forceContentReload: true }
     )
-  })
-
-  it('keeps the same-group behaviour when there is no gutter', async () => {
-    mountTerminalHost({ unsplit: true, hostWidth: 1102, paneWidth: 1100, panes: 1 })
-    openDetectedFilePath('/tmp/src/a.ts', null, null, { ...deps, sourceTabId: 't1' })
-    await flushAsyncWork()
-    expect(createEmptySplitGroupMock).not.toHaveBeenCalled()
-    expect(openFileMock.mock.calls[0][1]).not.toHaveProperty('targetGroupId')
-  })
-
-  it('keeps the same-group behaviour with no source tab id', async () => {
-    openDetectedFilePath('/tmp/src/a.ts', null, null, deps)
-    await flushAsyncWork()
-    expect(createEmptySplitGroupMock).not.toHaveBeenCalled()
-  })
-
-  it('never splits for a file routed to a different worktree', async () => {
-    storeState.openFiles = [{ filePath: '/sibling/a.ts', worktreeId: 'wt-2' }]
-    findWorkspaceFileRouteMock.mockReturnValueOnce({
-      worktreeId: 'wt-2',
-      relativePath: 'a.ts',
-      executionHostId: 'local'
-    })
-    openDetectedFilePath('/sibling/a.ts', null, null, { ...deps, sourceTabId: 't1' })
-    await flushAsyncWork()
-    expect(createEmptySplitGroupMock).not.toHaveBeenCalled()
-  })
-
-  it('does not split on a layout that changed while the stat was in flight', async () => {
-    const pendingStat = createDeferred<{ isDirectory: boolean }>()
-    statMock.mockReturnValueOnce(pendingStat.promise)
-    openDetectedFilePath('/tmp/src/a.ts', null, null, { ...deps, sourceTabId: 't1' })
-    // The user split the tab area themselves while the file was being resolved.
-    mountTerminalHost({ unsplit: false, hostWidth: 800, paneWidth: 800, panes: 1 })
-    pendingStat.resolve({ isDirectory: false })
-    await flushAsyncWork()
-    expect(createEmptySplitGroupMock).not.toHaveBeenCalled()
   })
 })

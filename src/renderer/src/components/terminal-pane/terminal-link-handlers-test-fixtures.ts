@@ -1,7 +1,6 @@
 import { vi, type Mock } from 'vitest'
 import type { TabGroupLayoutNode } from '../../../../shared/tab-types'
 
-export { mountTerminalHost } from './terminal-capped-host-test-dom'
 
 export type TerminalLinkStoreSettings = {
   openLinksInApp?: boolean
