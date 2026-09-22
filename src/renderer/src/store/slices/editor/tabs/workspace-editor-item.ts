@@ -53,17 +53,7 @@ export function getReplaceablePreviewFileId(
   }
   // Why: this open is about to become a new right pane, so it replaces nothing — evicting here
   // would delete the left pane's OpenFile and leave its tab with nothing behind it.
-  if (
-    findLonePaneSourceGroupId(
-      {
-        layoutByWorktree: state.layoutByWorktree ?? {},
-        groupsByWorktree: state.groupsByWorktree ?? {},
-        unifiedTabsByWorktree: state.unifiedTabsByWorktree ?? {}
-      },
-      worktreeId,
-      targetGroupId
-    )
-  ) {
+  if (findLonePaneSourceGroupId(state, worktreeId, targetGroupId)) {
     return null
   }
   const tabsForWorktree = state.unifiedTabsByWorktree?.[worktreeId] ?? []
