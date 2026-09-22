@@ -47,6 +47,7 @@ export function applyOpenFileToState(
         focusEditor?: boolean
         reopenId?: string
         selection?: EditorTabSelection
+        placementFixed?: boolean
       }
     | undefined,
   scratch: OpenFileApplyScratch
