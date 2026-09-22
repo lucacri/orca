@@ -150,13 +150,19 @@ export function detachTerminalPaneToTab(args: {
     recordInteraction: true
   })
   const afterCreateStore = args.getStore()
-  moveCreatedTabToIndex({
-    groupId: args.targetGroupId,
-    store: afterCreateStore,
-    tabId: tab.id,
-    targetIndex: args.targetIndex,
-    worktreeId: args.worktreeId
-  })
+  // Why: the lone-pane rule can place the terminal in a fresh group, so the requested one is stale.
+  const createdGroupId = afterCreateStore.groupsByWorktree[args.worktreeId]?.find((group) =>
+    (group.tabOrder ?? []).includes(tab.id)
+  )?.id
+  if (createdGroupId) {
+    moveCreatedTabToIndex({
+      groupId: createdGroupId,
+      store: afterCreateStore,
+      tabId: tab.id,
+      targetIndex: args.targetIndex,
+      worktreeId: args.worktreeId
+    })
+  }
   afterCreateStore.setTabLayout(args.sourceTabId, detached.sourceLayout)
   afterCreateStore.setTabLayout(tab.id, detachedLayout)
   afterCreateStore.syncPaneDetachPtyOwnership({
