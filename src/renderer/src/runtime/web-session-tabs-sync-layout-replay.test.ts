@@ -23,7 +23,7 @@ describe('applyWebSessionTabsSnapshot layout replay', () => {
 
   it('mirrors two host terminals sharing a host group as one pane, never a split', () => {
     // Why: mirroring replays the host's own layout; it must not auto-split beside the first tab.
-    const patch = applyWebSessionTabsSnapshot(
+    const patch: Partial<WebSessionTabsSyncState> = applyWebSessionTabsSnapshot(
       makeState(),
       makeSnapshot([
         {
@@ -49,7 +49,7 @@ describe('applyWebSessionTabsSnapshot layout replay', () => {
       ]),
       ENV,
       NOW
-    ) as Partial<WebSessionTabsSyncState>
+    )
 
     expect(patch.tabsByWorktree?.[WT]).toHaveLength(2)
     expect(patch.groupsByWorktree?.[WT]).toHaveLength(1)
