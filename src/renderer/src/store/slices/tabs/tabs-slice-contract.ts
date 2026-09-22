@@ -113,7 +113,7 @@ export type TabsSlice = {
     worktreeId: string,
     sourceGroupId: string,
     direction: TabSplitDirection,
-    opts?: { activate?: boolean }
+    opts?: { activate?: boolean; recordInteraction?: boolean }
   ) => string | null
   moveUnifiedTabToGroup: (
     tabId: string,
