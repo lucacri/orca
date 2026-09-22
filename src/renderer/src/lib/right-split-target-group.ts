@@ -2,9 +2,9 @@ import type { TabGroupLayoutNode } from '../../../shared/tab-types'
 import { findReusableRightSplitGroupId } from './emulator-right-split-target'
 
 type RightSplitTargetState = {
-  layoutByWorktree: Record<string, TabGroupLayoutNode | undefined>
-  activeGroupIdByWorktree: Record<string, string | undefined>
-  groupsByWorktree: Record<string, { id: string }[]>
+  layoutByWorktree?: Record<string, TabGroupLayoutNode | undefined>
+  activeGroupIdByWorktree?: Record<string, string | undefined>
+  groupsByWorktree?: Record<string, { id: string }[] | undefined>
   createEmptySplitGroup: (
     worktreeId: string,
     sourceGroupId: string,
@@ -23,14 +23,14 @@ export function resolveRightSplitTargetGroupId(
 ): string | null {
   const source =
     sourceGroupId ??
-    state.activeGroupIdByWorktree[worktreeId] ??
-    state.groupsByWorktree[worktreeId]?.[0]?.id ??
+    state.activeGroupIdByWorktree?.[worktreeId] ??
+    state.groupsByWorktree?.[worktreeId]?.[0]?.id ??
     null
   if (source === null) {
     return null
   }
   return (
-    findReusableRightSplitGroupId(state.layoutByWorktree[worktreeId], source) ??
+    findReusableRightSplitGroupId(state.layoutByWorktree?.[worktreeId], source) ??
     state.createEmptySplitGroup(worktreeId, source, 'right', opts)
   )
 }

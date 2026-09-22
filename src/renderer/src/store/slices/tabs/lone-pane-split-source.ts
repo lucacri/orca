@@ -2,10 +2,11 @@ import { resolveRightSplitTargetGroupId } from '@/lib/right-split-target-group'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../../shared/constants'
 import type { Tab, TabGroup, TabGroupLayoutNode } from '../../../../../shared/tab-types'
 
+/** Every map is optional: partial harness stores and pre-hydration state reach this predicate. */
 type LonePaneState = {
-  layoutByWorktree: Record<string, TabGroupLayoutNode | undefined>
-  groupsByWorktree: Record<string, TabGroup[] | undefined>
-  unifiedTabsByWorktree: Record<string, Tab[] | undefined>
+  layoutByWorktree?: Record<string, TabGroupLayoutNode | undefined>
+  groupsByWorktree?: Record<string, TabGroup[] | undefined>
+  unifiedTabsByWorktree?: Record<string, Tab[] | undefined>
 }
 
 /** The one group a worktree's tab area is showing, when the next pane should open beside it.
@@ -19,8 +20,8 @@ export function findLonePaneSourceGroupId(
   if (worktreeId === FLOATING_TERMINAL_WORKTREE_ID) {
     return null
   }
-  const layout = state.layoutByWorktree[worktreeId]
-  const groups = state.groupsByWorktree[worktreeId] ?? []
+  const layout = state.layoutByWorktree?.[worktreeId]
+  const groups = state.groupsByWorktree?.[worktreeId] ?? []
   const loneGroupId = layout
     ? layout.type === 'leaf'
       ? layout.groupId
@@ -36,7 +37,9 @@ export function findLonePaneSourceGroupId(
     return null
   }
   // Why unified tabs, not tabOrder: an orphaned runtime terminal sits in tabOrder but renders nothing.
-  return (state.unifiedTabsByWorktree[worktreeId] ?? []).some((tab) => tab.groupId === loneGroupId)
+  return (state.unifiedTabsByWorktree?.[worktreeId] ?? []).some(
+    (tab) => tab.groupId === loneGroupId
+  )
     ? loneGroupId
     : null
 }
