@@ -9,10 +9,10 @@ import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/orca-
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { TEST_REPO_PATH_FILE } from './global-setup'
 
-type PaneShape = { leaves: number; unsplitHosts: number; emptyGroups: number; groupBodies: number }
+type TabAreaPaneCounts = { leaves: number; unsplitHosts: number; emptyGroups: number; groupBodies: number }
 
-async function readPanes(page: Page, worktreeId: string): Promise<PaneShape> {
-  return page.evaluate((wt): PaneShape => {
+async function readPanes(page: Page, worktreeId: string): Promise<TabAreaPaneCounts> {
+  return page.evaluate((wt): TabAreaPaneCounts => {
     const store = window.__store
     if (!store) {
       throw new Error('Store unavailable')
