@@ -4,6 +4,7 @@ import type { OpenFile } from '../types/open-file'
 import { resolveEditorOpenTargetGroupId } from './editor-open-target-group'
 import { areEditorPreviewTabsEnabled } from './editor-preview-tab-setting'
 import { isEditorTabContentType } from './editor-tab-content-type'
+import { findLonePaneSourceGroupId } from '../../tabs/lone-pane-split-source'
 
 export function openWorkspaceEditorItem(
   state: AppState,
@@ -12,7 +13,8 @@ export function openWorkspaceEditorItem(
   label: string,
   contentType: 'editor' | 'diff' | 'conflict-review' | 'check-details',
   isPreview?: boolean,
-  targetGroupId?: string
+  targetGroupId?: string,
+  placementFixed?: boolean
 ): string {
   const resolvedGroupId = resolveEditorOpenTargetGroupId(state, worktreeId, targetGroupId)
   if (resolvedGroupId) {
@@ -32,17 +34,36 @@ export function openWorkspaceEditorItem(
     entityId: fileId,
     label,
     isPreview,
-    ...(resolvedGroupId ? { targetGroupId: resolvedGroupId } : {})
+    ...(resolvedGroupId ? { targetGroupId: resolvedGroupId } : {}),
+    ...(placementFixed ? { placementFixed: true } : {})
   })
   return created?.id ?? fileId
 }
 export function getReplaceablePreviewFileId(
-  state: Pick<AppState, 'openFiles' | 'unifiedTabsByWorktree' | 'settings'>,
+  state: Pick<
+    AppState,
+    'openFiles' | 'unifiedTabsByWorktree' | 'layoutByWorktree' | 'groupsByWorktree' | 'settings'
+  >,
   worktreeId: string,
   targetGroupId: string | undefined
 ): string | null {
   // Why: callers resolve intent first, but this helper is shared by five open paths — keep it correct for a caller that doesn't.
   if (!areEditorPreviewTabsEnabled(state)) {
+    return null
+  }
+  // Why: this open is about to become a new right pane, so it replaces nothing — evicting here
+  // would delete the left pane's OpenFile and leave its tab with nothing behind it.
+  if (
+    findLonePaneSourceGroupId(
+      {
+        layoutByWorktree: state.layoutByWorktree ?? {},
+        groupsByWorktree: state.groupsByWorktree ?? {},
+        unifiedTabsByWorktree: state.unifiedTabsByWorktree ?? {}
+      },
+      worktreeId,
+      targetGroupId
+    )
+  ) {
     return null
   }
   const tabsForWorktree = state.unifiedTabsByWorktree?.[worktreeId] ?? []

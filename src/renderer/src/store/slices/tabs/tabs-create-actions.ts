@@ -13,6 +13,7 @@ import {
   updateGroup
 } from '../tab-group-state'
 import { canReplacePreviewContentType } from './tabs-tab-order'
+import { resolveLonePaneBesideGroupId } from './lone-pane-split-source'
 
 export function createTabsCreateActions(
   set: TabsSliceSet,
@@ -20,6 +21,11 @@ export function createTabsCreateActions(
 ): Pick<TabsSlice, 'createUnifiedTab' | 'createUnifiedTabInSplit'> {
   return {
     createUnifiedTab: (worktreeId, contentType, init) => {
+      // Why: one pane means the tab area has room beside it; the next pane sits there, whatever it is.
+      const besideGroupId = init?.placementFixed
+        ? null
+        : resolveLonePaneBesideGroupId(get(), worktreeId, init?.targetGroupId)
+      const targetGroupId = besideGroupId ?? init?.targetGroupId
       const id = init?.id ?? createBrowserUuid()
       let created!: Tab
       set((state) => {
@@ -27,7 +33,7 @@ export function createTabsCreateActions(
           state.groupsByWorktree,
           state.activeGroupIdByWorktree,
           worktreeId,
-          init?.targetGroupId ?? state.activeGroupIdByWorktree[worktreeId]
+          targetGroupId ?? state.activeGroupIdByWorktree[worktreeId]
         )
         const existingTabs = state.unifiedTabsByWorktree[worktreeId] ?? []
 
@@ -103,6 +109,11 @@ export function createTabsCreateActions(
           }
         }
       })
+      // Why: the group was minted unfocused (a host snapshot reads an activated empty group as a
+      // pane), so focus lands here — focusGroup also emits the active-surface patch.
+      if (besideGroupId && (init?.activate ?? true)) {
+        get().focusGroup(worktreeId, besideGroupId)
+      }
       if (init?.recordInteraction !== false) {
         get().recordFeatureInteraction?.('terminal-tabs')
       }

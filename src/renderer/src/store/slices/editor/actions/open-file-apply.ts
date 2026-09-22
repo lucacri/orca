@@ -45,6 +45,7 @@ export function applyOpenFileToState(
         forceContentReload?: boolean
         focusEditor?: boolean
         reopenId?: string
+        placementFixed?: boolean
       }
     | undefined,
   scratch: OpenFileApplyScratch
