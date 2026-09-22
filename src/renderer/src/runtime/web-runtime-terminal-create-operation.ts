@@ -3,8 +3,6 @@ import { createAgentSessionKeyboardOptions } from './agent-session-keyboard-capa
 import type { RuntimeRpcResponse } from '../../../shared/runtime-rpc-envelope'
 import type { RuntimeMobileSessionCreateTerminalResult } from '../../../shared/runtime-types'
 import { toRuntimeExecutionHostId } from '../../../shared/execution-host'
-import { translate } from '../i18n/i18n'
-import { useAppStore } from '../store'
 import { agentResumeHostAuthorityCapability } from './agent-resume-host-authority-capability'
 import {
   createAgentSessionCreateOperation,
@@ -13,7 +11,6 @@ import {
 import { runRemoteAgentSessionLaunch } from './remote-agent-session-launch'
 import { unwrapRuntimeRpcResult } from './runtime-rpc-client'
 import { toRuntimeWorktreeSelector } from './runtime-worktree-selector'
-import { resolveWebRuntimeSessionEnvironmentId } from './web-runtime-session-workspace-routing'
 import { recordWebSessionFocusIntent } from './web-session-focus-intent'
 import {
   forgetWebSessionTerminalPlacement,
@@ -24,7 +21,6 @@ import { toHostSessionTabId } from './web-terminal-surface-id'
 import {
   captureRuntimeEnvironmentCall,
   captureWebSessionIntentOwner,
-  isWebRuntimeSessionActive,
   matchesWebSessionIntentOwner
 } from './web-runtime-session-environment'
 import { refreshWebRuntimeSessionTabsSnapshot } from './web-runtime-session-snapshot'
@@ -44,25 +40,20 @@ import {
   readCreatedAgentTerminalIdentity
 } from './web-runtime-terminal-identity'
 import { settleWebRuntimeTerminalPlacement } from './web-runtime-terminal-placement-settlement'
+import { resolveWebRuntimeTerminalTargetGroupId } from './web-runtime-terminal-lone-pane-target'
+import {
+  disconnectedWebRuntimeTerminalOutcome,
+  resolveConnectedWebRuntimeEnvironmentId
+} from './web-runtime-terminal-connected-environment'
 
 export async function createWebRuntimeSessionTerminalResult(
   args: CreateWebRuntimeSessionTerminalArgs
 ): Promise<CreatedWebRuntimeSessionTerminal> {
-  const environmentId = resolveWebRuntimeSessionEnvironmentId(
-    args.environmentId,
-    useAppStore.getState().settings?.activeRuntimeEnvironmentId
-  )
-  if (!environmentId || !isWebRuntimeSessionActive(environmentId)) {
-    return {
-      outcome: {
-        status: 'failed',
-        message: translate(
-          'auto.runtime.webRuntimeSession.remoteHostDisconnected',
-          'The workspace is not connected to a remote Orca host.'
-        )
-      }
-    }
+  const environmentId = resolveConnectedWebRuntimeEnvironmentId(args.environmentId)
+  if (!environmentId) {
+    return { outcome: disconnectedWebRuntimeTerminalOutcome() }
   }
+  const targetGroupId = resolveWebRuntimeTerminalTargetGroupId(args)
   const intentOwner = captureWebSessionIntentOwner(environmentId)
   const callEnvironment = captureRuntimeEnvironmentCall(environmentId, intentOwner.pairingRevision)
 
@@ -171,7 +162,7 @@ export async function createWebRuntimeSessionTerminalResult(
             params: {
               worktree: toRuntimeWorktreeSelector(args.worktreeId),
               afterTabId: args.afterTabId ? toHostSessionTabId(args.afterTabId) : undefined,
-              targetGroupId: args.targetGroupId,
+              targetGroupId,
               command: args.command,
               cwd: args.cwd,
               ...(args.env ? { env: args.env } : {}),
@@ -206,13 +197,13 @@ export async function createWebRuntimeSessionTerminalResult(
       createdLeafId = legacyAlreadyPlacedInGroup
         ? created.terminal.leafId
         : createdTerminalLeafId(created.terminal)
-      if (args.targetGroupId && createdTabId && !legacyAlreadyPlacedInGroup) {
+      if (targetGroupId && createdTabId && !legacyAlreadyPlacedInGroup) {
         await callEnvironment({
           method: 'session.tabs.move',
           params: {
             worktree: toRuntimeWorktreeSelector(args.worktreeId),
             tabId: createdTabId,
-            targetGroupId: args.targetGroupId,
+            targetGroupId,
             kind: 'move-to-group'
           },
           timeoutMs: 15_000
@@ -224,7 +215,7 @@ export async function createWebRuntimeSessionTerminalResult(
         params: {
           worktree: toRuntimeWorktreeSelector(args.worktreeId),
           afterTabId: args.afterTabId ? toHostSessionTabId(args.afterTabId) : undefined,
-          targetGroupId: args.targetGroupId,
+          targetGroupId,
           command: args.command,
           cwd: args.cwd,
           ...(args.env ? { env: args.env } : {}),
@@ -247,14 +238,14 @@ export async function createWebRuntimeSessionTerminalResult(
       createdTabId = created.tab.id
       createdLeafId = created.tab.leafId
     }
-    if (args.targetGroupId && createdTabId) {
+    if (targetGroupId && createdTabId) {
       // Why: the host drops client-minted group ids, so this client's own record is what
       // lands the mirrored tab in the requested pane under client-owned placement.
       recordWebSessionTerminalPlacement({
         environmentId,
         worktreeId: args.worktreeId,
         hostTabId: webTerminalPlacementParentTabId(createdTabId),
-        groupId: args.targetGroupId
+        groupId: targetGroupId
       })
     }
     if (args.activate !== false && createdTabId && matchesWebSessionIntentOwner(intentOwner)) {
@@ -263,7 +254,7 @@ export async function createWebRuntimeSessionTerminalResult(
       recordWebSessionFocusIntent(intentOwner, args.worktreeId, createdTabId, createdLeafId)
     }
     const placementTabId =
-      createdTabId && (args.targetGroupId || args.afterTabId) ? createdTabId : undefined
+      createdTabId && (targetGroupId || args.afterTabId) ? createdTabId : undefined
     await refreshWebRuntimeSessionTabsSnapshot(environmentId, args.worktreeId, {
       expectedEnvironmentPairingRevision: intentOwner.pairingRevision,
       // Why: the publication can beat the RPC response; replay it once after caller intent exists.
@@ -278,7 +269,7 @@ export async function createWebRuntimeSessionTerminalResult(
         args.worktreeId,
         webTerminalPlacementParentTabId(placementTabId),
         {
-          groupId: args.targetGroupId,
+          groupId: targetGroupId,
           afterTabId: args.afterTabId,
           activate: args.activate !== false
         }
