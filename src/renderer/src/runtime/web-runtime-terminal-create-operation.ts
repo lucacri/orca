@@ -3,6 +3,7 @@ import { createAgentSessionKeyboardOptions } from './agent-session-keyboard-capa
 import type { RuntimeRpcResponse } from '../../../shared/runtime-rpc-envelope'
 import type { RuntimeMobileSessionCreateTerminalResult } from '../../../shared/runtime-types'
 import { toRuntimeExecutionHostId } from '../../../shared/execution-host'
+import { useAppStore } from '../store'
 import { agentResumeHostAuthorityCapability } from './agent-resume-host-authority-capability'
 import {
   createAgentSessionCreateOperation,
@@ -53,7 +54,7 @@ export async function createWebRuntimeSessionTerminalResult(
   if (!environmentId) {
     return { outcome: disconnectedWebRuntimeTerminalOutcome() }
   }
-  const targetGroupId = resolveWebRuntimeTerminalTargetGroupId(args)
+  const { targetGroupId, mintedGroupId } = resolveWebRuntimeTerminalTargetGroupId(args)
   const intentOwner = captureWebSessionIntentOwner(environmentId)
   const callEnvironment = captureRuntimeEnvironmentCall(environmentId, intentOwner.pairingRevision)
 
@@ -295,8 +296,15 @@ export async function createWebRuntimeSessionTerminalResult(
         hostTabId: webTerminalPlacementParentTabId(createdTabId)
       })
     }
-    if (!hostCreated && workspaceSelectionRollback) {
-      restoreActiveWorkspaceSelection(workspaceSelectionRollback)
+    if (!hostCreated) {
+      if (workspaceSelectionRollback) {
+        restoreActiveWorkspaceSelection(workspaceSelectionRollback)
+      }
+      if (mintedGroupId) {
+        // Why: nothing ever reached the pane this call split off, so leaving it strands an
+        // empty second pane the user has to close by hand. Non-empty groups are a no-op.
+        useAppStore.getState().closeEmptyGroup(args.worktreeId, mintedGroupId)
+      }
     }
     // Why: once the host accepted creation, reporting failure invites the user
     // to retry with a new operation ID and can duplicate a fresh agent.
