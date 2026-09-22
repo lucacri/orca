@@ -199,6 +199,38 @@ describe('remote terminal placement beside a lone pane', () => {
     expect(requestedTargetGroupId(runtimeCall)).toBe(MINTED_GROUP_ID)
   })
 
+  it('closes the pane it minted when the create fails', async () => {
+    seedOnePaneRuntimeWorktree()
+    vi.stubGlobal('window', {
+      api: { runtimeEnvironments: { call: vi.fn().mockRejectedValue(new Error('host gone')) } }
+    })
+
+    const outcome = await createWebRuntimeSessionTerminal({
+      worktreeId: WORKTREE_ID,
+      environmentId: ENVIRONMENT_ID,
+      activate: true
+    })
+
+    expect(outcome.status).toBe('failed')
+    expect(mocks.closeEmptyGroup).toHaveBeenCalledWith(WORKTREE_ID, MINTED_GROUP_ID)
+  })
+
+  it('leaves a reused right-hand group alone when the create fails', async () => {
+    seedTwoPaneRuntimeWorktree()
+    vi.stubGlobal('window', {
+      api: { runtimeEnvironments: { call: vi.fn().mockRejectedValue(new Error('host gone')) } }
+    })
+
+    await createWebRuntimeSessionTerminal({
+      worktreeId: WORKTREE_ID,
+      environmentId: ENVIRONMENT_ID,
+      targetGroupId: 'group-right',
+      activate: true
+    })
+
+    expect(mocks.closeEmptyGroup).not.toHaveBeenCalled()
+  })
+
   it('honours placementFixed so a replay keeps its recorded group', async () => {
     seedOnePaneRuntimeWorktree()
     const runtimeCall = stubRuntimeCall()
