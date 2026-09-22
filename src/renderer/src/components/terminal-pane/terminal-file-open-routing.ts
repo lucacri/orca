@@ -8,8 +8,6 @@ import {
   buildWorkspaceFileContext,
   canClientOsOpenWorkspaceFile
 } from '@/lib/workspace-file-host-routing'
-import { resolveRightSplitTargetGroupId } from '@/lib/right-split-target-group'
-import { cappedPaneHasGutter } from './open-file-beside-capped-pane'
 import { statRuntimePath, type RuntimeFileOperationArgs } from '@/runtime/runtime-file-client'
 import { useAppStore } from '@/store'
 import { activateAndRevealWorkspace, activateAndRevealWorktree } from '@/lib/worktree-activation'
@@ -256,17 +254,6 @@ export function openDetectedFilePath(
       })
     }
 
-    // Why here and not earlier: the stat above is awaited, so the layout may have
-    // changed while the file was resolving. Why same-worktree only: a sibling route
-    // lands in another workspace whose layout this click never saw.
-    const besideGroupId =
-      deps.sourceTabId !== undefined &&
-      targetWorktreeId === worktreeId &&
-      cappedPaneHasGutter(deps.sourceTabId)
-        ? // Unfocused: a host snapshot reads an activated empty group as a terminal pane.
-          resolveRightSplitTargetGroupId(store, targetWorktreeId, null, { activate: false })
-        : null
-
     const language = detectLanguage(mappedFilePath)
     store.openFile(
       {
@@ -284,7 +271,7 @@ export function openDetectedFilePath(
           ? { externalSshTargetId: fileContext.connectionId }
           : {})
       },
-      { forceContentReload: true, ...(besideGroupId ? { targetGroupId: besideGroupId } : {}) }
+      { forceContentReload: true }
     )
 
     if (line !== null) {

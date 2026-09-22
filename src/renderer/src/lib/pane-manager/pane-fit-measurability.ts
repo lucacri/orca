@@ -5,7 +5,7 @@ import {
   hasDeferredPaneMetricOptions
 } from './pane-metric-options-deferral'
 
-export const MIN_PANE_FIT_WIDTH_PX = 48
+const MIN_PANE_FIT_WIDTH_PX = 48
 const MIN_PANE_FIT_HEIGHT_PX = 24
 const MIN_PANE_FIT_COLS = 8
 const MIN_PANE_FIT_ROWS = 4
