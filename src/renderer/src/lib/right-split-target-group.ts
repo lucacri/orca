@@ -9,7 +9,7 @@ type RightSplitTargetState = {
     worktreeId: string,
     sourceGroupId: string,
     direction: 'right',
-    opts: { activate: boolean }
+    opts: { activate: boolean; recordInteraction?: boolean }
   ) => string | null
 }
 
@@ -19,7 +19,7 @@ export function resolveRightSplitTargetGroupId(
   state: RightSplitTargetState,
   worktreeId: string,
   sourceGroupId: string | null,
-  opts: { activate: boolean }
+  opts: { activate: boolean; recordInteraction?: boolean }
 ): string | null {
   const source =
     sourceGroupId ??

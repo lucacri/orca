@@ -45,4 +45,13 @@ describe('resolveRightSplitTargetGroupId', () => {
     resolveRightSplitTargetGroupId(s, 'w', 'g1', { activate: true })
     expect(s.createEmptySplitGroup).toHaveBeenCalledWith('w', 'g1', 'right', { activate: true })
   })
+
+  it('forwards a silent mint to createEmptySplitGroup', () => {
+    const s = state()
+    resolveRightSplitTargetGroupId(s, 'w', 'g1', { activate: false, recordInteraction: false })
+    expect(s.createEmptySplitGroup).toHaveBeenCalledWith('w', 'g1', 'right', {
+      activate: false,
+      recordInteraction: false
+    })
+  })
 })

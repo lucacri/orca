@@ -215,3 +215,35 @@ export function makeTabGroup(
     ...overrides
   }
 }
+
+/** Seeds a horizontal split so a test about in-group tab semantics is not subject to the
+ *  "second pane opens beside a lone pane" rule (tabs/lone-pane-split-source.ts). New tabs land
+ *  in the left group, which is index 0 of groupsByWorktree. */
+export function seedTwoPaneLayout(
+  store: { setState: (updater: (state: AppState) => Partial<AppState>) => void },
+  worktreeId: string
+): { leftGroupId: string; rightGroupId: string } {
+  const leftGroupId = `${worktreeId}::left-pane`
+  const rightGroupId = `${worktreeId}::right-pane`
+  store.setState((state) => ({
+    groupsByWorktree: {
+      ...state.groupsByWorktree,
+      [worktreeId]: [
+        makeTabGroup({ id: leftGroupId, worktreeId }),
+        makeTabGroup({ id: rightGroupId, worktreeId })
+      ]
+    },
+    activeGroupIdByWorktree: { ...state.activeGroupIdByWorktree, [worktreeId]: leftGroupId },
+    layoutByWorktree: {
+      ...state.layoutByWorktree,
+      [worktreeId]: {
+        type: 'split',
+        direction: 'horizontal',
+        ratio: 0.5,
+        first: { type: 'leaf', groupId: leftGroupId },
+        second: { type: 'leaf', groupId: rightGroupId }
+      }
+    }
+  }))
+  return { leftGroupId, rightGroupId }
+}
