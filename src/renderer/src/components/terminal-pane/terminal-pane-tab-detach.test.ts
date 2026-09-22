@@ -457,6 +457,47 @@ describe('detachTerminalPaneToTab', () => {
     )
   })
 
+  it('reorders the group the created terminal actually landed in, not the one it asked for', () => {
+    // The lone-pane rule places the detached terminal in a fresh right group.
+    const store = createStore(splitLayout(), [EXISTING_TAB_1, EXISTING_TAB_2])
+    store.createTab = vi.fn(() => {
+      const created = createTerminalTab('tab-detached', null)
+      store.groupsByWorktree[WORKTREE_ID]?.push({
+        id: 'right-group',
+        worktreeId: WORKTREE_ID,
+        activeTabId: created.id,
+        tabOrder: [created.id],
+        recentTabIds: []
+      })
+      return created
+    })
+    const manager = {
+      getPanes: vi.fn(() => [{ id: 1 }, { id: 2 }]),
+      getLeafId: vi.fn((paneId: number) => (paneId === 2 ? LEAF_2 : LEAF_1)),
+      detachPaneForExternalMove: vi.fn(() => true)
+    }
+
+    detachTerminalPaneToTab({
+      getStore: () => store,
+      manager,
+      persistLayoutSnapshot: vi.fn(),
+      sourcePaneId: 2,
+      sourceTabId: SOURCE_TAB_ID,
+      targetGroupId: TARGET_GROUP_ID,
+      targetIndex: 0,
+      worktreeId: WORKTREE_ID
+    })
+
+    expect(
+      store.groupsByWorktree[WORKTREE_ID]?.find((group) => group.id === TARGET_GROUP_ID)?.tabOrder
+    ).not.toContain('tab-detached')
+    expect(store.reorderUnifiedTabs).not.toHaveBeenCalledWith(
+      TARGET_GROUP_ID,
+      expect.arrayContaining(['tab-detached']),
+      expect.anything()
+    )
+  })
+
   it('uses the live transport PTY id when the snapshot has not persisted it yet', () => {
     const store = createStore({
       root: {
