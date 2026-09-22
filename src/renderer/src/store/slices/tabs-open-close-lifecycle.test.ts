@@ -4,7 +4,13 @@ import { getDefaultUIState } from '../../../../shared/constants'
 import { buildMobileSessionTabSnapshots } from '../../runtime/sync-runtime-graph'
 import { closeMobileSessionTabInStore } from '../../runtime/mobile-session-tab-close'
 import { createTabsSliceMockApi } from './tabs-slice-test-harness'
-import { createTestStore, makeOpenFile, makeTabGroup, makeUnifiedTab } from './store-test-helpers'
+import {
+  createTestStore,
+  makeOpenFile,
+  makeTabGroup,
+  makeUnifiedTab,
+  seedTwoPaneLayout
+} from './store-test-helpers'
 
 // Mock sonner (imported by repos.ts)
 vi.mock('sonner', () => ({ toast: { info: vi.fn(), success: vi.fn(), error: vi.fn() } }))
@@ -74,26 +80,116 @@ describe('TabsSlice', () => {
       expect(store.getState().createUnifiedTab(WT, 'browser').executionHostId).toBe('local')
     })
 
-    it('activates the newly created tab', () => {
-      const tab1 = store.getState().createUnifiedTab(WT, 'terminal')
-      const tab2 = store.getState().createUnifiedTab(WT, 'terminal')
+    it('opens the second pane beside the first, in a new right-hand group', () => {
+      const first = store.getState().createUnifiedTab(WT, 'terminal')
+      const second = store.getState().createUnifiedTab(WT, 'editor', {
+        id: '/tmp/feature/src/main.ts',
+        label: 'main.ts'
+      })
 
-      const group = store.getState().groupsByWorktree[WT][0]
-      expect(group.activeTabId).toBe(tab2.id)
-      expect(group.tabOrder).toEqual([tab1.id, tab2.id])
+      const state = store.getState()
+      expect(second.groupId).not.toBe(first.groupId)
+      expect(state.groupsByWorktree[WT].map((group) => group.id)).toEqual([
+        first.groupId,
+        second.groupId
+      ])
+      expect(state.layoutByWorktree[WT]).toEqual({
+        type: 'split',
+        direction: 'horizontal',
+        ratio: 0.5,
+        first: { type: 'leaf', groupId: first.groupId },
+        second: { type: 'leaf', groupId: second.groupId }
+      })
+      expect(state.activeGroupIdByWorktree[WT]).toBe(second.groupId)
+      expect(state.groupsByWorktree[WT][1]).toMatchObject({
+        activeTabId: second.id,
+        tabOrder: [second.id]
+      })
     })
 
-    it('can create a tab without activating it', () => {
-      const tab1 = store.getState().createUnifiedTab(WT, 'terminal')
-      const tab2 = store.getState().createUnifiedTab(WT, 'browser', { activate: false })
+    it('never opens a third pane: the third tab lands in the active group', () => {
+      const first = store.getState().createUnifiedTab(WT, 'terminal')
+      const second = store.getState().createUnifiedTab(WT, 'terminal')
+      const third = store.getState().createUnifiedTab(WT, 'browser')
 
-      const group = store.getState().groupsByWorktree[WT][0]
-      expect(group.activeTabId).toBe(tab1.id)
-      expect(group.tabOrder).toEqual([tab1.id, tab2.id])
-      expect(group.recentTabIds).toEqual([tab1.id])
+      const state = store.getState()
+      expect(state.groupsByWorktree[WT]).toHaveLength(2)
+      expect(third.groupId).toBe(second.groupId)
+      expect(state.layoutByWorktree[WT]).toMatchObject({
+        type: 'split',
+        first: { type: 'leaf', groupId: first.groupId },
+        second: { type: 'leaf', groupId: second.groupId }
+      })
+      expect(state.groupsByWorktree[WT][1].tabOrder).toEqual([second.id, third.id])
+    })
+
+    it('re-arms once the area collapses back to one pane', () => {
+      const first = store.getState().createUnifiedTab(WT, 'terminal')
+      const second = store.getState().createUnifiedTab(WT, 'terminal')
+      store.getState().closeUnifiedTab(second.id)
+      expect(store.getState().layoutByWorktree[WT]).toEqual({
+        type: 'leaf',
+        groupId: first.groupId
+      })
+
+      const third = store.getState().createUnifiedTab(WT, 'terminal')
+      expect(third.groupId).not.toBe(first.groupId)
+      expect(store.getState().groupsByWorktree[WT]).toHaveLength(2)
+    })
+
+    it('opens beside without focusing when activate is false', () => {
+      const first = store.getState().createUnifiedTab(WT, 'terminal')
+      const second = store.getState().createUnifiedTab(WT, 'browser', { activate: false })
+
+      const state = store.getState()
+      expect(second.groupId).not.toBe(first.groupId)
+      expect(state.activeGroupIdByWorktree[WT]).toBe(first.groupId)
+      expect(state.groupsByWorktree[WT][0]).toMatchObject({
+        activeTabId: first.id,
+        recentTabIds: [first.id]
+      })
+      // Why: the new group still needs its own active tab or the right pane renders nothing.
+      expect(state.groupsByWorktree[WT][1]).toMatchObject({ activeTabId: second.id })
+    })
+
+    it('carries the caller metadata through the split', () => {
+      store.getState().createUnifiedTab(WT, 'terminal')
+      const second = store.getState().createUnifiedTab(WT, 'editor', {
+        id: 'tab-id-from-caller',
+        entityId: '/tmp/feature/src/main.ts',
+        label: 'main.ts'
+      })
+
+      expect(second.id).toBe('tab-id-from-caller')
+      expect(second.entityId).toBe('/tmp/feature/src/main.ts')
+      expect(second.label).toBe('main.ts')
+    })
+
+    it('skips the rule when the caller has already decided placement', () => {
+      const first = store.getState().createUnifiedTab(WT, 'terminal')
+      const second = store.getState().createUnifiedTab(WT, 'browser', { placementFixed: true })
+
+      expect(second.groupId).toBe(first.groupId)
+      expect(store.getState().layoutByWorktree[WT]).toEqual({
+        type: 'leaf',
+        groupId: first.groupId
+      })
+    })
+
+    it('does not record a pane-split interaction for an automatic split', () => {
+      // Why: the user did not split anything; feature discovery must stay honest.
+      const recordSpy = vi.spyOn(store.getState(), 'recordFeatureInteraction')
+      store.getState().createUnifiedTab(WT, 'terminal')
+      store.getState().createUnifiedTab(WT, 'editor', { id: '/a.ts' })
+
+      const recorded = recordSpy.mock.calls.map(([id]) => id)
+      expect(recorded).not.toContain('tab-splits')
+      expect(recorded).not.toContain('terminal-panes')
+      expect(recorded).toContain('terminal-tabs')
     })
 
     it('replaces existing preview tab when creating a new preview', () => {
+      seedTwoPaneLayout(store, WT)
       const preview1 = store.getState().createUnifiedTab(WT, 'editor', {
         id: 'file-a.ts',
         label: 'file-a.ts',
@@ -115,6 +211,7 @@ describe('TabsSlice', () => {
     })
 
     it('replaces editor preview tabs with diff preview tabs', () => {
+      seedTwoPaneLayout(store, WT)
       store.getState().createUnifiedTab(WT, 'editor', {
         id: 'file-a.ts',
         label: 'file-a.ts',
@@ -137,16 +234,18 @@ describe('TabsSlice', () => {
       expect(store.getState().groupsByWorktree[WT][0].tabOrder).toEqual(['diff-file-b.ts'])
     })
 
-    it('reuses the existing group for the worktree', () => {
+    it('reuses the existing group once the area is split', () => {
+      seedTwoPaneLayout(store, WT)
       store.getState().createUnifiedTab(WT, 'terminal')
       store.getState().createUnifiedTab(WT, 'editor', { id: 'f.ts', label: 'f.ts' })
 
-      expect(store.getState().groupsByWorktree[WT]).toHaveLength(1)
+      expect(store.getState().groupsByWorktree[WT]).toHaveLength(2)
     })
   })
 
   describe('terminal tab creation tracking', () => {
     it('records normal terminal tab creation without recording activation fallback tabs', () => {
+      seedTwoPaneLayout(store, WT)
       const setMock = vi.mocked(window.api.ui.set)
       store.getState().hydratePersistedUI(getDefaultUIState())
       setMock.mockClear()
@@ -167,6 +266,7 @@ describe('TabsSlice', () => {
 
   describe('closeUnifiedTab', () => {
     it('removes the tab and selects right neighbor', () => {
+      seedTwoPaneLayout(store, WT)
       store.getState().createUnifiedTab(WT, 'terminal')
       const t2 = store.getState().createUnifiedTab(WT, 'terminal')
       const t3 = store.getState().createUnifiedTab(WT, 'terminal')
@@ -184,6 +284,7 @@ describe('TabsSlice', () => {
     })
 
     it('selects left neighbor when closing the rightmost tab', () => {
+      seedTwoPaneLayout(store, WT)
       const t1 = store.getState().createUnifiedTab(WT, 'terminal')
       const t2 = store.getState().createUnifiedTab(WT, 'terminal')
       // t2 is already active (last created)
@@ -516,6 +617,7 @@ describe('TabsSlice', () => {
 
   describe('closeTabsToRight', () => {
     it('closes unpinned tabs to the right of target', () => {
+      seedTwoPaneLayout(store, WT)
       const t1 = store.getState().createUnifiedTab(WT, 'terminal')
       const t2 = store.getState().createUnifiedTab(WT, 'terminal')
       const t3 = store.getState().createUnifiedTab(WT, 'terminal')
@@ -531,6 +633,7 @@ describe('TabsSlice', () => {
     })
 
     it('activates target if active tab was closed', () => {
+      seedTwoPaneLayout(store, WT)
       const t1 = store.getState().createUnifiedTab(WT, 'terminal')
       store.getState().createUnifiedTab(WT, 'terminal')
       // last created tab is active
@@ -545,6 +648,7 @@ describe('TabsSlice', () => {
 
   describe('closeTabsToLeft', () => {
     it('closes unpinned tabs to the left of target', () => {
+      seedTwoPaneLayout(store, WT)
       const t1 = store.getState().createUnifiedTab(WT, 'terminal')
       const t2 = store.getState().createUnifiedTab(WT, 'terminal')
       const t3 = store.getState().createUnifiedTab(WT, 'terminal')
@@ -570,6 +674,7 @@ describe('TabsSlice', () => {
     })
 
     it('activates target if active tab was closed', () => {
+      seedTwoPaneLayout(store, WT)
       store.getState().createUnifiedTab(WT, 'terminal')
       const t2 = store.getState().createUnifiedTab(WT, 'terminal')
       const t3 = store.getState().createUnifiedTab(WT, 'terminal')

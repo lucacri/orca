@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createEditorStore, createEditorTabsStore } from './editor-slice-test-harness'
+import { seedTwoPaneLayout } from './store-test-helpers'
 import type { AppState } from '../types'
 
 const { toastErrorMock } = vi.hoisted(() => ({
@@ -496,6 +497,7 @@ describe('createEditorSlice openDiff', () => {
 
   it('reuses a preview editor tab when opening a preview diff', () => {
     const store = createEditorTabsStore()
+    seedTwoPaneLayout(store, 'wt-1')
 
     store.getState().openFile(
       {
@@ -529,6 +531,7 @@ describe('createEditorSlice openDiff', () => {
 
   it('keeps an existing preview replaceable when it is opened as preview again', () => {
     const store = createEditorTabsStore()
+    seedTwoPaneLayout(store, 'wt-1')
 
     const openPreviewFile = (): void => {
       store.getState().openFile(
