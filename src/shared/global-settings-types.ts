@@ -92,6 +92,8 @@ export type GlobalSettings = GlobalSettingsBase & {
   richMarkdownSpellcheckEnabled?: boolean
   /** Whether local markdown review note controls and the review panel are shown. */
   markdownReviewToolsEnabled: boolean
+  /** Forces a light reading surface on markdown preview/rich editor, independent of the app theme. */
+  markdownPreviewLightBackground?: boolean
   /** Selection paste preserves the normal clipboard; defaults on for Linux/macOS, off for Windows. */
   primarySelectionMiddleClickPaste?: boolean
   /** One-shot migration guard for turning the Linux default on for profiles

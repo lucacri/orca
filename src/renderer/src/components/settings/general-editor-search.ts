@@ -151,6 +151,23 @@ export const getGeneralEditorSearchEntries = createLocalizedCatalog(() => [
     ]
   },
   {
+    title: translate(
+      'auto.components.settings.general.search.1d7f09ad39',
+      'Light Markdown Background'
+    ),
+    description: translate(
+      'auto.components.settings.general.search.5f8f521577',
+      'Show Markdown preview and the rich Markdown editor on a light background when the app theme is dark.'
+    ),
+    keywords: [
+      ...translateSearchKeyword('auto.components.settings.general.search.4b7457b852', 'light'),
+      ...translateSearchKeyword('auto.components.settings.general.search.450edddbf8', 'background'),
+      ...translateSearchKeyword('auto.components.settings.general.search.d9b1892a5c', 'theme'),
+      ...translateSearchKeyword('auto.components.settings.general.search.6ca0f43036', 'preview'),
+      ...translateSearchKeyword('auto.components.settings.general.search.d05f629d2c', 'markdown')
+    ]
+  },
+  {
     title: translate('auto.components.settings.general.search.128bc09325', 'Markdown Review Notes'),
     description: translate(
       'auto.components.settings.general.search.694613d47f',

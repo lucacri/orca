@@ -14,9 +14,9 @@ import {
   getMarkdownPreviewSourceRelativePath,
   resolveMarkdownPreviewSourceWorktree
 } from './markdown-preview-source-routing'
-import { useDocumentDarkTheme } from '@/hooks/use-document-dark-theme'
 import { usePreserveSectionDuringExternalEdit } from './usePreserveSectionDuringExternalEdit'
 import { selectWorktreesByRepo } from '@/store/workspace-record-selectors'
+import { useMarkdownSurfaceIsDark } from './use-markdown-surface-is-dark'
 
 export function useMarkdownPreviewSourceFoundation({
   content,
@@ -151,7 +151,7 @@ export function useMarkdownPreviewSourceFoundation({
   )
   const editorFontZoomLevel = useAppStore((s) => s.editorFontZoomLevel)
   const editorFontSize = computeEditorFontSize(14, editorFontZoomLevel)
-  const isDark = useDocumentDarkTheme()
+  const isDark = useMarkdownSurfaceIsDark()
 
   const renderedContent = usePreserveSectionDuringExternalEdit(content, bodyRef)
 

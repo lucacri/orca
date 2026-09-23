@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   createAutoSaveDelayDraftState,
+  getGeneralPaneSearchEntries,
   shouldShowProjectRuntimeSection,
   updateAutoSaveDelayDraftState
 } from './GeneralPane'
+import { matchesSettingsSearch } from './settings-search'
 
 vi.mock('@/store', () => ({
   useAppStore: () => {
@@ -34,6 +36,14 @@ describe('GeneralPane auto-save delay drafts', () => {
       sourceDelayMs: 1250,
       draft: '1750'
     })
+  })
+})
+
+describe('GeneralPane search entries', () => {
+  it('includes the light Markdown background setting', () => {
+    const entries = getGeneralPaneSearchEntries()
+
+    expect(matchesSettingsSearch('light markdown background', entries)).toBe(true)
   })
 })
 
