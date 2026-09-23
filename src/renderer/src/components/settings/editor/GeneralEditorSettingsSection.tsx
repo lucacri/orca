@@ -19,6 +19,7 @@ import {
 import { translate } from '@/i18n/i18n'
 import { RichMarkdownSpellcheckSetting } from './RichMarkdownSpellcheckSetting'
 import { MarkdownDefaultViewSetting } from './MarkdownDefaultViewSetting'
+import { MarkdownLightBackgroundSetting } from './MarkdownLightBackgroundSetting'
 import { DiffShowWhitespaceSetting } from './DiffShowWhitespaceSetting'
 import { EditorWordWrapSetting } from './EditorWordWrapSetting'
 import { EditorFontFamilySetting } from './EditorFontFamilySetting'
@@ -384,6 +385,8 @@ export function GeneralEditorSettingsSection({
       <MarkdownDefaultViewSetting settings={settings} />
 
       <RichMarkdownSpellcheckSetting settings={settings} updateSettings={updateSettings} />
+
+      <MarkdownLightBackgroundSetting settings={settings} updateSettings={updateSettings} />
 
       <SearchableSetting
         title={translate(

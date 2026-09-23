@@ -8287,7 +8287,9 @@
           "collapseUnchangedTitle": "Collapse Unchanged Regions",
           "collapseUnchangedDescription": "Show only changed lines and a little surrounding context in a file diff, hiding the rest behind expandable bands. The View All Changes diff always collapses this way.",
           "markdownDefaultView": "Default Markdown View",
-          "markdownDefaultViewDesc": "The view Markdown files open in. Right-click the view switcher in a Markdown tab to change it there."
+          "markdownDefaultViewDesc": "The view Markdown files open in. Right-click the view switcher in a Markdown tab to change it there.",
+          "94c2f548f7": "Light Markdown Background",
+          "9088b9db22": "Show Markdown preview and the rich Markdown editor on a light background when the app theme is dark."
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "localhost, 127.0.0.1, *.internal",
@@ -10628,7 +10630,13 @@
             "markdownDefaultView": "Default Markdown View",
             "markdownDefaultViewDesc": "The view Markdown files open in. Right-click the view switcher in a Markdown tab to change it there.",
             "markdownSourceKw": "source",
-            "markdownRichKw": "rich"
+            "markdownRichKw": "rich",
+            "1d7f09ad39": "Light Markdown Background",
+            "5f8f521577": "Show Markdown preview and the rich Markdown editor on a light background when the app theme is dark.",
+            "4b7457b852": "light",
+            "450edddbf8": "background",
+            "d9b1892a5c": "theme",
+            "6ca0f43036": "preview"
           }
         },
         "git": {
@@ -16531,7 +16539,8 @@
           "3e0ce48c24": "Export as PDF",
           "561251019a": "More actions",
           "1eef809708": "Word Wrap",
-          "4dedd55efa": "Show Whitespace"
+          "4dedd55efa": "Show Whitespace",
+          "dce17383c8": "Light Background"
         },
         "EditorPanelShell": {
           "e2c4dec350": "Loading editor..."
