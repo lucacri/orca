@@ -8071,7 +8071,9 @@
           "916c5582f2": "折叠未更改的区域",
           "6f33c2a32f": "差异自动换行",
           "markdownDefaultViewDesc": "Markdown 文件默认以此视图打开，也可在 Markdown 标签页中右键点击视图切换器进行更改",
-          "1dd79964bf": "默认 Markdown 视图"
+          "1dd79964bf": "默认 Markdown 视图",
+          "94c2f548f7": "Markdown 浅色背景",
+          "9088b9db22": "当应用主题为深色时，以浅色背景显示 Markdown 预览和富文本 Markdown 编辑器。"
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "localhost, 127.0.0.1, *.internal",
@@ -10358,7 +10360,13 @@
             "markdownDefaultViewDesc": "Markdown 文件默认以此视图打开，也可在 Markdown 标签页中右键点击视图切换器进行更改",
             "markdownSourceKw": "源码",
             "markdownRichKw": "富文本",
-            "0f9304f821": "默认 Markdown 视图"
+            "0f9304f821": "默认 Markdown 视图",
+            "1d7f09ad39": "Markdown 浅色背景",
+            "5f8f521577": "当应用主题为深色时，以浅色背景显示 Markdown 预览和富文本 Markdown 编辑器。",
+            "4b7457b852": "浅色",
+            "450edddbf8": "背景",
+            "d9b1892a5c": "主题",
+            "6ca0f43036": "预览"
           }
         },
         "git": {
@@ -16414,7 +16422,8 @@
           "3e0ce48c24": "导出为 PDF",
           "561251019a": "更多操作",
           "1eef809708": "自动换行",
-          "4dedd55efa": "显示空白字符"
+          "4dedd55efa": "显示空白字符",
+          "dce17383c8": "浅色背景"
         },
         "EditorPanelShell": {
           "e2c4dec350": "正在加载编辑器..."
