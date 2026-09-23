@@ -7707,7 +7707,9 @@
           "b11d620d45": "Vista de diff predeterminada",
           "0971ef5c63": "Diferencia Mostrar espacios en blanco",
           "916c5582f2": "Contraer regiones sin cambios",
-          "6f33c2a32f": "Ajuste de línea en diffs"
+          "6f33c2a32f": "Ajuste de línea en diffs",
+          "94c2f548f7": "Fondo claro para Markdown",
+          "9088b9db22": "Muestra la vista previa de Markdown y el editor de Markdown enriquecido con fondo claro cuando el tema de la app es oscuro."
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "localhost, 127.0.0.1, *.internal",
@@ -9939,7 +9941,13 @@
             "66395fb7ff": "Fuente del editor",
             "aa1c06eb2c": "Vista de diff predeterminada",
             "8ad175042b": "Corrector ortográfico de Rich Markdown",
-            "da5c42780e": "Apps de Abrir en"
+            "da5c42780e": "Apps de Abrir en",
+            "1d7f09ad39": "Fondo claro para Markdown",
+            "5f8f521577": "Muestra la vista previa de Markdown y el editor de Markdown enriquecido con fondo claro cuando el tema de la app es oscuro.",
+            "4b7457b852": "claro",
+            "450edddbf8": "fondo",
+            "d9b1892a5c": "tema",
+            "6ca0f43036": "vista previa"
           }
         },
         "git": {
@@ -15922,7 +15930,8 @@
           "3e0ce48c24": "Exportar como PDF",
           "561251019a": "Más acciones",
           "1eef809708": "Ajuste de línea",
-          "4dedd55efa": "Mostrar espacios en blanco"
+          "4dedd55efa": "Mostrar espacios en blanco",
+          "dce17383c8": "Fondo claro"
         },
         "EditorPanelShell": {
           "e2c4dec350": "Cargando editor…"
