@@ -34,6 +34,24 @@ function openPreview(store: StoreApi<AppState>, relativePath: string): void {
   )
 }
 
+// Why: a lone pane sends the next open beside it instead of replacing, so replacement is only observable once split.
+function splitWithPinnedFile(store: StoreApi<AppState>): void {
+  store.getState().openFile({
+    filePath: '/repo/src/pinned.ts',
+    relativePath: 'src/pinned.ts',
+    worktreeId: 'wt-1',
+    language: 'typescript',
+    mode: 'edit'
+  })
+}
+
+function previewPaths(store: StoreApi<AppState>): string[] {
+  return store
+    .getState()
+    .openFiles.filter((file) => file.relativePath !== 'src/pinned.ts')
+    .map((file) => file.relativePath)
+}
+
 function storeWithPreviewTabs(enabled: boolean): StoreApi<AppState> {
   const store = createEditorTabsStore()
   store.setState({ settings: createGlobalSettingsFixture({ editorPreviewTabsEnabled: enabled }) })
@@ -43,12 +61,15 @@ function storeWithPreviewTabs(enabled: boolean): StoreApi<AppState> {
 describe('editor preview tab setting', () => {
   it('replaces the open preview when preview tabs are enabled', () => {
     const store = storeWithPreviewTabs(true)
+    splitWithPinnedFile(store)
 
     openPreview(store, 'src/a.ts')
     openPreview(store, 'src/b.ts')
 
-    expect(store.getState().openFiles.map((file) => file.relativePath)).toEqual(['src/b.ts'])
-    expect(store.getState().openFiles[0].isPreview).toBe(true)
+    expect(previewPaths(store)).toEqual(['src/b.ts'])
+    expect(
+      store.getState().openFiles.find((file) => file.relativePath === 'src/b.ts')?.isPreview
+    ).toBe(true)
   })
 
   it('keeps both files open when preview tabs are disabled', () => {
@@ -69,11 +90,12 @@ describe('editor preview tab setting', () => {
 
   it('treats an unset setting as enabled so existing profiles keep preview tabs', () => {
     const store = createEditorTabsStore()
+    splitWithPinnedFile(store)
 
     openPreview(store, 'src/a.ts')
     openPreview(store, 'src/b.ts')
 
-    expect(store.getState().openFiles.map((file) => file.relativePath)).toEqual(['src/b.ts'])
+    expect(previewPaths(store)).toEqual(['src/b.ts'])
   })
 
   it('never evicts a preview restored from before the setting was turned off', () => {
@@ -119,6 +141,7 @@ describe('editor preview tab setting', () => {
 
   it('makes the flag live again when the setting is turned back on', () => {
     const store = storeWithPreviewTabs(true)
+    splitWithPinnedFile(store)
     openPreview(store, 'src/a.ts')
     store.setState({ settings: createGlobalSettingsFixture({ editorPreviewTabsEnabled: false }) })
     store.setState({ settings: createGlobalSettingsFixture({ editorPreviewTabsEnabled: true }) })
