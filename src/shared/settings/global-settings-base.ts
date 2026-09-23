@@ -77,4 +77,7 @@ export type GlobalSettingsBase = AntigravityChatAuthSettings &
   PRAutoRefreshSettings &
   ManagedAccountNameSettings &
   NewTabMenuSettings &
-  UiLanguageSettings
+  UiLanguageSettings & {
+    /** Forces a light reading surface on markdown preview/rich editor, independent of the app theme. */
+    markdownPreviewLightBackground?: boolean
+  }
