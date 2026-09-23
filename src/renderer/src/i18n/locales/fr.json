@@ -7257,7 +7257,9 @@
           "f1b3ceeb98": "Diff Afficher les espaces",
           "94a479cef3": "Afficher les différences d'espaces de début et de fin dans les différences.",
           "collapseUnchangedTitle": "Réduire les régions inchangées",
-          "collapseUnchangedDescription": "Afficher uniquement les lignes modifiées et un peu de contexte environnant dans un fichier de comparaison, en cachant le reste derrière des bandes extensibles. Le diff Afficher toutes les modifications se réduit toujours de cette façon."
+          "collapseUnchangedDescription": "Afficher uniquement les lignes modifiées et un peu de contexte environnant dans un fichier de comparaison, en cachant le reste derrière des bandes extensibles. Le diff Afficher toutes les modifications se réduit toujours de cette façon.",
+          "94c2f548f7": "Fond clair pour Markdown",
+          "9088b9db22": "Affiche l'aperçu Markdown et l'éditeur Markdown enrichi sur un fond clair lorsque le thème de l'application est sombre."
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "localhost, 127.0.0.1, *.internal",
@@ -9834,7 +9836,13 @@
             "command": "commande",
             "confirm": "confirmer",
             "close": "fermer",
-            "omp": "OMP"
+            "omp": "OMP",
+            "1d7f09ad39": "Fond clair pour Markdown",
+            "5f8f521577": "Affiche l'aperçu Markdown et l'éditeur Markdown enrichi sur un fond clair lorsque le thème de l'application est sombre.",
+            "4b7457b852": "clair",
+            "450edddbf8": "fond",
+            "d9b1892a5c": "thème",
+            "6ca0f43036": "aperçu"
           }
         },
         "git": {
@@ -14958,7 +14966,8 @@
           "8c8b7f5ff5": "Afficher le front matter",
           "10c39d58c1": "Masquer le front matter",
           "1eef809708": "Retour à la ligne",
-          "4dedd55efa": "Afficher les espaces"
+          "4dedd55efa": "Afficher les espaces",
+          "dce17383c8": "Fond clair"
         },
         "EditorPanelShell": {
           "e2c4dec350": "Chargement de l'éditeur..."

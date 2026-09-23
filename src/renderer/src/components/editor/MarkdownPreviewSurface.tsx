@@ -1,5 +1,6 @@
 import type { Components } from 'react-markdown'
 import { translate } from '@/i18n/i18n'
+import { cn } from '@/lib/utils'
 import { MarkdownTableOfContentsPanel } from './MarkdownTableOfContentsPanel'
 import { MarkdownPreviewBody } from './MarkdownPreviewBody'
 import { MarkdownPreviewReviewToolbar } from './MarkdownPreviewReviewToolbar'
@@ -7,6 +8,7 @@ import { MarkdownPreviewSearchBar } from './MarkdownPreviewSearchBar'
 import type { MarkdownPreviewFoundation } from './use-markdown-preview-foundation'
 import type { MarkdownPreviewReviewActions } from './use-markdown-preview-review-actions'
 import type { MarkdownPreviewViewport } from './use-markdown-preview-viewport'
+import { useMarkdownSurfaceForceLight } from './use-markdown-surface-is-dark'
 
 export function MarkdownPreviewSurface({
   foundation,
@@ -37,9 +39,10 @@ export function MarkdownPreviewSurface({
     frontMatterInner,
     renderedContent
   } = foundation
+  const forceLight = useMarkdownSurfaceForceLight()
 
   return (
-    <div className="markdown-preview-shell">
+    <div className={cn('markdown-preview-shell', forceLight && 'markdown-force-light')}>
       {showTableOfContents ? (
         <MarkdownTableOfContentsPanel
           items={tableOfContentsItems}
@@ -51,7 +54,10 @@ export function MarkdownPreviewSurface({
         ref={viewport.setRootRef}
         tabIndex={0}
         style={{ fontSize: `${editorFontSize}px` }}
-        className={`markdown-preview h-full min-h-0 overflow-auto scrollbar-editor ${isDark ? 'markdown-dark' : 'markdown-light'}`}
+        className={cn(
+          'markdown-preview h-full min-h-0 overflow-auto scrollbar-editor',
+          isDark ? 'markdown-dark' : 'markdown-light'
+        )}
       >
         {isSearchOpen ? (
           <MarkdownPreviewSearchBar foundation={foundation} viewport={viewport} />

@@ -7139,7 +7139,9 @@
           "f1b3ceeb98": "차이점 표시 공백",
           "94a479cef3": "diff에서 선행 및 후행 공백 차이를 표시합니다.",
           "collapseUnchangedTitle": "변경되지 않은 지역 축소",
-          "collapseUnchangedDescription": "변경된 줄과 약간의 주변 컨텍스트만 파일 비교에 표시하고 나머지는 확장 가능한 밴드 뒤에 숨깁니다. 모든 변경 사항 보기 차이점은 항상 이런 식으로 축소됩니다."
+          "collapseUnchangedDescription": "변경된 줄과 약간의 주변 컨텍스트만 파일 비교에 표시하고 나머지는 확장 가능한 밴드 뒤에 숨깁니다. 모든 변경 사항 보기 차이점은 항상 이런 식으로 축소됩니다.",
+          "94c2f548f7": "Markdown 밝은 배경",
+          "9088b9db22": "앱 테마가 어두울 때 Markdown 미리보기와 리치 Markdown 편집기를 밝은 배경으로 표시합니다."
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "로컬호스트, 127.0.0.1, *.internal",
@@ -9674,7 +9676,13 @@
             "command": "명령",
             "confirm": "확인",
             "close": "닫다",
-            "omp": "OMP"
+            "omp": "OMP",
+            "1d7f09ad39": "Markdown 밝은 배경",
+            "5f8f521577": "앱 테마가 어두울 때 Markdown 미리보기와 리치 Markdown 편집기를 밝은 배경으로 표시합니다.",
+            "4b7457b852": "라이트",
+            "450edddbf8": "배경",
+            "d9b1892a5c": "테마",
+            "6ca0f43036": "미리보기"
           }
         },
         "git": {
@@ -14855,7 +14863,8 @@
           "8c8b7f5ff5": "머리말 표시",
           "10c39d58c1": "머리말 숨기기",
           "1eef809708": "단어 줄 바꿈",
-          "4dedd55efa": "공백 표시"
+          "4dedd55efa": "공백 표시",
+          "dce17383c8": "밝은 배경"
         },
         "EditorPanelShell": {
           "e2c4dec350": "편집기 로드 중..."
