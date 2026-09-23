@@ -8814,7 +8814,9 @@
           "b11d620d45": "Default diff view",
           "0971ef5c63": "Diff show whitespace",
           "916c5582f2": "Collapse unchanged regions",
-          "6f33c2a32f": "Diff word wrap"
+          "6f33c2a32f": "Diff word wrap",
+          "94c2f548f7": "Light Markdown Background",
+          "9088b9db22": "Show Markdown preview and the rich Markdown editor on a light background when the app theme is dark."
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "localhost, 127.0.0.1, *.internal",
@@ -11138,7 +11140,13 @@
             "66395fb7ff": "Editor font family",
             "aa1c06eb2c": "Default diff view",
             "8ad175042b": "Rich Markdown spellcheck",
-            "da5c42780e": "Open in apps"
+            "da5c42780e": "Open in apps",
+            "1d7f09ad39": "Light Markdown Background",
+            "5f8f521577": "Show Markdown preview and the rich Markdown editor on a light background when the app theme is dark.",
+            "4b7457b852": "light",
+            "450edddbf8": "background",
+            "d9b1892a5c": "theme",
+            "6ca0f43036": "preview"
           }
         },
         "git": {
@@ -17203,7 +17211,8 @@
           "3e0ce48c24": "Export as PDF",
           "561251019a": "More actions",
           "1eef809708": "Word Wrap",
-          "4dedd55efa": "Show Whitespace"
+          "4dedd55efa": "Show Whitespace",
+          "dce17383c8": "Light Background"
         },
         "EditorPanelShell": {
           "e2c4dec350": "Loading editor..."

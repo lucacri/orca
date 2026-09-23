@@ -7978,7 +7978,9 @@
           "b11d620d45": "Vue de diff par défaut",
           "0971ef5c63": "Diff Afficher les espaces",
           "916c5582f2": "Réduire les régions inchangées",
-          "6f33c2a32f": "Retour à la ligne dans les diffs"
+          "6f33c2a32f": "Retour à la ligne dans les diffs",
+          "94c2f548f7": "Fond clair pour Markdown",
+          "9088b9db22": "Affiche l'aperçu Markdown et l'éditeur Markdown enrichi sur un fond clair lorsque le thème de l'application est sombre."
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "localhost, 127.0.0.1, *.internal",
@@ -10256,7 +10258,13 @@
             "66395fb7ff": "Police de l'éditeur",
             "aa1c06eb2c": "Vue de diff par défaut",
             "8ad175042b": "Vérification orthographique du Markdown enrichi",
-            "da5c42780e": "Applications « Ouvrir dans »"
+            "da5c42780e": "Applications « Ouvrir dans »",
+            "1d7f09ad39": "Fond clair pour Markdown",
+            "5f8f521577": "Affiche l'aperçu Markdown et l'éditeur Markdown enrichi sur un fond clair lorsque le thème de l'application est sombre.",
+            "4b7457b852": "clair",
+            "450edddbf8": "fond",
+            "d9b1892a5c": "thème",
+            "6ca0f43036": "aperçu"
           }
         },
         "git": {
@@ -16193,7 +16201,8 @@
           "3e0ce48c24": "Exporter en PDF",
           "561251019a": "Plus d'actions",
           "1eef809708": "Retour à la ligne",
-          "4dedd55efa": "Afficher les espaces"
+          "4dedd55efa": "Afficher les espaces",
+          "dce17383c8": "Fond clair"
         },
         "EditorPanelShell": {
           "e2c4dec350": "Chargement de l'éditeur..."

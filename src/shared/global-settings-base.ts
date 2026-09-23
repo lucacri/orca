@@ -53,4 +53,7 @@ export type GlobalSettingsBase = AntigravityChatAuthSettings &
   NestedWorkerDepthSettings &
   AgentWorkspaceTrustSettings &
   KeybindingGlobalSettings &
-  WorkspaceCleanupPolicySettings
+  WorkspaceCleanupPolicySettings & {
+    /** Forces a light reading surface on markdown preview/rich editor, independent of the app theme. */
+    markdownPreviewLightBackground?: boolean
+  }
