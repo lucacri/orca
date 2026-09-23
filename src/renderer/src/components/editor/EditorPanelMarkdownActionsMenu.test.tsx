@@ -56,6 +56,7 @@ describe('EditorPanelMarkdownActionsMenu', () => {
         diffWordWrap: false,
         diffShowWhitespace: false,
         editorWordWrap: true,
+        markdownPreviewLightBackground: false,
         shouldShowMarkdownExportAction: false,
         canExportMarkdownToPdf: false,
         canShowMarkdownFrontmatterToggle: false,
@@ -63,6 +64,7 @@ describe('EditorPanelMarkdownActionsMenu', () => {
         onToggleDiffWordWrap,
         onToggleDiffWhitespace: () => {},
         onToggleEditorWordWrap,
+        onToggleMarkdownPreviewLightBackground: () => {},
         onToggleMarkdownFrontmatter: () => {},
         onExportMarkdownToPdf: () => {}
       })
@@ -85,6 +87,7 @@ describe('EditorPanelMarkdownActionsMenu', () => {
         diffWordWrap: true,
         diffShowWhitespace: false,
         editorWordWrap: false,
+        markdownPreviewLightBackground: false,
         shouldShowMarkdownExportAction: false,
         canExportMarkdownToPdf: false,
         canShowMarkdownFrontmatterToggle: false,
@@ -92,6 +95,7 @@ describe('EditorPanelMarkdownActionsMenu', () => {
         onToggleDiffWordWrap,
         onToggleDiffWhitespace: () => {},
         onToggleEditorWordWrap,
+        onToggleMarkdownPreviewLightBackground: () => {},
         onToggleMarkdownFrontmatter: () => {},
         onExportMarkdownToPdf: () => {}
       })
@@ -113,6 +117,7 @@ describe('EditorPanelMarkdownActionsMenu', () => {
         diffWordWrap: false,
         diffShowWhitespace: true,
         editorWordWrap: false,
+        markdownPreviewLightBackground: false,
         shouldShowMarkdownExportAction: false,
         canExportMarkdownToPdf: false,
         canShowMarkdownFrontmatterToggle: false,
@@ -120,6 +125,7 @@ describe('EditorPanelMarkdownActionsMenu', () => {
         onToggleDiffWordWrap: () => {},
         onToggleDiffWhitespace,
         onToggleEditorWordWrap: () => {},
+        onToggleMarkdownPreviewLightBackground: () => {},
         onToggleMarkdownFrontmatter: () => {},
         onExportMarkdownToPdf: () => {}
       })
@@ -132,5 +138,39 @@ describe('EditorPanelMarkdownActionsMenu', () => {
     })
     checkboxItems.list[1]?.onCheckedChange?.(false)
     expect(onToggleDiffWhitespace).toHaveBeenCalledOnce()
+  })
+
+  it('shows and binds Light Background only on non-diff markdown tabs', () => {
+    const onToggleMarkdownPreviewLightBackground = vi.fn()
+    const props = {
+      isMarkdown: true,
+      isDiffSurface: false,
+      diffWordWrap: false,
+      diffShowWhitespace: false,
+      editorWordWrap: true,
+      markdownPreviewLightBackground: true,
+      shouldShowMarkdownExportAction: false,
+      canExportMarkdownToPdf: false,
+      canShowMarkdownFrontmatterToggle: false,
+      markdownFrontmatterVisible: false,
+      onToggleDiffWordWrap: () => {},
+      onToggleDiffWhitespace: () => {},
+      onToggleEditorWordWrap: () => {},
+      onToggleMarkdownPreviewLightBackground,
+      onToggleMarkdownFrontmatter: () => {},
+      onExportMarkdownToPdf: () => {}
+    }
+    renderToStaticMarkup(React.createElement(EditorPanelMarkdownActionsMenu, props))
+
+    expect(checkboxItems.list).toHaveLength(2)
+    expect(checkboxItems.list[1]).toMatchObject({ checked: true, label: 'Light Background' })
+    checkboxItems.list[1]?.onCheckedChange?.(false)
+    expect(onToggleMarkdownPreviewLightBackground).toHaveBeenCalledOnce()
+
+    checkboxItems.list = []
+    renderToStaticMarkup(
+      React.createElement(EditorPanelMarkdownActionsMenu, { ...props, isDiffSurface: true })
+    )
+    expect(checkboxItems.list.map((item) => item.label)).not.toContain('Light Background')
   })
 })
