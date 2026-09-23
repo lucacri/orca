@@ -56,10 +56,12 @@ describe('EditorPanelActionsMenu', () => {
     const onToggleMarkdownFrontmatter = vi.fn()
     renderToStaticMarkup(
       <EditorPanelActionsMenu
+        isMarkdown={false}
         isDiffSurface={false}
         diffWordWrap={false}
         diffShowWhitespace={false}
         editorWordWrap
+        markdownPreviewLightBackground={false}
         shouldShowMarkdownExportAction
         canExportMarkdownToPdf
         canShowMarkdownFrontmatterToggle
@@ -67,6 +69,7 @@ describe('EditorPanelActionsMenu', () => {
         onToggleDiffWordWrap={vi.fn()}
         onToggleDiffWhitespace={vi.fn()}
         onToggleEditorWordWrap={vi.fn()}
+        onToggleMarkdownPreviewLightBackground={vi.fn()}
         onToggleMarkdownFrontmatter={onToggleMarkdownFrontmatter}
         onExportMarkdownToPdf={vi.fn()}
       />
@@ -82,10 +85,12 @@ describe('EditorPanelActionsMenu', () => {
     const onToggleEditorWordWrap = vi.fn()
     renderToStaticMarkup(
       React.createElement(EditorPanelActionsMenu, {
+        isMarkdown: false,
         isDiffSurface: false,
         diffWordWrap: false,
         diffShowWhitespace: false,
         editorWordWrap: true,
+        markdownPreviewLightBackground: false,
         shouldShowMarkdownExportAction: false,
         canExportMarkdownToPdf: false,
         canShowMarkdownFrontmatterToggle: false,
@@ -93,6 +98,7 @@ describe('EditorPanelActionsMenu', () => {
         onToggleDiffWordWrap,
         onToggleDiffWhitespace: () => {},
         onToggleEditorWordWrap,
+        onToggleMarkdownPreviewLightBackground: () => {},
         onToggleMarkdownFrontmatter: () => {},
         onExportMarkdownToPdf: () => {}
       })
@@ -110,10 +116,12 @@ describe('EditorPanelActionsMenu', () => {
     const onToggleEditorWordWrap = vi.fn()
     renderToStaticMarkup(
       React.createElement(EditorPanelActionsMenu, {
+        isMarkdown: false,
         isDiffSurface: true,
         diffWordWrap: true,
         diffShowWhitespace: false,
         editorWordWrap: false,
+        markdownPreviewLightBackground: false,
         shouldShowMarkdownExportAction: false,
         canExportMarkdownToPdf: false,
         canShowMarkdownFrontmatterToggle: false,
@@ -121,6 +129,7 @@ describe('EditorPanelActionsMenu', () => {
         onToggleDiffWordWrap,
         onToggleDiffWhitespace: () => {},
         onToggleEditorWordWrap,
+        onToggleMarkdownPreviewLightBackground: () => {},
         onToggleMarkdownFrontmatter: () => {},
         onExportMarkdownToPdf: () => {}
       })
@@ -137,10 +146,12 @@ describe('EditorPanelActionsMenu', () => {
     const onToggleDiffWhitespace = vi.fn()
     renderToStaticMarkup(
       React.createElement(EditorPanelActionsMenu, {
+        isMarkdown: false,
         isDiffSurface: true,
         diffWordWrap: false,
         diffShowWhitespace: true,
         editorWordWrap: false,
+        markdownPreviewLightBackground: false,
         shouldShowMarkdownExportAction: false,
         canExportMarkdownToPdf: false,
         canShowMarkdownFrontmatterToggle: false,
@@ -148,6 +159,7 @@ describe('EditorPanelActionsMenu', () => {
         onToggleDiffWordWrap: () => {},
         onToggleDiffWhitespace,
         onToggleEditorWordWrap: () => {},
+        onToggleMarkdownPreviewLightBackground: () => {},
         onToggleMarkdownFrontmatter: () => {},
         onExportMarkdownToPdf: () => {}
       })
@@ -160,5 +172,39 @@ describe('EditorPanelActionsMenu', () => {
     })
     checkboxItems.list[1]?.onCheckedChange?.(false)
     expect(onToggleDiffWhitespace).toHaveBeenCalledOnce()
+  })
+
+  it('shows and binds Light Background only on non-diff markdown tabs', () => {
+    const onToggleMarkdownPreviewLightBackground = vi.fn()
+    const props = {
+      isMarkdown: true,
+      isDiffSurface: false,
+      diffWordWrap: false,
+      diffShowWhitespace: false,
+      editorWordWrap: true,
+      markdownPreviewLightBackground: true,
+      shouldShowMarkdownExportAction: false,
+      canExportMarkdownToPdf: false,
+      canShowMarkdownFrontmatterToggle: false,
+      markdownFrontmatterVisible: false,
+      onToggleDiffWordWrap: () => {},
+      onToggleDiffWhitespace: () => {},
+      onToggleEditorWordWrap: () => {},
+      onToggleMarkdownPreviewLightBackground,
+      onToggleMarkdownFrontmatter: () => {},
+      onExportMarkdownToPdf: () => {}
+    }
+    renderToStaticMarkup(React.createElement(EditorPanelActionsMenu, props))
+
+    expect(checkboxItems.list).toHaveLength(2)
+    expect(checkboxItems.list[1]).toMatchObject({ checked: true, label: 'Light Background' })
+    checkboxItems.list[1]?.onCheckedChange?.(false)
+    expect(onToggleMarkdownPreviewLightBackground).toHaveBeenCalledOnce()
+
+    checkboxItems.list = []
+    renderToStaticMarkup(
+      React.createElement(EditorPanelActionsMenu, { ...props, isDiffSurface: true })
+    )
+    expect(checkboxItems.list.map((item) => item.label)).not.toContain('Light Background')
   })
 })

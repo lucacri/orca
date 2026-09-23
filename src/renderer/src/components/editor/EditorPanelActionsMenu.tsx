@@ -14,12 +14,15 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 type EditorPanelActionsMenuProps = {
   fileLocationActions?: React.ReactNode
+  isMarkdown: boolean
   isDiffSurface: boolean
   /** Diff-only wrap preference; ignored for normal file tabs. */
   diffWordWrap: boolean
   /** Diff-only whitespace preference; ignored for normal file tabs. */
   diffShowWhitespace: boolean
   editorWordWrap: boolean
+  /** `settings.markdownPreviewLightBackground`; only shown on non-diff markdown tabs. */
+  markdownPreviewLightBackground: boolean
   shouldShowMarkdownExportAction: boolean
   canExportMarkdownToPdf: boolean
   canShowMarkdownFrontmatterToggle: boolean
@@ -27,16 +30,19 @@ type EditorPanelActionsMenuProps = {
   onToggleDiffWordWrap: () => void
   onToggleDiffWhitespace: () => void
   onToggleEditorWordWrap: () => void
+  onToggleMarkdownPreviewLightBackground: () => void
   onToggleMarkdownFrontmatter: () => void
   onExportMarkdownToPdf: () => void
 }
 
 export function EditorPanelActionsMenu({
   fileLocationActions,
+  isMarkdown,
   isDiffSurface,
   diffWordWrap,
   diffShowWhitespace,
   editorWordWrap,
+  markdownPreviewLightBackground,
   shouldShowMarkdownExportAction,
   canExportMarkdownToPdf,
   canShowMarkdownFrontmatterToggle,
@@ -44,6 +50,7 @@ export function EditorPanelActionsMenu({
   onToggleDiffWordWrap,
   onToggleDiffWhitespace,
   onToggleEditorWordWrap,
+  onToggleMarkdownPreviewLightBackground,
   onToggleMarkdownFrontmatter,
   onExportMarkdownToPdf
 }: EditorPanelActionsMenuProps): React.JSX.Element {
@@ -88,6 +95,17 @@ export function EditorPanelActionsMenu({
             {translate(
               'auto.components.editor.EditorPanelMarkdownActionsMenu.4dedd55efa',
               'Show Whitespace'
+            )}
+          </DropdownMenuCheckboxItem>
+        ) : null}
+        {isMarkdown && !isDiffSurface ? (
+          <DropdownMenuCheckboxItem
+            checked={markdownPreviewLightBackground}
+            onCheckedChange={onToggleMarkdownPreviewLightBackground}
+          >
+            {translate(
+              'auto.components.editor.EditorPanelMarkdownActionsMenu.dce17383c8',
+              'Light Background'
             )}
           </DropdownMenuCheckboxItem>
         ) : null}
