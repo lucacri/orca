@@ -7286,7 +7286,9 @@
           "f1b3ceeb98": "Diferencia Mostrar espacios en blanco",
           "94a479cef3": "Muestra las diferencias de espacios en blanco iniciales y finales en las diferencias.",
           "collapseUnchangedTitle": "Contraer regiones sin cambios",
-          "collapseUnchangedDescription": "Muestra solo las líneas modificadas y un poco de contexto circundante en una diferencia de archivo, ocultando el resto detrás de bandas expandibles. La diferencia Ver todos los cambios siempre colapsa de esta manera."
+          "collapseUnchangedDescription": "Muestra solo las líneas modificadas y un poco de contexto circundante en una diferencia de archivo, ocultando el resto detrás de bandas expandibles. La diferencia Ver todos los cambios siempre colapsa de esta manera.",
+          "94c2f548f7": "Fondo claro para Markdown",
+          "9088b9db22": "Muestra la vista previa de Markdown y el editor de Markdown enriquecido con fondo claro cuando el tema de la app es oscuro."
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "localhost, 127.0.0.1, *.internal",
@@ -9887,7 +9889,13 @@
             "running_terminal": "correr",
             "command": "dominio",
             "confirm": "confirmar",
-            "omp": "OMP"
+            "omp": "OMP",
+            "1d7f09ad39": "Fondo claro para Markdown",
+            "5f8f521577": "Muestra la vista previa de Markdown y el editor de Markdown enriquecido con fondo claro cuando el tema de la app es oscuro.",
+            "4b7457b852": "claro",
+            "450edddbf8": "fondo",
+            "d9b1892a5c": "tema",
+            "6ca0f43036": "vista previa"
           }
         },
         "git": {
@@ -15291,7 +15299,8 @@
           "8c8b7f5ff5": "Mostrar front matter",
           "10c39d58c1": "Ocultar front matter",
           "1eef809708": "Ajuste de línea",
-          "4dedd55efa": "Mostrar espacios en blanco"
+          "4dedd55efa": "Mostrar espacios en blanco",
+          "dce17383c8": "Fondo claro"
         },
         "EditorPanelShell": {
           "e2c4dec350": "Cargando editor…"
