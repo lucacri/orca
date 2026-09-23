@@ -10,6 +10,7 @@ import type { useMarkdownPreviewDocument } from '../document-worker/use-markdown
 import type { useMarkdownPreviewDocumentSearch } from '../search/use-markdown-preview-document-search'
 import type { Components } from 'react-markdown'
 import { translate } from '@/i18n/i18n'
+import { cn } from '@/lib/utils'
 import { MarkdownTableOfContentsPanel } from '../../markdown/navigation/MarkdownTableOfContentsPanel'
 import { MarkdownPreviewBody } from '../render-tree/MarkdownPreviewBody'
 import { MarkdownPreviewReviewToolbar } from '../review/MarkdownPreviewReviewToolbar'
@@ -17,6 +18,7 @@ import { MarkdownPreviewSearchBar } from '../search/MarkdownPreviewSearchBar'
 import type { MarkdownPreviewFoundation } from './use-markdown-preview-foundation'
 import type { MarkdownPreviewReviewActions } from '../review/use-markdown-preview-review-actions'
 import type { MarkdownPreviewViewport } from '../viewport/use-markdown-preview-viewport'
+import { useMarkdownSurfaceForceLight } from '../../use-markdown-surface-is-dark'
 
 export function MarkdownPreviewSurface({
   largePreview,
@@ -55,6 +57,7 @@ export function MarkdownPreviewSurface({
     frontmatterVisible,
     renderedContent
   } = foundation
+  const forceLight = useMarkdownSurfaceForceLight()
 
   const displayedContent =
     documentState.status === 'ready' ? documentState.content : renderedContent
@@ -62,7 +65,7 @@ export function MarkdownPreviewSurface({
   const frontMatterInner = useMemo(() => markdownFrontMatterInner(frontMatter), [frontMatter])
 
   return (
-    <div className="markdown-preview-shell">
+    <div className={cn('markdown-preview-shell', forceLight && 'markdown-force-light')}>
       {showTableOfContents ? (
         <MarkdownTableOfContentsPanel
           virtualized={largePreview}
@@ -84,7 +87,10 @@ export function MarkdownPreviewSurface({
           fontSize: `${editorFontSize}px`,
           overflowAnchor: largePreview ? 'none' : undefined
         }}
-        className={`markdown-preview h-full min-h-0 overflow-auto scrollbar-editor ${isDark ? 'markdown-dark' : 'markdown-light'}`}
+        className={cn(
+          'markdown-preview h-full min-h-0 overflow-auto scrollbar-editor',
+          isDark ? 'markdown-dark' : 'markdown-light'
+        )}
       >
         {isSearchOpen ? (
           <MarkdownPreviewSearchBar
