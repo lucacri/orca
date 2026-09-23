@@ -19,6 +19,8 @@ type EditorPanelMarkdownActionsMenuProps = {
   diffShowWhitespace: boolean
   /** File editor wrap preference (`settings.editorWordWrap`). */
   editorWordWrap: boolean
+  /** `settings.markdownPreviewLightBackground`; only shown on non-diff markdown tabs. */
+  markdownPreviewLightBackground: boolean
   shouldShowMarkdownExportAction: boolean
   canExportMarkdownToPdf: boolean
   canShowMarkdownFrontmatterToggle: boolean
@@ -26,6 +28,7 @@ type EditorPanelMarkdownActionsMenuProps = {
   onToggleDiffWordWrap: () => void
   onToggleDiffWhitespace: () => void
   onToggleEditorWordWrap: () => void
+  onToggleMarkdownPreviewLightBackground: () => void
   onToggleMarkdownFrontmatter: () => void
   onExportMarkdownToPdf: () => void
 }
@@ -36,6 +39,7 @@ export function EditorPanelMarkdownActionsMenu({
   diffWordWrap,
   diffShowWhitespace,
   editorWordWrap,
+  markdownPreviewLightBackground,
   shouldShowMarkdownExportAction,
   canExportMarkdownToPdf,
   canShowMarkdownFrontmatterToggle,
@@ -43,6 +47,7 @@ export function EditorPanelMarkdownActionsMenu({
   onToggleDiffWordWrap,
   onToggleDiffWhitespace,
   onToggleEditorWordWrap,
+  onToggleMarkdownPreviewLightBackground,
   onToggleMarkdownFrontmatter,
   onExportMarkdownToPdf
 }: EditorPanelMarkdownActionsMenuProps): React.JSX.Element | null {
@@ -85,6 +90,17 @@ export function EditorPanelMarkdownActionsMenu({
             {translate(
               'auto.components.editor.EditorPanelMarkdownActionsMenu.4dedd55efa',
               'Show Whitespace'
+            )}
+          </DropdownMenuCheckboxItem>
+        ) : null}
+        {isMarkdown && !isDiffSurface ? (
+          <DropdownMenuCheckboxItem
+            checked={markdownPreviewLightBackground}
+            onCheckedChange={onToggleMarkdownPreviewLightBackground}
+          >
+            {translate(
+              'auto.components.editor.EditorPanelMarkdownActionsMenu.dce17383c8',
+              'Light Background'
             )}
           </DropdownMenuCheckboxItem>
         ) : null}
