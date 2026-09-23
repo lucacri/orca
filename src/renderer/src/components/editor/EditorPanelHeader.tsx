@@ -95,6 +95,9 @@ export function EditorPanelHeader({
   const diffShowWhitespace = useAppStore((s) => s.settings?.diffShowWhitespace === true)
   // Why: undefined/true mean wrap on; only explicit false turns wrap off (#9974).
   const editorWordWrap = useAppStore((s) => s.settings?.editorWordWrap !== false)
+  const markdownPreviewLightBackground = useAppStore(
+    (s) => s.settings?.markdownPreviewLightBackground === true
+  )
   const updateSettings = useAppStore((s) => s.updateSettings)
   const fileDiffComments = useMemo(
     () => diffComments.filter((comment) => comment.filePath === activeFile.relativePath),
@@ -328,10 +331,12 @@ export function EditorPanelHeader({
             <EditorFileLocationMenuItems file={activeFile} onCopyPath={onCopyPath} />
           ) : undefined
         }
+        isMarkdown={isMarkdown}
         isDiffSurface={isDiffSurface}
         diffWordWrap={diffWordWrap}
         diffShowWhitespace={diffShowWhitespace}
         editorWordWrap={editorWordWrap}
+        markdownPreviewLightBackground={markdownPreviewLightBackground}
         shouldShowMarkdownExportAction={shouldShowMarkdownExportAction}
         canExportMarkdownToPdf={canExportMarkdownToPdf}
         canShowMarkdownFrontmatterToggle={canShowMarkdownFrontmatterToggle}
@@ -341,6 +346,9 @@ export function EditorPanelHeader({
           void updateSettings({ diffShowWhitespace: !diffShowWhitespace })
         }
         onToggleEditorWordWrap={() => void updateSettings({ editorWordWrap: !editorWordWrap })}
+        onToggleMarkdownPreviewLightBackground={() =>
+          void updateSettings({ markdownPreviewLightBackground: !markdownPreviewLightBackground })
+        }
         onToggleMarkdownFrontmatter={onToggleMarkdownFrontmatter}
         onExportMarkdownToPdf={onExportMarkdownToPdf}
       />
