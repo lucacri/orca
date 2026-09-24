@@ -8,6 +8,7 @@ import type { OpenWorkspaceBrowserTabRequest } from './workspace-browser-tab-ope
 import type { BrowserWorkspace } from '../../../shared/browser-workspace-types'
 import type { GlobalSettings } from '../../../shared/global-settings-types'
 import { isFloatingWorkspaceId } from '../../../shared/floating-workspace-worktree'
+import { findVisibleBrowserLinkTarget } from './visible-browser-link-target'
 
 export type HttpLinkBrowserPlacement = { targetGroupId: string } | { split: TabSplitTarget }
 
@@ -17,7 +18,7 @@ export type HttpLinkBrowserTabState = Partial<
   groupsByWorktree?: Record<string, readonly Pick<TabGroup, 'id' | 'activeTabId'>[]>
   unifiedTabsByWorktree?: Record<
     string,
-    readonly (Pick<Tab, 'id'> & Partial<Pick<Tab, 'contentType'>>)[]
+    readonly (Pick<Tab, 'id'> & Partial<Pick<Tab, 'contentType' | 'groupId' | 'lastFocusedAt'>>)[]
   >
   settings?: Partial<Pick<GlobalSettings, 'openLinksInAppInBackground'>> | null
   createBrowserTab: (
@@ -42,15 +43,13 @@ export function resolveHttpLinkBrowserPlacement(
   state: Omit<HttpLinkBrowserTabState, 'createBrowserTab'>,
   worktreeId: string
 ): HttpLinkBrowserPlacement | null {
-  const groups = state.groupsByWorktree?.[worktreeId] ?? []
-  const tabsById = new Map((state.unifiedTabsByWorktree?.[worktreeId] ?? []).map((t) => [t.id, t]))
-  const visibleGroupIds = liveLayoutGroupIds(state, worktreeId)
-  for (const groupId of visibleGroupIds) {
-    const activeTabId = groups.find((group) => group.id === groupId)?.activeTabId
-    if (activeTabId && tabsById.get(activeTabId)?.contentType === 'browser') {
-      return { targetGroupId: groupId }
-    }
+  // Why: with several browsers on screen, prefer the focused, else most recently focused one.
+  const visibleBrowser = findVisibleBrowserLinkTarget(state, worktreeId)
+  if (visibleBrowser) {
+    return { targetGroupId: visibleBrowser.targetGroupId }
   }
+  const groups = state.groupsByWorktree?.[worktreeId] ?? []
+  const visibleGroupIds = liveLayoutGroupIds(state, worktreeId)
   const sourceGroupId = state.activeGroupIdByWorktree?.[worktreeId]
   if (!sourceGroupId || !visibleGroupIds.has(sourceGroupId)) {
     return null
