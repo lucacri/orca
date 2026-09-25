@@ -1,5 +1,5 @@
 import { vi, type Mock } from 'vitest'
-import type { TabGroupLayoutNode } from '../../../../shared/tab-types'
+import type { TabGroup, TabGroupLayoutNode } from '../../../../shared/tab-types'
 
 
 export type TerminalLinkStoreSettings = {
@@ -21,7 +21,7 @@ export type TerminalLinkStoreState = {
   folderWorkspaces: []
   layoutByWorktree: Record<string, TabGroupLayoutNode | undefined>
   activeGroupIdByWorktree: Record<string, string | undefined>
-  groupsByWorktree: Record<string, { id: string }[]>
+  groupsByWorktree: Record<string, TabGroup[]>
   createEmptySplitGroup: Mock
 }
 
