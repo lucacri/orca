@@ -31,8 +31,8 @@ export function createTabsCreateActions(
       // Why afterTabId too: an anchor tab is placement intent of its own, like a named group.
       const besideGroupId =
         init?.placementFixed || init?.afterTabId
-        ? null
-        : resolveLonePaneBesideGroupId(get(), worktreeId, init?.targetGroupId)
+          ? null
+          : resolveLonePaneBesideGroupId(get(), worktreeId, init?.targetGroupId, contentType)
       const targetGroupId = besideGroupId ?? init?.targetGroupId
       const id = init?.id ?? createBrowserUuid()
       let created!: Tab

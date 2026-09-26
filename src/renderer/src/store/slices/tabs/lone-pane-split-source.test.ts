@@ -164,4 +164,46 @@ describe('resolveLonePaneBesideGroupId', () => {
     ).toBeNull()
     expect(createEmptySplitGroup).not.toHaveBeenCalled()
   })
+
+  describe('a browser opening into a lone browser pane', () => {
+    const loneBrowser = {
+      ...oneLeaf,
+      groupsByWorktree: { [WT]: [{ ...group('g1'), activeTabId: 'b1' }] },
+      unifiedTabsByWorktree: { [WT]: [{ ...tab('b1', 'g1'), contentType: 'browser' as const }] }
+    }
+
+    it('joins it as a tab instead of splitting', () => {
+      const createEmptySplitGroup = vi.fn(() => 'gNew')
+      expect(
+        resolveLonePaneBesideGroupId({ ...loneBrowser, createEmptySplitGroup }, WT, 'g1', 'browser')
+      ).toBeNull()
+      expect(createEmptySplitGroup).not.toHaveBeenCalled()
+    })
+
+    it('still opens a terminal beside it', () => {
+      const createEmptySplitGroup = vi.fn(() => 'gNew')
+      expect(
+        resolveLonePaneBesideGroupId(
+          { ...loneBrowser, createEmptySplitGroup },
+          WT,
+          'g1',
+          'terminal'
+        )
+      ).toBe('gNew')
+    })
+
+    it('still opens beside a lone pane whose browser is hidden behind another tab', () => {
+      const createEmptySplitGroup = vi.fn(() => 'gNew')
+      const hidden = {
+        ...loneBrowser,
+        groupsByWorktree: { [WT]: [{ ...group('g1'), activeTabId: 't1' }] },
+        unifiedTabsByWorktree: {
+          [WT]: [{ ...tab('b1', 'g1'), contentType: 'browser' as const }, tab('t1', 'g1')]
+        }
+      }
+      expect(
+        resolveLonePaneBesideGroupId({ ...hidden, createEmptySplitGroup }, WT, undefined, 'browser')
+      ).toBe('gNew')
+    })
+  })
 })
