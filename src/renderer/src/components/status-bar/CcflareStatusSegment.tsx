@@ -20,41 +20,51 @@ import { isCcflareAccountLimited, summarizeCcflare } from './ccflare-status-summ
 
 const POLL_MS = 60_000
 
-function windowText(
-  label: string,
-  window: CcflareUsageWindow | null,
+function WindowCells({
+  window,
+  display,
+  now
+}: {
+  window: CcflareUsageWindow | null
   display: UsagePercentageDisplay
-): string {
-  if (!window) {
-    return `${label} –`
-  }
-  const reset = window.resetsAt ? Date.parse(window.resetsAt) - Date.now() : Number.NaN
-  const resetText = Number.isFinite(reset) ? ` (${formatResetDuration(reset)})` : ''
-  return `${label} ${getDisplayedUsagePercentage(window.percent, display)}%${resetText}`
+  now: number
+}): React.JSX.Element {
+  const reset = window?.resetsAt ? Date.parse(window.resetsAt) - now : Number.NaN
+  return (
+    <>
+      <span className="text-right">
+        {window ? `${getDisplayedUsagePercentage(window.percent, display)}%` : '–'}
+      </span>
+      <span className="text-right text-muted-foreground">
+        {Number.isFinite(reset) ? formatResetDuration(reset) : ''}
+      </span>
+    </>
+  )
 }
 
 function AccountRow({
   account,
   active,
-  display
+  display,
+  now
 }: {
   account: CcflareAccount
   active: boolean
   display: UsagePercentageDisplay
+  now: number
 }): React.JSX.Element {
   return (
-    <div className="flex items-center justify-between gap-3 py-0.5">
+    <>
       <span className={cn('truncate', active && 'font-medium text-foreground')}>
         {account.name}
         {account.paused ? translate('components.status.ccflare.paused', ' · paused') : ''}
-        {isCcflareAccountLimited(account)
+        {isCcflareAccountLimited(account, now)
           ? translate('components.status.ccflare.limited', ' · limited')
           : ''}
       </span>
-      <span className="shrink-0 tabular-nums text-muted-foreground">
-        {windowText('5h', account.fiveHour, display)} · {windowText('wk', account.weekly, display)}
-      </span>
-    </div>
+      <WindowCells window={account.fiveHour} display={display} now={now} />
+      <WindowCells window={account.weekly} display={display} now={now} />
+    </>
   )
 }
 
@@ -68,6 +78,7 @@ export function CcflareStatusSegment({
 }): React.JSX.Element {
   const display = useAppStore((s) => s.usagePercentageDisplay)
   const [snapshot, setSnapshot] = useState<CcflareSnapshot | null>(null)
+  const [fetchedAt, setFetchedAt] = useState(0)
 
   useEffect(() => {
     let latestRequest = 0
@@ -80,6 +91,7 @@ export function CcflareStatusSegment({
           // Why: focus and interval refreshes can overlap; never let an older reply win.
           if (mounted && request === latestRequest) {
             setSnapshot(next)
+            setFetchedAt(Date.now())
           }
         })
         .catch(() => {})
@@ -175,14 +187,27 @@ export function CcflareStatusSegment({
                 </div>
               ) : null}
               <div>
-                {ok.accounts.map((account) => (
-                  <AccountRow
-                    key={account.name}
-                    account={account}
-                    active={account === summary.activeAccount}
-                    display={display}
-                  />
-                ))}
+                {/* Why: one grid across all rows so the percentage columns line up. */}
+                <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] items-baseline gap-x-3 gap-y-0.5 tabular-nums">
+                  <span />
+                  <span className="text-right text-muted-foreground">
+                    {translate('components.status.ccflare.fiveHourColumn', '5h')}
+                  </span>
+                  <span />
+                  <span className="text-right text-muted-foreground">
+                    {translate('components.status.ccflare.weeklyColumn', 'wk')}
+                  </span>
+                  <span />
+                  {ok.accounts.map((account) => (
+                    <AccountRow
+                      key={account.name}
+                      account={account}
+                      active={account === summary.activeAccount}
+                      display={display}
+                      now={fetchedAt}
+                    />
+                  ))}
+                </div>
                 <div className="pt-1 text-muted-foreground">{displayNote}</div>
               </div>
               {ok.totals ? (
