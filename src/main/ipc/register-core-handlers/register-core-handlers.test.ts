@@ -225,6 +225,10 @@ vi.mock('../computer-use-permissions', () => ({
   registerComputerUsePermissionHandlers: registerComputerUsePermissionHandlersMock
 }))
 
+vi.mock('../ccflare', () => ({
+  registerCcflareHandlers: vi.fn()
+}))
+
 vi.mock('../settings', () => ({
   registerSettingsHandlers: registerSettingsHandlersMock
 }))

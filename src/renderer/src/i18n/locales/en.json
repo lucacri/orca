@@ -18088,6 +18088,23 @@
         "workspaceSpace": {
           "otherTopLevelItems": "Other top-level items ({{value0}})"
         }
+      },
+      "ccflare": {
+        "title": "better-ccflare",
+        "settingsDescription": "Show usage from a local better-ccflare proxy in the status bar.",
+        "keywordProxy": "proxy",
+        "toggleDescription": "Show the active account usage and pool health from better-ccflare (localhost:8085, or ORCA_CCFLARE_URL).",
+        "offline": "offline",
+        "paused": " · paused",
+        "limited": " · limited",
+        "ariaLabel": "better-ccflare: {{status}}",
+        "unreachable": "Not reachable: {{reason}}. Set ORCA_CCFLARE_URL to point elsewhere.",
+        "pool": "{{routable}}/{{configured}} accounts routable",
+        "poolRateLimited": " · {{count}} rate-limited",
+        "totals": "Last 24h: {{requests}} requests · ${{cost}} · {{success}}% success",
+        "noAccounts": "no accounts",
+        "showingUsed": "Percentages show usage",
+        "showingRemaining": "Percentages show what is left"
       }
     },
     "cmd-j": {

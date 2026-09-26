@@ -6,6 +6,7 @@ import { getAntigravityStatusBarToggleSearchEntry } from './appearance-status-ba
 import { getMiniMaxStatusBarToggleSearchEntry } from './appearance-status-bar-minimax-toggle-search'
 import { getGrokStatusBarToggleSearchEntry } from './appearance-status-bar-grok-toggle-search'
 import { getCursorStatusBarToggleSearchEntry } from './appearance-status-bar-cursor-toggle-search'
+import { getCcflareStatusBarToggleSearchEntry } from './appearance-status-bar-ccflare-toggle-search'
 
 export const getStatusBarToggles = createLocalizedCatalog(
   (): readonly {
@@ -264,6 +265,7 @@ export const getStatusBarToggles = createLocalizedCatalog(
         'settings.appearance.statusBar.portsToggleDescription',
         'Show live workspace ports. Click it for workspace-scoped ports and external listeners.'
       )
-    }
+    },
+    getCcflareStatusBarToggleSearchEntry()
   ]
 )
