@@ -101,6 +101,11 @@ export function CcflareStatusSegment({
                       <span className="font-normal opacity-50">·</span>
                     </>
                   ) : null}
+                  {summary.activeAccount ? (
+                    <span className="max-w-24 truncate text-foreground">
+                      {summary.activeAccount.name}
+                    </span>
+                  ) : null}
                   {summary.parts.map((part) => (
                     <span key={part.label} className="inline-flex gap-1">
                       <span className="font-normal">{part.label}</span>

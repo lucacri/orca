@@ -88,7 +88,11 @@ export function summarizeCcflare(
       shown: getDisplayedUsagePercentage(used, display)
     })
   }
-  const text = [poolText, ...parts.map((part) => `${part.label} ${part.shown}%`)]
+  const text = [
+    poolText,
+    activeAccount?.name,
+    ...parts.map((part) => `${part.label} ${part.shown}%`)
+  ]
     .filter(Boolean)
     .join(' · ')
   const warning =
