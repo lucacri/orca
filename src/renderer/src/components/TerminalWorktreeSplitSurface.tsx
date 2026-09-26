@@ -47,6 +47,8 @@ export const WorktreeSplitSurface = React.memo(function WorktreeSplitSurface({
     shouldMeasureHiddenWorktree,
     needsBrowserGuestPaint
   })
+  // The cap's only source of truth: one visible group per worktree.
+  const tabAreaUnsplit = layout.type !== 'split'
 
   return (
     <div
@@ -76,6 +78,7 @@ export const WorktreeSplitSurface = React.memo(function WorktreeSplitSurface({
         activityTerminalPortals={activityTerminalPortals}
         backgroundMountTabIds={backgroundMountTabIds}
         activationDeferredMountTabIds={activationDeferredMountTabIds}
+        tabAreaUnsplit={tabAreaUnsplit}
       />
       <RetainedBrowserPaneOverlayLayer
         worktreeId={worktreeId}
@@ -85,6 +88,7 @@ export const WorktreeSplitSurface = React.memo(function WorktreeSplitSurface({
           hasDeferredBackgroundMounts: backgroundMountTabIds !== null,
           needsBrowserGuestPaint
         })}
+        tabAreaUnsplit={tabAreaUnsplit}
       />
       {isVisible || backgroundMountTabIds === null ? (
         <EmulatorPaneOverlayLayer worktreeId={worktreeId} isWorktreeActive={isVisible} />

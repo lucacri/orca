@@ -52,6 +52,8 @@ export { isTerminalLinkActivation } from './terminal-link-activation'
 export type LinkHandlerDeps = {
   worktreeId: string
   worktreePath: string
+  /** The terminal tab these links belong to; lets a file open beside it. */
+  sourceTabId?: string
   startupCwd: string
   getPaneLinkCwd?: (paneId: number) => string | null
   managerRef: React.RefObject<PaneManager | null>
@@ -197,7 +199,8 @@ export function createFilePathLinkProvider(
                           worktreeId,
                           worktreePath,
                           runtimeEnvironmentId,
-                          wslDistro: deps.wslDistro
+                          wslDistro: deps.wslDistro,
+                          sourceTabId: deps.sourceTabId
                         },
                         deps.getLinkActionContext?.(paneId)
                       )
@@ -299,6 +302,7 @@ export function installFilePathLinkClickFallback(
         worktreePath: deps.worktreePath,
         runtimeEnvironmentId,
         wslDistro: deps.wslDistro,
+        sourceTabId: deps.sourceTabId,
         pathExistsCache: deps.pathExistsCache,
         openWithSystemDefault: Boolean(event.shiftKey)
       }

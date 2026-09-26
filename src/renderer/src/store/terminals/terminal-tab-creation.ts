@@ -16,6 +16,7 @@ import {
   sanitizeRecentTabIds,
   updateGroup
 } from '../slices/tab-group-state'
+import { resolveLonePaneBesideGroupId } from '../slices/tabs/lone-pane-split-source'
 import { createBrowserUuid } from '@/lib/browser-uuid'
 import { getLocalProjectExecutionRuntimeContext } from '@/lib/local-preflight-context'
 import type { TerminalSlice, TerminalStoreGet, TerminalStoreSet } from './terminal-state'
@@ -60,6 +61,11 @@ export function createTerminalTabCreationActions(
   return {
     createTab: (worktreeId, targetGroupId, shellOverride, options) => {
       let tab!: TerminalTab
+      // Why: terminals bypass createUnifiedTab, so the beside-a-lone-pane rule lives here too.
+      const besideGroupId = options?.placementFixed
+        ? null
+        : resolveLonePaneBesideGroupId(get(), worktreeId, targetGroupId)
+      const requestedGroupId = besideGroupId ?? targetGroupId
       set((s) => {
         const orphanTerminalIds = getOrphanTerminalIds(s, worktreeId)
         const orphanCleanupPatch = buildOrphanTerminalCleanupPatch(s, worktreeId, orphanTerminalIds)
@@ -140,9 +146,9 @@ export function createTerminalTabCreationActions(
           void warnIfZCodeCannotOpenSession()
         }
         const validTargetGroupId =
-          targetGroupId &&
-          s.groupsByWorktree[worktreeId]?.some((group) => group.id === targetGroupId)
-            ? targetGroupId
+          requestedGroupId &&
+          s.groupsByWorktree[worktreeId]?.some((group) => group.id === requestedGroupId)
+            ? requestedGroupId
             : undefined
         const { group, groupsByWorktree, activeGroupIdByWorktree } = ensureGroup(
           s.groupsByWorktree,

@@ -155,7 +155,8 @@ export function createBrowserTabActions(
           entityId: workspaceId,
           label: browserTab.title,
           targetGroupId: options?.targetGroupId,
-          activate: options?.activate ?? true
+          activate: options?.activate ?? true,
+          ...(options?.placementFixed ? { placementFixed: true } : {})
         })
       }
       return browserTab

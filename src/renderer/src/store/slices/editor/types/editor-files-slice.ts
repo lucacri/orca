@@ -44,6 +44,8 @@ export type EditorFilesSlice = {
       forceContentReload?: boolean
       focusEditor?: boolean
       reopenId?: string
+      /** This call's placement is already decided (reopen replay); never redirect it beside a lone pane. */
+      placementFixed?: boolean
     }
   ) => string
   openNewMarkdownInActiveWorkspace: (groupId: string) => Promise<void>

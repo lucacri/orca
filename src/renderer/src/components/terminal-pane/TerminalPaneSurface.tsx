@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom'
+import { useAppStore } from '@/store'
 import TerminalSearch from '@/components/TerminalSearch'
 import { DaemonActionDialog } from '@/components/shared/useDaemonActions'
 import { AgentSessionContinuationDialog } from '@/components/agent-session-continuation/AgentSessionContinuationDialog'
@@ -15,6 +16,10 @@ import { SessionRestoredBannerPortals } from './SessionRestoredBannerPortals'
 import { handleInternalTerminalFileDrop } from './terminal-drop-handler'
 import { TerminalQuickCommandEditorDialog } from './TerminalQuickCommandEditorDialog'
 import { TerminalPaneNativeChatPortal } from './TerminalPaneNativeChatPortal'
+import {
+  DEFAULT_SINGLE_PANE_MAX_WIDTH,
+  TerminalSinglePaneWidthHandles
+} from './TerminalSinglePaneWidthHandles'
 import {
   TerminalPaneCodexRestartPortals,
   TerminalPaneMobileDriverPortals,
@@ -39,6 +44,7 @@ export function TerminalPaneSurface({
     agentSessionFork,
     beginPaneDragFromHeader,
     closeTerminalLinkActions,
+    containerRef,
     contextMenu,
     contextMenuCanContinueInNewSession,
     contextMenuCanToggleChat,
@@ -100,18 +106,26 @@ export function TerminalPaneSurface({
     setRenameValue,
     setSearchOpen,
     setSessionStateSaveFailureOpen,
+    settings,
     showSplitButton,
     showSshReconnectOverlay,
     splitTerminalPaneFromHeader,
     tabId,
     terminalContainerStyle,
+    terminalDividerStyle,
     terminalContentVisible,
     terminalLinkActionRequest,
     titleUsesLightSurface,
+    updateSettings,
     visibleQuickCommandHosts,
     visibleTerminalError,
     worktreeId
   } = controller
+  const singlePaneMaxWidth = settings?.terminalSinglePaneMaxWidth ?? DEFAULT_SINGLE_PANE_MAX_WIDTH
+  // Same predicate WorktreeSplitSurface uses; its effective-layout fallback can only
+  // produce a leaf (split-group-mount.ts:7-23), so reading the raw map agrees. Read
+  // here rather than threaded: this component is three prop hops from the layout owner.
+  const tabAreaUnsplit = useAppStore((s) => s.layoutByWorktree[worktreeId]?.type !== 'split')
 
   return (
     <>
@@ -295,6 +309,18 @@ export function TerminalPaneSurface({
               setAgentSessionContinuation(null)
             }
           }}
+        />
+      ) : null}
+      {singlePaneMaxWidth > 0 &&
+      tabAreaUnsplit &&
+      paneCount === 1 &&
+      terminalContentVisible &&
+      !(effectiveChatViewMode && activePaneIsChatLeaf) ? (
+        <TerminalSinglePaneWidthHandles
+          containerRef={containerRef}
+          maxWidth={singlePaneMaxWidth}
+          dividerStyle={terminalDividerStyle}
+          onCommit={(value) => updateSettings({ terminalSinglePaneMaxWidth: value })}
         />
       ) : null}
       <TerminalPaneHeaderOverlay
