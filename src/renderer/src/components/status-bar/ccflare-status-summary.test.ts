@@ -37,7 +37,7 @@ describe('summarizeCcflare', () => {
       },
       'used'
     )
-    expect(summary.label).toBe('5h 4% · wk 10%')
+    expect(summary.label).toBe('b · 5h 4% · wk 10%')
     expect(summary.activeAccount?.name).toBe('b')
     expect(summary.warning).toBe(false)
   })
@@ -50,8 +50,8 @@ describe('summarizeCcflare', () => {
       accounts: [account('a', null, 4)],
       totals: null
     }
-    expect(summarizeCcflare(snapshot, 'remaining').label).toBe('5h 96% · wk 90%')
-    expect(summarizeCcflare(snapshot, 'used', true).label).toBe('5h 4%')
+    expect(summarizeCcflare(snapshot, 'remaining').label).toBe('a · 5h 96% · wk 90%')
+    expect(summarizeCcflare(snapshot, 'used', true).label).toBe('a · 5h 4%')
   })
 
   it('compares lastUsed as time, not text', () => {
@@ -89,7 +89,7 @@ describe('summarizeCcflare', () => {
         },
         'used'
       )
-    ).toMatchObject({ label: '1/3 · 5h 1% · wk 10%', warning: true })
+    ).toMatchObject({ label: '1/3 · a · 5h 1% · wk 10%', warning: true })
     expect(
       summarizeCcflare({ status: 'ok', url: 'u', pool, accounts: [], totals: null }, 'used')
     ).toMatchObject({ label: 'no accounts', warning: true })
