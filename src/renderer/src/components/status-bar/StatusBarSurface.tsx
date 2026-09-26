@@ -46,6 +46,9 @@ const ResourceUsageStatusSegment = lazyWithRetry(() =>
     default: module.ResourceUsageStatusSegment
   }))
 )
+const CcflareStatusSegment = lazyWithRetry(() =>
+  import('./CcflareStatusSegment').then((module) => ({ default: module.CcflareStatusSegment }))
+)
 const PortsStatusSegment = lazyWithRetry(() =>
   import('./PortsStatusSegment').then((module) => ({ default: module.PortsStatusSegment }))
 )
@@ -97,6 +100,7 @@ export function StatusBarSurface({
     showFloatingTerminalToggle,
     showFloatingWorkspaceAttentionDot,
     showPorts,
+    showCcflare,
     showResourceUsage,
     showSsh,
     statusBarUsageMode,
@@ -305,6 +309,9 @@ export function StatusBarSurface({
             {petEnabled ? <PetStatusSegment /> : null}
             {showResourceUsage ? (
               <ResourceUsageStatusSegment compact={compact} iconOnly={segmentsIconOnly} />
+            ) : null}
+            {showCcflare && !isPairedWebClientWindow() ? (
+              <CcflareStatusSegment compact={compact} iconOnly={segmentsIconOnly} />
             ) : null}
             {showPorts ? (
               <PortsStatusSegment compact={compact} iconOnly={segmentsIconOnly} />
