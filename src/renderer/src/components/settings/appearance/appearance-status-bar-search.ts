@@ -9,6 +9,7 @@ import { getCursorStatusBarToggleSearchEntry } from './appearance-status-bar-cur
 import { getZcodeStatusBarToggleSearchEntry } from './appearance-status-bar-zcode-toggle-search'
 import { getMuseStatusBarToggleSearchEntry } from './appearance-status-bar-muse-toggle-search'
 import { getGitBlameStatusBarToggleSearchEntry } from './appearance-status-bar-git-blame-toggle-search'
+import { getCcflareStatusBarToggleSearchEntry } from './appearance-status-bar-ccflare-toggle-search'
 
 export const getStatusBarToggles = createLocalizedCatalog(
   (): readonly {
@@ -270,6 +271,7 @@ export const getStatusBarToggles = createLocalizedCatalog(
         'Show live workspace ports. Click it for workspace-scoped ports and external listeners.'
       )
     },
-    getGitBlameStatusBarToggleSearchEntry()
+    getGitBlameStatusBarToggleSearchEntry(),
+    getCcflareStatusBarToggleSearchEntry()
   ]
 )

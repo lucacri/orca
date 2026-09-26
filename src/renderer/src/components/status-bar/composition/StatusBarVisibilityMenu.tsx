@@ -1,4 +1,4 @@
-import { Activity, GitCommitHorizontal, Plug, Server } from 'lucide-react'
+import { Activity, Gauge, GitCommitHorizontal, Plug, Server } from 'lucide-react'
 import React from 'react'
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import {
 } from '../accounts/provider-icons'
 import { useTranslate } from '@/i18n/use-translate'
 import { isStatusBarItemAvailable } from './status-bar-agent-gating'
+import { isPairedWebClientWindow } from '@/app-shell/chrome/desktop-window-chrome'
 import type { StatusBarController } from './use-status-bar-controller'
 
 export function StatusBarVisibilityMenu({
@@ -208,6 +209,15 @@ export function StatusBarVisibilityMenu({
           <GitCommitHorizontal className="size-3.5" />
           {t('editor.gitBlame.statusBarItem', 'Git Blame')}
         </DropdownMenuCheckboxItem>
+        {!isPairedWebClientWindow() && (
+          <DropdownMenuCheckboxItem
+            checked={statusBarItems.includes('ccflare')}
+            onCheckedChange={() => toggleStatusBarItem('ccflare')}
+          >
+            <Gauge className="size-3.5" />
+            {t('components.status.ccflare.title', 'better-ccflare')}
+          </DropdownMenuCheckboxItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

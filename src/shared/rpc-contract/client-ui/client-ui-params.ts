@@ -1,5 +1,6 @@
 import { GitHistoryRefName } from '../source-control/git-params'
 import * as z from 'zod'
+import { salvagingArray } from '../../validation/zod-salvage'
 import { isFeatureTipSeenId } from '../../feature-education/feature-tips'
 import {
   WORKTREE_CARD_PROPERTIES,
@@ -69,7 +70,8 @@ export const StatusBarItem = z.enum([
   'ssh',
   'resource-usage',
   'ports',
-  'git-blame'
+  'git-blame',
+  'ccflare'
 ])
 
 export const WorkspaceStatusDefinition = z.object({
@@ -201,7 +203,8 @@ export const UiUpdateFields = z
     _workspaceStatusesReorderedDefaultRepaired: z.boolean().optional(),
     _workspaceStatusesDefaultWorkflowMigrated: z.boolean().optional(),
     _workspaceStatusesDefaultVisualsMigrated: z.boolean().optional(),
-    statusBarItems: z.array(StatusBarItem).optional(),
+    // Why: drop ids this host doesn't know instead of rejecting the whole list (remote-wire-compatibility Rule 4).
+    statusBarItems: salvagingArray(StatusBarItem).optional(),
     _portsStatusBarDefaultAdded: z.boolean().optional(),
     _kimiStatusBarDefaultAdded: z.boolean().optional(),
     _minimaxStatusBarDefaultAdded: z.boolean().optional(),

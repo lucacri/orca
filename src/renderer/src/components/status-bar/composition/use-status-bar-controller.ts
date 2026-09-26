@@ -185,6 +185,7 @@ export function useStatusBarController(floatingTerminalOpen: boolean) {
   const showResourceUsage = statusBarItems.includes('resource-usage')
   const showPorts = statusBarItems.includes('ports')
   const showGitBlame = statusBarItems.includes('git-blame')
+  const showCcflare = statusBarItems.includes('ccflare')
   const showFloatingTerminalToggle =
     floatingTerminalEnabled && floatingTerminalTriggerLocation === 'status-bar'
   // Why: meter-only children (excludes resource-usage) so the % display callout anchors to a real meter cluster.
@@ -316,6 +317,7 @@ export function useStatusBarController(floatingTerminalOpen: boolean) {
     showFloatingWorkspaceAttentionDot,
     showGitBlame,
     showPorts,
+    showCcflare,
     showResourceUsage,
     showSsh,
     statusBarItems,
