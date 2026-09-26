@@ -1,6 +1,11 @@
 import { resolveRightSplitTargetGroupId } from '@/lib/right-split-target-group'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../../shared/constants'
-import type { Tab, TabGroup, TabGroupLayoutNode } from '../../../../../shared/tab-types'
+import type {
+  Tab,
+  TabContentType,
+  TabGroup,
+  TabGroupLayoutNode
+} from '../../../../../shared/tab-types'
 
 /** Every map is optional: partial harness stores and pre-hydration state reach this predicate. */
 type LonePaneState = {
@@ -52,13 +57,25 @@ type BesideGroupState = LonePaneState & Parameters<typeof resolveRightSplitTarge
 export function resolveLonePaneBesideGroupId(
   state: BesideGroupState,
   worktreeId: string,
-  requestedGroupId?: string
+  requestedGroupId?: string,
+  contentType?: TabContentType
 ): string | null {
   const loneGroupId = findLonePaneSourceGroupId(state, worktreeId, requestedGroupId)
-  return loneGroupId === null
+  // Why: a browser joins a lone pane already showing a browser as another tab, not a split.
+  return loneGroupId === null ||
+    (contentType === 'browser' && loneGroupShowsBrowser(state, worktreeId, loneGroupId))
     ? null
     : resolveRightSplitTargetGroupId(state, worktreeId, loneGroupId, {
         activate: false,
         recordInteraction: false
       })
+}
+
+function loneGroupShowsBrowser(state: LonePaneState, worktreeId: string, groupId: string): boolean {
+  const activeTabId = state.groupsByWorktree?.[worktreeId]?.find(
+    (g) => g.id === groupId
+  )?.activeTabId
+  return (state.unifiedTabsByWorktree?.[worktreeId] ?? []).some(
+    (tab) => tab.id === activeTabId && tab.contentType === 'browser'
+  )
 }

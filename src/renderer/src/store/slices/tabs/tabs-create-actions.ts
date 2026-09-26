@@ -24,7 +24,7 @@ export function createTabsCreateActions(
       // Why: one pane means the tab area has room beside it; the next pane sits there, whatever it is.
       const besideGroupId = init?.placementFixed
         ? null
-        : resolveLonePaneBesideGroupId(get(), worktreeId, init?.targetGroupId)
+        : resolveLonePaneBesideGroupId(get(), worktreeId, init?.targetGroupId, contentType)
       const targetGroupId = besideGroupId ?? init?.targetGroupId
       const id = init?.id ?? createBrowserUuid()
       let created!: Tab
