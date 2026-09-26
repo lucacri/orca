@@ -3270,7 +3270,7 @@
             "missing": {
               "tui": {
                 "title": "This ZCode build has no terminal UI",
-                "description": "Orca's hooks installed correctly \u2014 the zcode on your PATH just cannot open a session. The ZCode desktop app bundles the agent runtime without its terminal UI. Install a zcode that ships the TUI, then run zcode outside Orca to confirm."
+                "description": "Orca's hooks installed correctly — the zcode on your PATH just cannot open a session. The ZCode desktop app bundles the agent runtime without its terminal UI. Install a zcode that ships the TUI, then run zcode outside Orca to confirm."
               }
             }
           },
@@ -18104,7 +18104,9 @@
         "totals": "Last 24h: {{requests}} requests · ${{cost}} · {{success}}% success",
         "noAccounts": "no accounts",
         "showingUsed": "Percentages show usage",
-        "showingRemaining": "Percentages show what is left"
+        "showingRemaining": "Percentages show what is left",
+        "fiveHourColumn": "5h",
+        "weeklyColumn": "wk"
       }
     },
     "cmd-j": {
