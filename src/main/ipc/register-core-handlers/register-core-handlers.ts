@@ -45,6 +45,7 @@ import { registerBrowserServerDownloadCopyHandlers } from '../browser/browser-se
 import { setTrustedBrowserRendererWebContentsId } from '../browser/browser-renderer-trust'
 import { registerSessionHandlers } from '../session'
 import { registerSettingsHandlers } from '../settings/settings'
+import { registerCcflareHandlers } from '../ccflare'
 import { registerDiagnosticsHandlers } from '../diagnostics'
 import { registerSkillsHandlers } from '../skills/skills'
 import { registerSkillDeleteIpcHandlers } from '../skill-delete/handlers'
@@ -160,6 +161,7 @@ export async function registerCoreHandlers(
     registerGrokAccountHandlers()
     registerCursorAccountHandlers()
     registerRateLimitHandlers(rateLimits, codexAccounts)
+    registerCcflareHandlers()
     registerGitHubHandlers(store, stats, runtime)
     registerGitLabHandlers(store)
     registerHostedReviewHandlers(store, stats)
