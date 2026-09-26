@@ -19085,7 +19085,9 @@
         "totals": "Last 24h: {{requests}} requests · ${{cost}} · {{success}}% success",
         "noAccounts": "no accounts",
         "showingUsed": "Percentages show usage",
-        "showingRemaining": "Percentages show what is left"
+        "showingRemaining": "Percentages show what is left",
+        "fiveHourColumn": "5h",
+        "weeklyColumn": "wk"
       }
     },
     "cmd-j": {
