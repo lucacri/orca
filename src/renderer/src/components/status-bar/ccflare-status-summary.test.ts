@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import type { CcflareAccount } from '../../../../shared/ccflare-types'
-import { pickActiveCcflareAccount, summarizeCcflare } from './ccflare-status-summary'
+import {
+  ccflareUsageLevel,
+  pickActiveCcflareAccount,
+  summarizeCcflare
+} from './ccflare-status-summary'
 
 const account = (
   name: string,
@@ -92,5 +96,14 @@ describe('summarizeCcflare', () => {
     expect(
       summarizeCcflare({ status: 'unreachable', url: 'u', reason: 'timed out' }, 'used')
     ).toMatchObject({ label: 'offline', warning: true })
+  })
+
+  it('colors usage with the same 60/80 thresholds as the other usage bars', () => {
+    expect([59, 60, 79, 80].map(ccflareUsageLevel)).toEqual([
+      'normal',
+      'warning',
+      'warning',
+      'critical'
+    ])
   })
 })
