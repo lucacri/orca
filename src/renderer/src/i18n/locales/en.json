@@ -3271,7 +3271,7 @@
             "missing": {
               "tui": {
                 "title": "This ZCode build has no terminal UI",
-                "description": "Orca's hooks installed correctly \u2014 the zcode on your PATH just cannot open a session. The ZCode desktop app bundles the agent runtime without its terminal UI. Install a zcode that ships the TUI, then run zcode outside Orca to confirm."
+                "description": "Orca's hooks installed correctly — the zcode on your PATH just cannot open a session. The ZCode desktop app bundles the agent runtime without its terminal UI. Install a zcode that ships the TUI, then run zcode outside Orca to confirm."
               }
             }
           },
@@ -18126,6 +18126,36 @@
         "workspaceSpace": {
           "otherTopLevelItems": "Other top-level items ({{value0}})"
         }
+      },
+      "ccflare": {
+        "title": "better-ccflare",
+        "settingsDescription": "Show usage from a local better-ccflare proxy in the status bar.",
+        "keywordProxy": "proxy",
+        "toggleDescription": "Show the active account usage and pool health from better-ccflare (localhost:8085, or ORCA_CCFLARE_URL).",
+        "offline": "offline",
+        "ariaLabel": "better-ccflare: {{status}}",
+        "unreachable": "Not reachable: {{reason}}. Set ORCA_CCFLARE_URL to point elsewhere.",
+        "noAccounts": "no accounts",
+        "stateLimited": "rate-limited",
+        "statePaused": "paused",
+        "stateActive": "in use",
+        "stateIdle": "idle",
+        "tagLimited": "limited",
+        "tagPaused": "paused",
+        "openDashboard": "Open dashboard",
+        "offlineTitle": "Offline",
+        "modeUsed": "used",
+        "modeLeft": "left",
+        "routable": "{{routable}} of {{configured}} routable",
+        "rateLimitedCount": " · {{count}} rate-limited",
+        "routingTo": " · routing to {{name}}",
+        "fiveHourMode": "5h {{mode}}",
+        "weekMode": "week {{mode}}",
+        "last24h": "Last 24h",
+        "requests": "{{value}} req",
+        "successRate": "{{value}}% ok",
+        "fiveHourShort": "5h",
+        "weekShort": "wk"
       }
     },
     "cmd-j": {

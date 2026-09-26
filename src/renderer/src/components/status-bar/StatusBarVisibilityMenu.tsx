@@ -1,4 +1,4 @@
-import { Activity, Plug, Server } from 'lucide-react'
+import { Activity, Gauge, Plug, Server } from 'lucide-react'
 import React from 'react'
 import {
   DropdownMenu,
@@ -10,6 +10,7 @@ import { AgentIcon } from '@/lib/agent-catalog'
 import { ClaudeIcon, GeminiIcon, MiniMaxIcon, OpenAIIcon, OpenCodeGoIcon } from './icons'
 import { translate } from '@/i18n/i18n'
 import { isStatusBarItemAvailable } from './status-bar-agent-gating'
+import { isPairedWebClientWindow } from '@/lib/desktop-window-chrome'
 import type { StatusBarController } from './use-status-bar-controller'
 
 export function StatusBarVisibilityMenu({
@@ -173,6 +174,15 @@ export function StatusBarVisibilityMenu({
           <Plug className="size-3.5" />
           {translate('auto.components.status.bar.StatusBar.9659e38343', 'Ports')}
         </DropdownMenuCheckboxItem>
+        {!isPairedWebClientWindow() && (
+          <DropdownMenuCheckboxItem
+            checked={statusBarItems.includes('ccflare')}
+            onCheckedChange={() => toggleStatusBarItem('ccflare')}
+          >
+            <Gauge className="size-3.5" />
+            {translate('components.status.ccflare.title', 'better-ccflare')}
+          </DropdownMenuCheckboxItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
