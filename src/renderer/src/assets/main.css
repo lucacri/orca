@@ -24,7 +24,8 @@
   unicode-range: U+E000-F8FF, U+F0000-FFFFD, U+100000-10FFFD;
 }
 
-@custom-variant dark (&:is(.dark *));
+/* Why: `dark:` utilities must not fire inside a forced-light markdown surface. */
+@custom-variant dark (&:is(.dark *):where(:not(.markdown-force-light, .markdown-force-light *)));
 
 /* Why: hover-reveal controls (sidebar/row action buttons) hide with `opacity-0`
    and fade in via `group-hover`. Touch devices have no hover, so those controls
@@ -140,6 +141,12 @@
     'SF Mono', SFMono-Regular, ui-monospace, 'Cascadia Code', Menlo, Consolas, 'Liberation Mono',
     monospace;
   --radius: 0.625rem;
+}
+
+/* Why: `.markdown-force-light` re-applies the light tokens so the markdown
+   reading surface stays light under a dark app theme (see markdownPreviewLightBackground). */
+:root,
+.markdown-force-light {
   --orca-security-background: #fff;
   --orca-security-foreground: #0a0a0a;
   --orca-security-card: #fff;
@@ -258,6 +265,13 @@
      meet >=3:1 against `--card`, not only the hover/drag strong state. */
   --tab-group-split-divider: #868690;
   --tab-group-split-divider-strong: #71717a;
+}
+
+/* Why: inherited `color` was already computed from the dark tokens at <body>. */
+.markdown-force-light {
+  color: var(--foreground);
+  background-color: var(--editor-surface);
+  color-scheme: light;
 }
 
 /* ── Dark Mode ───────────────────────────────────────── */
@@ -2895,7 +2909,8 @@ html.native-shell .app-layout {
     background-color 150ms ease;
 }
 
-.dark .orca-diff-comment-card {
+/* Why: `:where` keeps specificity unchanged while skipping forced-light markdown surfaces. */
+.dark .orca-diff-comment-card:where(:not(.markdown-force-light *)) {
   border-color: color-mix(in srgb, var(--foreground) 12%, var(--border));
   background: color-mix(in srgb, var(--foreground) 2%, var(--editor-surface));
   box-shadow:
@@ -2947,7 +2962,7 @@ html.native-shell .app-layout {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-.dark .orca-diff-comment-actions-pill {
+.dark .orca-diff-comment-actions-pill:where(:not(.markdown-force-light *)) {
   border-color: color-mix(in srgb, var(--foreground) 14%, var(--border));
   background: color-mix(in srgb, var(--foreground) 4%, var(--editor-surface));
 }
@@ -3042,7 +3057,7 @@ html.native-shell .app-layout {
     0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.dark .orca-diff-comment-popover {
+.dark .orca-diff-comment-popover:where(:not(.markdown-force-light *)) {
   border-color: color-mix(in srgb, var(--foreground) 14%, var(--border));
   background: color-mix(in srgb, var(--foreground) 2%, var(--editor-surface));
   box-shadow:
@@ -3079,7 +3094,7 @@ html.native-shell .app-layout {
     box-shadow 150ms ease;
 }
 
-.dark .orca-diff-comment-popover-textarea {
+.dark .orca-diff-comment-popover-textarea:where(:not(.markdown-force-light *)) {
   border-color: color-mix(in srgb, var(--foreground) 10%, var(--border));
   background: color-mix(in srgb, var(--foreground) 3%, var(--editor-surface));
 }
@@ -3089,7 +3104,7 @@ html.native-shell .app-layout {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 18%, transparent);
 }
 
-.dark .orca-diff-comment-popover-textarea:focus {
+.dark .orca-diff-comment-popover-textarea:focus:where(:not(.markdown-force-light *)) {
   border-color: color-mix(in srgb, var(--ring) 70%, var(--border));
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 12%, transparent);
 }

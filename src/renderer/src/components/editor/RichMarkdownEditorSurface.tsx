@@ -20,6 +20,8 @@ import type { MarkdownReviewNote } from '@/lib/markdown-review-notes'
 import type { RichMarkdownAnnotationTarget } from './rich-markdown-review-annotations'
 import type { RichMarkdownReviewNotePosition } from './rich-markdown-review-note-layout'
 import type { DiffComment } from '../../../../shared/diff-comment-types'
+import { cn } from '@/lib/utils'
+import { useMarkdownSurfaceForceLight } from './use-markdown-surface-is-dark'
 
 function shouldFocusEmptyEditorFromSurfaceClick(
   event: React.MouseEvent<HTMLDivElement>,
@@ -181,8 +183,9 @@ export function RichMarkdownEditorSurface({
   onNavigateTableOfContentsItem,
   onCloseTableOfContents
 }: RichMarkdownEditorSurfaceProps): React.JSX.Element {
+  const forceLight = useMarkdownSurfaceForceLight()
   return (
-    <div className="rich-markdown-editor-layout">
+    <div className={cn('rich-markdown-editor-layout', forceLight && 'markdown-force-light')}>
       {showTableOfContents ? (
         <MarkdownTableOfContentsPanel
           items={tableOfContentsItems}
@@ -267,6 +270,7 @@ export function RichMarkdownEditorSurface({
             isEditing={isEditingLink}
             onDismiss={linkBubbleActions.dismissLinkBubble}
             portalToDocument
+            forceLight={forceLight}
             onSave={linkBubbleActions.handleLinkSave}
             onRemove={linkBubbleActions.handleLinkRemove}
             onEditStart={() => linkBubbleActions.setIsEditingLink(true)}

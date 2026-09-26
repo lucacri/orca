@@ -115,6 +115,12 @@ describe('GeneralPane search entries', () => {
     expect(matchesSettingsSearch('running', entries)).toBe(true)
   })
 
+  it('includes the light Markdown background setting', () => {
+    const entries = getGeneralPaneSearchEntries()
+
+    expect(matchesSettingsSearch('light markdown background', entries)).toBe(true)
+  })
+
   it('omits the default project runtime setting when Windows runtimes are unsupported', () => {
     const entries = getGeneralPaneSearchEntries({ includeProjectRuntime: false })
 

@@ -7152,7 +7152,9 @@
           "f1b3ceeb98": "差异显示空白",
           "94a479cef3": "显示差异中前导和尾随空白的差异。",
           "collapseUnchangedTitle": "折叠未更改的区域",
-          "collapseUnchangedDescription": "在文件差异中仅显示更改的行和一些周围的上下文，将其余部分隐藏在可扩展带后面。查看所有更改差异总是以这种方式折叠。"
+          "collapseUnchangedDescription": "在文件差异中仅显示更改的行和一些周围的上下文，将其余部分隐藏在可扩展带后面。查看所有更改差异总是以这种方式折叠。",
+          "94c2f548f7": "Markdown 浅色背景",
+          "9088b9db22": "当应用主题为深色时，以浅色背景显示 Markdown 预览和富文本 Markdown 编辑器。"
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "本地主机，127.0.0.1，*.internal",
@@ -9705,7 +9707,13 @@
             "command": "命令",
             "confirm": "确认",
             "close": "关闭",
-            "omp": "OMP"
+            "omp": "OMP",
+            "1d7f09ad39": "Markdown 浅色背景",
+            "5f8f521577": "当应用主题为深色时，以浅色背景显示 Markdown 预览和富文本 Markdown 编辑器。",
+            "4b7457b852": "浅色",
+            "450edddbf8": "背景",
+            "d9b1892a5c": "主题",
+            "6ca0f43036": "预览"
           }
         },
         "git": {
@@ -14911,7 +14919,8 @@
           "8c8b7f5ff5": "显示前面的内容",
           "10c39d58c1": "隐藏前面的内容",
           "1eef809708": "自动换行",
-          "4dedd55efa": "显示空白"
+          "4dedd55efa": "显示空白",
+          "dce17383c8": "浅色背景"
         },
         "EditorPanelShell": {
           "e2c4dec350": "正在加载编辑器..."

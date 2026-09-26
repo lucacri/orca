@@ -6147,7 +6147,9 @@
           "b82f86d7d2": "Corrector ortográfico de Rich Markdown",
           "5195f0b9ef": "Muestra subrayados y sugerencias ortográficas del navegador al editar Rich Markdown.",
           "7ddd66fede": "Ajuste de línea en el editor",
-          "9b18de6eea": "Ajusta las líneas largas en editores de archivos en lugar de requerir desplazamiento horizontal."
+          "9b18de6eea": "Ajusta las líneas largas en editores de archivos en lugar de requerir desplazamiento horizontal.",
+          "94c2f548f7": "Fondo claro para Markdown",
+          "9088b9db22": "Muestra la vista previa de Markdown y el editor de Markdown enriquecido con fondo claro cuando el tema de la app es oscuro."
         },
         "AdvancedNetworkSettingsSection": {
           "3e431564b5": "localhost, 127.0.0.1, *.internal",
@@ -8542,7 +8544,13 @@
             "editorFontFamily": "Fuente del editor",
             "editorFontFamilyDesc": "Fuente utilizada por los editores de archivos y vistas de diferencias. Dejar vacío para seguir la fuente de la terminal.",
             "externalWorktrees": "Worktrees externos",
-            "externalWorktreesDescription": "Elige si los worktrees creados fuera de Orca aparecen de forma predeterminada."
+            "externalWorktreesDescription": "Elige si los worktrees creados fuera de Orca aparecen de forma predeterminada.",
+            "1d7f09ad39": "Fondo claro para Markdown",
+            "5f8f521577": "Muestra la vista previa de Markdown y el editor de Markdown enriquecido con fondo claro cuando el tema de la app es oscuro.",
+            "4b7457b852": "claro",
+            "450edddbf8": "fondo",
+            "d9b1892a5c": "tema",
+            "6ca0f43036": "vista previa"
           }
         },
         "git": {
@@ -13084,7 +13092,8 @@
           "561251019a": "Más acciones",
           "8c8b7f5ff5": "Mostrar front matter",
           "10c39d58c1": "Ocultar front matter",
-          "1eef809708": "Ajuste de línea"
+          "1eef809708": "Ajuste de línea",
+          "dce17383c8": "Fondo claro"
         },
         "EditorPanelShell": {
           "e2c4dec350": "Cargando editor…"
