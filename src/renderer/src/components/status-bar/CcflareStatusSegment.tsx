@@ -1,72 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Gauge } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { translate } from '@/i18n/i18n'
 import { useAppStore } from '@/store'
-import { formatResetDuration } from '../../../../shared/rate-limit-reset-format'
-import {
-  getDisplayedUsagePercentage,
-  type UsagePercentageDisplay
-} from '../../../../shared/usage-percentage-display'
-import type {
-  CcflareAccount,
-  CcflareSnapshot,
-  CcflareUsageWindow
-} from '../../../../shared/ccflare-types'
+import type { CcflareSnapshot } from '../../../../shared/ccflare-types'
 import { STATUS_BAR_CONTEXT_MENU_EXEMPT_PROPS } from './status-bar-context-menu-policy'
-import { isCcflareAccountLimited, summarizeCcflare } from './ccflare-status-summary'
+import { ccflareUsageLevel, summarizeCcflare } from './ccflare-status-summary'
+import { CcflarePopoverContent } from './ccflare-popover-content'
 
-const POLL_MS = 60_000
+// Why: a local proxy answers in ~25ms, so a fast refresh while the popover is open is cheap.
+const IDLE_POLL_MS = 60_000
+const OPEN_POLL_MS = 2_000
 
-function WindowCells({
-  window,
-  display,
-  now
-}: {
-  window: CcflareUsageWindow | null
-  display: UsagePercentageDisplay
-  now: number
-}): React.JSX.Element {
-  const reset = window?.resetsAt ? Date.parse(window.resetsAt) - now : Number.NaN
-  return (
-    <>
-      <span className="text-right">
-        {window ? `${getDisplayedUsagePercentage(window.percent, display)}%` : '–'}
-      </span>
-      <span className="text-right text-muted-foreground">
-        {Number.isFinite(reset) ? formatResetDuration(reset) : ''}
-      </span>
-    </>
-  )
-}
-
-function AccountRow({
-  account,
-  active,
-  display,
-  now
-}: {
-  account: CcflareAccount
-  active: boolean
-  display: UsagePercentageDisplay
-  now: number
-}): React.JSX.Element {
-  return (
-    <>
-      <span className={cn('truncate', active && 'font-medium text-foreground')}>
-        {account.name}
-        {account.paused ? translate('components.status.ccflare.paused', ' · paused') : ''}
-        {isCcflareAccountLimited(account, now)
-          ? translate('components.status.ccflare.limited', ' · limited')
-          : ''}
-      </span>
-      <WindowCells window={account.fiveHour} display={display} now={now} />
-      <WindowCells window={account.weekly} display={display} now={now} />
-    </>
-  )
-}
+const LEVEL_TEXT = { normal: '', warning: 'text-status-warning', critical: 'text-destructive' }
 
 /** Status-bar summary of a local better-ccflare proxy: active account usage and pool health. */
 export function CcflareStatusSegment({
@@ -79,49 +27,57 @@ export function CcflareStatusSegment({
   const display = useAppStore((s) => s.usagePercentageDisplay)
   const [snapshot, setSnapshot] = useState<CcflareSnapshot | null>(null)
   const [fetchedAt, setFetchedAt] = useState(0)
+  const [open, setOpen] = useState(false)
+  const latestRequest = useRef(0)
+  const mounted = useRef(true)
 
-  useEffect(() => {
-    let latestRequest = 0
-    let mounted = true
-    const refresh = (): void => {
-      const request = ++latestRequest
-      void window.api.ccflare
-        .getSnapshot()
-        .then((next) => {
-          // Why: focus and interval refreshes can overlap; never let an older reply win.
-          if (mounted && request === latestRequest) {
-            setSnapshot(next)
-            setFetchedAt(Date.now())
-          }
-        })
-        .catch(() => {})
-    }
-    refresh()
-    const timer = setInterval(() => {
-      if (document.hasFocus()) {
-        refresh()
-      }
-    }, POLL_MS)
-    window.addEventListener('focus', refresh)
-    return () => {
-      mounted = false
-      clearInterval(timer)
-      window.removeEventListener('focus', refresh)
-    }
+  const refresh = useCallback((): void => {
+    const request = ++latestRequest.current
+    void window.api.ccflare
+      .getSnapshot()
+      .then((next) => {
+        // Why: focus, interval and open refreshes can overlap; never let an older reply win.
+        if (mounted.current && request === latestRequest.current) {
+          setSnapshot(next)
+          setFetchedAt(Date.now())
+        }
+      })
+      .catch(() => {})
   }, [])
 
+  useEffect(() => {
+    mounted.current = true
+    refresh()
+    window.addEventListener('focus', refresh)
+    return () => {
+      mounted.current = false
+      window.removeEventListener('focus', refresh)
+    }
+  }, [refresh])
+
+  useEffect(() => {
+    if (open) {
+      refresh()
+    }
+    const timer = setInterval(
+      () => {
+        // Why: skip background polling while Orca is not focused; an open popover is always visible.
+        if (open || document.hasFocus()) {
+          refresh()
+        }
+      },
+      open ? OPEN_POLL_MS : IDLE_POLL_MS
+    )
+    return () => clearInterval(timer)
+  }, [open, refresh])
+
   const summary = summarizeCcflare(snapshot, display, compact)
-  const ok = snapshot?.status === 'ok' ? snapshot : null
-  const displayNote =
-    display === 'used'
-      ? translate('components.status.ccflare.showingUsed', 'Percentages show usage')
-      : translate('components.status.ccflare.showingRemaining', 'Percentages show what is left')
   const ariaLabel = translate('components.status.ccflare.ariaLabel', 'better-ccflare: {{status}}', {
     status: summary.label
   })
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <Tooltip delayDuration={150}>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
@@ -129,15 +85,37 @@ export function CcflareStatusSegment({
               type="button"
               {...STATUS_BAR_CONTEXT_MENU_EXEMPT_PROPS}
               className={cn(
-                'inline-flex cursor-pointer items-center gap-1 rounded px-1 py-0.5 text-muted-foreground transition-colors hover:bg-accent/70 hover:text-foreground',
-                summary.warning && 'text-status-warning'
+                'inline-flex cursor-pointer items-center gap-1 rounded px-1 py-0.5 text-[11px] font-medium text-muted-foreground tabular-nums transition-colors hover:bg-accent/70 hover:text-foreground',
+                summary.parts.length === 0 && summary.warning && 'text-status-warning'
               )}
               aria-label={ariaLabel}
             >
               <Gauge className="size-3" />
-              {!iconOnly ? (
-                <span className="text-[11px] font-medium tabular-nums">{summary.label}</span>
-              ) : null}
+              {iconOnly ? null : summary.parts.length === 0 ? (
+                <span>{summary.label}</span>
+              ) : (
+                <>
+                  {summary.pool ? (
+                    <>
+                      <span className="text-status-warning">{summary.pool}</span>
+                      <span className="font-normal opacity-50">·</span>
+                    </>
+                  ) : null}
+                  {summary.parts.map((part) => (
+                    <span key={part.label} className="inline-flex gap-1">
+                      <span className="font-normal">{part.label}</span>
+                      <span className={LEVEL_TEXT[ccflareUsageLevel(part.used)]}>
+                        {part.shown}%
+                      </span>
+                    </span>
+                  ))}
+                  {display === 'remaining' ? (
+                    <span className="font-normal">
+                      {translate('components.status.ccflare.modeLeft', 'left')}
+                    </span>
+                  ) : null}
+                </>
+              )}
             </button>
           </PopoverTrigger>
         </TooltipTrigger>
@@ -150,81 +128,15 @@ export function CcflareStatusSegment({
         side="top"
         align="end"
         sideOffset={8}
-        className="w-96"
+        className="w-[368px]"
       >
-        <div className="text-xs">
-          <div className="mb-2 flex items-center justify-between gap-3">
-            <span className="font-medium">
-              {translate('components.status.ccflare.title', 'better-ccflare')}
-            </span>
-            <span className="truncate text-muted-foreground">{snapshot?.url}</span>
-          </div>
-          {snapshot?.status === 'unreachable' ? (
-            <p className="text-muted-foreground">
-              {translate(
-                'components.status.ccflare.unreachable',
-                'Not reachable: {{reason}}. Set ORCA_CCFLARE_URL to point elsewhere.',
-                { reason: snapshot.reason }
-              )}
-            </p>
-          ) : null}
-          {ok ? (
-            <div className="space-y-2">
-              {ok.pool ? (
-                <div className="text-muted-foreground">
-                  {translate(
-                    'components.status.ccflare.pool',
-                    '{{routable}}/{{configured}} accounts routable',
-                    { routable: ok.pool.routable, configured: ok.pool.configured }
-                  )}
-                  {ok.pool.rateLimited > 0
-                    ? translate(
-                        'components.status.ccflare.poolRateLimited',
-                        ' · {{count}} rate-limited',
-                        { count: ok.pool.rateLimited }
-                      )
-                    : ''}
-                </div>
-              ) : null}
-              <div>
-                {/* Why: one grid across all rows so the percentage columns line up. */}
-                <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] items-baseline gap-x-3 gap-y-0.5 tabular-nums">
-                  <span />
-                  <span className="text-right text-muted-foreground">
-                    {translate('components.status.ccflare.fiveHourColumn', '5h')}
-                  </span>
-                  <span />
-                  <span className="text-right text-muted-foreground">
-                    {translate('components.status.ccflare.weeklyColumn', 'wk')}
-                  </span>
-                  <span />
-                  {ok.accounts.map((account) => (
-                    <AccountRow
-                      key={account.name}
-                      account={account}
-                      active={account === summary.activeAccount}
-                      display={display}
-                      now={fetchedAt}
-                    />
-                  ))}
-                </div>
-                <div className="pt-1 text-muted-foreground">{displayNote}</div>
-              </div>
-              {ok.totals ? (
-                <div className="border-t border-border pt-2 text-muted-foreground tabular-nums">
-                  {translate(
-                    'components.status.ccflare.totals',
-                    'Last 24h: {{requests}} requests · ${{cost}} · {{success}}% success',
-                    {
-                      requests: ok.totals.requests.toLocaleString(),
-                      cost: ok.totals.costUsd.toFixed(2),
-                      success: ok.totals.successRate
-                    }
-                  )}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
+        <div className="p-1 text-xs">
+          <CcflarePopoverContent
+            snapshot={snapshot}
+            summary={summary}
+            display={display}
+            now={fetchedAt}
+          />
         </div>
       </PopoverContent>
     </Popover>
