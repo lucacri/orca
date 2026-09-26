@@ -31,6 +31,9 @@ const ResourceUsageStatusSegment = lazyWithRetry(() =>
     default: module.ResourceUsageStatusSegment
   }))
 )
+const CcflareStatusSegment = lazyWithRetry(() =>
+  import('./CcflareStatusSegment').then((module) => ({ default: module.CcflareStatusSegment }))
+)
 const PortsStatusSegment = lazyWithRetry(() =>
   import('./host-connections/PortsStatusSegment').then((module) => ({
     default: module.PortsStatusSegment
@@ -78,6 +81,7 @@ export function StatusBarSurface({
     showFloatingWorkspaceAttentionDot,
     showGitBlame,
     showPorts,
+    showCcflare,
     showResourceUsage,
     showSsh
   } = controller
@@ -123,6 +127,10 @@ export function StatusBarSurface({
           <React.Suspense fallback={null}>
             {petEnabled ? <PetStatusSegment /> : null}
             {showResourceUsage ? <ResourceUsageStatusSegment /> : null}
+            {showCcflare && !isPairedWebClientWindow() ? (
+              // Why: upstream dropped live density switching (#44647), so the bar is always full-size.
+              <CcflareStatusSegment compact={false} iconOnly={false} />
+            ) : null}
             {showPorts ? <PortsStatusSegment /> : null}
             {showSsh ? <SshStatusSegment /> : null}
           </React.Suspense>
