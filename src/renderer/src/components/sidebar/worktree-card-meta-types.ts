@@ -41,7 +41,9 @@ export type WorktreeCardMetaBadgesProps = {
 }
 
 export type WorktreeCardMetaBadgesRootProps = WorktreeCardMetaBadgesProps &
-  React.HTMLAttributes<HTMLDivElement>
+  React.HTMLAttributes<HTMLDivElement> & {
+    onOpenReviewInBrowser?: (url: string) => void
+  }
 
 export type WorktreeCardDetailsHoverProps = WorktreeCardMetaBadgesProps & {
   children: React.ReactElement
