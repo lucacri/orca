@@ -206,6 +206,7 @@ export function buildWorktreeCardPresentation(card: WorktreeCardController) {
             comment={metaComment}
             automationProvenance={metaAutomationProvenance}
             cliProvenance={metaCliProvenance}
+            onOpenReviewInBrowser={metaReview?.url ? handleOpenReviewInBrowser : undefined}
             className="ml-0 pr-0"
           />
         )}
