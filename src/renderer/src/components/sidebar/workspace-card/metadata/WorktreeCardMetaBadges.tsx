@@ -18,9 +18,11 @@ function hasComment(comment: string | null): boolean {
 }
 
 function ReviewNumberBadge({
-  review
+  review,
+  onOpenReviewInBrowser
 }: {
   review: NonNullable<WorktreeCardMetaBadgesProps['review']>
+  onOpenReviewInBrowser?: (url: string) => void
 }) {
   const t = useTranslate()
   const label = t(
@@ -36,16 +38,24 @@ function ReviewNumberBadge({
     </>
   )
 
-  if (review.url) {
+  const { url } = review
+  if (url) {
     return (
       <Badge asChild variant="outline" className={className}>
         <a
-          href={review.url}
+          href={url}
           target="_blank"
           rel="noreferrer"
           aria-label={label}
           data-worktree-review-number=""
-          onClick={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation()
+            if (onOpenReviewInBrowser) {
+              // Why: keep href for copy/middle-click, but a plain click opens Orca's browser tab.
+              event.preventDefault()
+              onOpenReviewInBrowser(url)
+            }
+          }}
         >
           {content}
         </a>
@@ -102,6 +112,7 @@ export const WorktreeCardMetaBadges = React.forwardRef<
     comment,
     automationProvenance,
     cliProvenance,
+    onOpenReviewInBrowser,
     className,
     ...props
   },
@@ -229,7 +240,9 @@ export const WorktreeCardMetaBadges = React.forwardRef<
           </MetaIconBadge>
         )
       )}
-      {review && <ReviewNumberBadge review={review} />}
+      {review && (
+        <ReviewNumberBadge review={review} onOpenReviewInBrowser={onOpenReviewInBrowser} />
+      )}
     </div>
   )
 })

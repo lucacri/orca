@@ -42,6 +42,7 @@ export function renderWorktreeCardIndicators(
           comment={card.metaComment}
           automationProvenance={card.metaAutomationProvenance}
           cliProvenance={card.metaCliProvenance}
+          onOpenReviewInBrowser={card.metaReview?.url ? card.handleOpenReviewInBrowser : undefined}
           className="ml-0 pr-0"
         />
       )}
