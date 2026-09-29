@@ -88,7 +88,6 @@ export const WorktreeSplitSurface = React.memo(function WorktreeSplitSurface({
           hasDeferredBackgroundMounts: backgroundMountTabIds !== null,
           needsBrowserGuestPaint
         })}
-        tabAreaUnsplit={tabAreaUnsplit}
       />
       {isVisible || backgroundMountTabIds === null ? (
         <EmulatorPaneOverlayLayer worktreeId={worktreeId} isWorktreeActive={isVisible} />

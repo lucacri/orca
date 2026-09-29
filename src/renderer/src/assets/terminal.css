@@ -519,8 +519,8 @@
     var(--orca-terminal-divider-color, transparent);
 }
 
-/* Content with no internal splits of its own: browser, editor, markdown preview.
-   Same shared width and the same edge lines as a lone terminal. Diff,
+/* Content with no internal splits of its own: editor, markdown preview.
+   Same shared width and the same edge lines as a lone terminal. Browser, diff,
    conflict-review and check-details deliberately opt out — see TabGroupPanel. */
 [data-tab-area-unsplit] .pane-single-cap {
   box-sizing: border-box;

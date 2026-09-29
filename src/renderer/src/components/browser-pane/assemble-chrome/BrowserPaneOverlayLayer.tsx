@@ -35,7 +35,6 @@ type BrowserOverlaySlotProps = {
   groupId: string | undefined
   isActive: boolean
   chromeShortcutScope: BrowserChromeShortcutScope
-  tabAreaUnsplit?: boolean
   // Why: overlay is a sibling of the group layout, so pane focus doesn't bubble to TabGroupPanel; re-sync it here or split-view clicks leave activeGroupIdByWorktree stale.
   onFocusOwningGroup: ((groupId: string) => void) | undefined
 }
@@ -47,7 +46,6 @@ const BrowserOverlaySlot = memo(function BrowserOverlaySlot({
   groupId,
   isActive,
   chromeShortcutScope,
-  tabAreaUnsplit = false,
   onFocusOwningGroup
 }: BrowserOverlaySlotProps): React.JSX.Element {
   // Why: persistent page viewports (webview guests) live under this root so they survive BrowserPane chrome unmounts without reparenting.
@@ -103,22 +101,18 @@ const BrowserOverlaySlot = memo(function BrowserOverlaySlot({
       style={style}
       className="relative flex min-h-0 flex-1 flex-col"
       data-browser-overlay-tab-id={browserTab.id}
-      data-tab-area-unsplit={tabAreaUnsplit ? '' : undefined}
       onPointerDown={handleFocus}
       onFocusCapture={handleFocus}
     >
-      {/* The outer div is anchor-positioned with an explicit width, so the cap needs its own box. */}
-      <div className="pane-single-cap absolute inset-0 flex min-h-0 flex-col">
-        <div ref={setSlotViewportRef} className="absolute inset-0 flex min-h-0 flex-col" />
-        <DeferredBrowserContent mountEligible={isPaintable} retainMounted={isWorktreeActive}>
-          <BrowserPane
-            browserTab={browserTab}
-            isWorktreeActive={isWorktreeActive}
-            isActive={isActive}
-            chromeShortcutScope={chromeShortcutScope}
-          />
-        </DeferredBrowserContent>
-      </div>
+      <div ref={setSlotViewportRef} className="absolute inset-0 flex min-h-0 flex-col" />
+      <DeferredBrowserContent mountEligible={isPaintable} retainMounted={isWorktreeActive}>
+        <BrowserPane
+          browserTab={browserTab}
+          isWorktreeActive={isWorktreeActive}
+          isActive={isActive}
+          chromeShortcutScope={chromeShortcutScope}
+        />
+      </DeferredBrowserContent>
     </div>
   )
 })
@@ -126,12 +120,10 @@ const BrowserOverlaySlot = memo(function BrowserOverlaySlot({
 // Why: memoize so parent re-renders on props this layer doesn't consume don't rerun its selector or assignments mapping (focused-split state comes from the store selector below, not props).
 const BrowserPaneOverlayLayer = memo(function BrowserPaneOverlayLayer({
   worktreeId,
-  isWorktreeActive,
-  tabAreaUnsplit = false
+  isWorktreeActive
 }: {
   worktreeId: string
   isWorktreeActive: boolean
-  tabAreaUnsplit?: boolean
 }): React.JSX.Element {
   const { browserTabs, unifiedTabs, groups, focusedGroupId } = useAppStore(
     useShallow((state) => ({
@@ -201,7 +193,6 @@ const BrowserPaneOverlayLayer = memo(function BrowserPaneOverlayLayer({
             groupId={assignment?.groupId}
             isActive={isActive}
             chromeShortcutScope={chromeShortcutScope}
-            tabAreaUnsplit={tabAreaUnsplit}
             onFocusOwningGroup={focusOwningGroup}
           />
         )
@@ -269,21 +260,15 @@ function ClientHostedBrowserRowOverlaySlot({
 export const RetainedBrowserPaneOverlayLayer = memo(function RetainedBrowserPaneOverlayLayer({
   worktreeId,
   isWorktreeActive,
-  mountEligible,
-  tabAreaUnsplit = false
+  mountEligible
 }: {
   worktreeId: string
   isWorktreeActive: boolean
   mountEligible: boolean
-  tabAreaUnsplit?: boolean
 }): React.JSX.Element | null {
   return (
     <DeferredBrowserContent mountEligible={mountEligible}>
-      <BrowserPaneOverlayLayer
-        worktreeId={worktreeId}
-        isWorktreeActive={isWorktreeActive}
-        tabAreaUnsplit={tabAreaUnsplit}
-      />
+      <BrowserPaneOverlayLayer worktreeId={worktreeId} isWorktreeActive={isWorktreeActive} />
     </DeferredBrowserContent>
   )
 })

@@ -27,7 +27,7 @@ describe('terminal container geometry', () => {
     expect(terminalCss).not.toMatch(/\[data-retained-pane-host\] \[data-terminal-tab-id\]/)
   })
 
-  it('caps browser, editor and markdown content with the same shared width', () => {
+  it('caps editor and markdown content with the same shared width', () => {
     expect(terminalCss).toMatch(
       /\[data-tab-area-unsplit\][^{]*\.pane-single-cap[^{]*{[^}]*max-width:\s*var\(--pane-single-max-width, 1100px\);[^}]*margin-inline:\s*auto;/s
     )
