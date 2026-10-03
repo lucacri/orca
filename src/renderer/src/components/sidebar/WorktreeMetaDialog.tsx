@@ -34,6 +34,7 @@ import {
 import { parseExecutionHostId } from '../../../../shared/execution-host'
 import { WorktreeDisplayNameField } from './WorktreeDisplayNameField'
 import { WorktreeReviewLinkField } from './WorktreeReviewLinkField'
+import { useWorkspaceUrlDraft, WorktreeWorkspaceUrlField } from './WorktreeWorkspaceUrlField'
 
 function resizeCommentTextarea(textarea: HTMLTextAreaElement): void {
   textarea.style.height = 'auto'
@@ -109,6 +110,7 @@ const WorktreeMetaDialog = React.memo(function WorktreeMetaDialog() {
   const [issueProvider, setIssueProvider] = useState<IssueLinkProvider>('github')
   const [reviewInput, setReviewInput] = useState('')
   const [commentInput, setCommentInput] = useState('')
+  const workspaceUrl = useWorkspaceUrlDraft()
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [snapshot, setSnapshot] = useState<WorktreeMetaSnapshot>(EMPTY_SNAPSHOT)
@@ -138,6 +140,7 @@ const WorktreeMetaDialog = React.memo(function WorktreeMetaDialog() {
     setIssueProvider(currentProvider)
     setReviewInput(currentReview)
     setCommentInput(currentComment)
+    workspaceUrl.seed(worktree?.workspaceUrl ?? '')
     // Why: the baseline is frozen with the seed instead of tracking the store.
     // A background `orca worktree set --linear-issue` while the dialog is open
     // would otherwise move it, making the untouched field read as dirty — and
@@ -211,8 +214,8 @@ const WorktreeMetaDialog = React.memo(function WorktreeMetaDialog() {
       !isEditableReviewProvider(reviewProvider) ||
       (!isWorkItemLinkQueryTooLarge(trimmedReview) &&
         REVIEW_LINK_EDITORS[reviewProvider].parse(trimmedReview) !== null)
-    return !issueInvalid && reviewValid
-  }, [worktreeId, issueInvalid, reviewInput, reviewProvider])
+    return !issueInvalid && reviewValid && workspaceUrl.valid
+  }, [worktreeId, issueInvalid, reviewInput, reviewProvider, workspaceUrl.valid])
 
   const displacedLinkLabels = useMemo(
     () =>
@@ -245,7 +248,9 @@ const WorktreeMetaDialog = React.memo(function WorktreeMetaDialog() {
     // spinner for the whole in-flight save.
     setSaveError(null)
     try {
-      const updates = buildWorktreeMetaUpdates(draft, snapshot, liveLinks, reviewProvider)
+      const updates = workspaceUrl.withUpdate(
+        buildWorktreeMetaUpdates(draft, snapshot, liveLinks, reviewProvider)
+      )
 
       const result =
         executionHostId || suppressHostedReviewRefresh
@@ -285,6 +290,7 @@ const WorktreeMetaDialog = React.memo(function WorktreeMetaDialog() {
     snapshot,
     liveLinks,
     reviewProvider,
+    workspaceUrl,
     updateWorktreeMeta,
     closeModal,
     afterSave,
@@ -379,6 +385,7 @@ const WorktreeMetaDialog = React.memo(function WorktreeMetaDialog() {
             provider={reviewProvider}
             value={reviewInput}
           />
+          <WorktreeWorkspaceUrlField draft={workspaceUrl} onEnter={handleSave} />
 
           <div className="space-y-1">
             <label className="text-[11px] font-medium text-muted-foreground">
