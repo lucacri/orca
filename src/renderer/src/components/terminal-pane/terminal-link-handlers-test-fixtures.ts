@@ -1,4 +1,6 @@
 import { vi, type Mock } from 'vitest'
+import type { TabGroup, TabGroupLayoutNode } from '../../../../shared/tab-types'
+
 
 export type TerminalLinkStoreSettings = {
   openLinksInApp?: boolean
@@ -17,6 +19,10 @@ export type TerminalLinkStoreState = {
   openFiles: { filePath: string; worktreeId: string }[]
   worktreesByRepo: Record<string, { id: string; path: string }[]>
   folderWorkspaces: []
+  layoutByWorktree: Record<string, TabGroupLayoutNode | undefined>
+  activeGroupIdByWorktree: Record<string, string | undefined>
+  groupsByWorktree: Record<string, TabGroup[]>
+  createEmptySplitGroup: Mock
 }
 
 export type TerminalLinkTestDoubles = {
@@ -33,6 +39,7 @@ export type TerminalLinkTestDoubles = {
   createBrowserTabMock: Mock
   setPendingEditorRevealMock: Mock
   setMarkdownViewModeMock: Mock
+  createEmptySplitGroupMock: Mock
   deps: { worktreeId: string; worktreePath: string }
   storeState: TerminalLinkStoreState
 }
@@ -52,19 +59,24 @@ export function createTerminalLinkTestDoubles(): TerminalLinkTestDoubles {
   const createBrowserTabMock = vi.fn()
   const setPendingEditorRevealMock = vi.fn()
   const setMarkdownViewModeMock = vi.fn()
+  const createEmptySplitGroupMock = vi.fn(() => 'g2')
 
   const deps = { worktreeId: 'wt-1', worktreePath: '/tmp' }
-  const storeState = {
-    settings: undefined as TerminalLinkStoreSettings | undefined,
+  const storeState: TerminalLinkStoreState = {
+    settings: undefined,
     setActiveWorktree: setActiveWorktreeMock,
     createBrowserTab: createBrowserTabMock,
     openFile: openFileMock,
     setPendingEditorReveal: setPendingEditorRevealMock,
     setMarkdownViewMode: setMarkdownViewModeMock,
-    activeFileIdByWorktree: {} as Record<string, string | null>,
-    openFiles: [] as { filePath: string; worktreeId: string }[],
-    worktreesByRepo: {} as Record<string, { id: string; path: string }[]>,
-    folderWorkspaces: [] as []
+    activeFileIdByWorktree: {},
+    openFiles: [],
+    worktreesByRepo: {},
+    folderWorkspaces: [],
+    layoutByWorktree: {},
+    activeGroupIdByWorktree: {},
+    groupsByWorktree: {},
+    createEmptySplitGroup: createEmptySplitGroupMock
   }
 
   return {
@@ -81,6 +93,7 @@ export function createTerminalLinkTestDoubles(): TerminalLinkTestDoubles {
     createBrowserTabMock,
     setPendingEditorRevealMock,
     setMarkdownViewModeMock,
+    createEmptySplitGroupMock,
     deps,
     storeState
   }

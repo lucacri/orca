@@ -164,7 +164,8 @@ export function createBrowserTabActions(
           ...(options?.afterTabId ? { afterTabId: options.afterTabId } : {}),
           // Why no routing-host default: a substituted host would disown the wrapper from its worktree.
           ...(options?.executionHostId ? { executionHostId: options.executionHostId } : {}),
-          activate: shouldActivate
+          activate: shouldActivate,
+          ...(options?.placementFixed ? { placementFixed: true } : {})
         })
         // Why: unified creation already selected the tab and recorded the visit; only the group moves.
         if (shouldActivate && created) {

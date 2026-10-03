@@ -19,6 +19,7 @@ import {
 } from './tabs-tab-order'
 import { resolveUnifiedTabCreatePlacement } from './tabs-create-placement'
 import { folderWorkspaceToWorktree } from '../../../../../shared/folder-workspace-worktree'
+import { resolveLonePaneBesideGroupId } from './lone-pane-split-source'
 
 export function createTabsCreateActions(
   set: TabsSliceSet,
@@ -26,6 +27,13 @@ export function createTabsCreateActions(
 ): Pick<TabsSlice, 'createUnifiedTab' | 'createUnifiedTabInSplit'> {
   return {
     createUnifiedTab: (worktreeId, contentType, init) => {
+      // Why: one pane means the tab area has room beside it; the next pane sits there, whatever it is.
+      // Why afterTabId too: an anchor tab is placement intent of its own, like a named group.
+      const besideGroupId =
+        init?.placementFixed || init?.afterTabId
+          ? null
+          : resolveLonePaneBesideGroupId(get(), worktreeId, init?.targetGroupId, contentType)
+      const targetGroupId = besideGroupId ?? init?.targetGroupId
       const id = init?.id ?? createBrowserUuid()
       let created!: Tab
       set((state) => {
@@ -34,7 +42,7 @@ export function createTabsCreateActions(
           groups: state.groupsByWorktree[worktreeId] ?? [],
           tabs: existingTabs,
           activeGroupId: state.activeGroupIdByWorktree[worktreeId],
-          targetGroupId: init?.targetGroupId,
+          targetGroupId,
           afterTabId: init?.afterTabId,
           executionHostId: init?.executionHostId,
           lookupWorktrees: () =>
@@ -133,6 +141,11 @@ export function createTabsCreateActions(
           }
         }
       })
+      // Why: the group was minted unfocused (a host snapshot reads an activated empty group as a
+      // pane), so focus lands here — focusGroup also emits the active-surface patch.
+      if (besideGroupId && (init?.activate ?? true)) {
+        get().focusGroup(worktreeId, besideGroupId)
+      }
       if (init?.recordInteraction !== false) {
         get().recordFeatureInteraction?.('terminal-tabs')
       }

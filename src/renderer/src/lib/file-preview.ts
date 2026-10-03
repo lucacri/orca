@@ -11,7 +11,7 @@ import { getRuntimeEnvironmentIdForWorktree } from '@/lib/worktree-runtime-owner
 import { translate } from '@/i18n/i18n'
 import { useAppStore } from '@/store'
 import type { AppState } from '@/store/types'
-import { findSiblingGroupId } from '@/store/slices/tabs'
+import { resolveRightSplitTargetGroupId } from './right-split-target-group'
 import { browserPageDocLocationsEqual } from '../../../shared/browser-page-doc-location'
 import type { BrowserPageDocLocation } from '../../../shared/browser-workspace-types'
 import { findPage } from '@/store/slices/browser-page-records'
@@ -325,28 +325,11 @@ export function openFilePreviewToSide(params: {
     return
   }
 
-  // Resolve the group this action originated from. Prefer the caller-supplied
-  // id (the tab's own group under split-pane layouts), fall back to the
-  // worktree's active group.
-  const sourceGroupId =
-    params.sourceGroupId ??
-    state.activeGroupIdByWorktree[worktreeId] ??
-    state.groupsByWorktree[worktreeId]?.[0]?.id ??
-    null
-  if (!sourceGroupId) {
-    return
-  }
-
-  const layout = state.layoutByWorktree[worktreeId] ?? null
-  const existingSibling = layout ? findSiblingGroupId(layout, sourceGroupId) : null
-
   // Why the unfocused split on a paired workspace: the preview opens in the background, and a host
   // snapshot reads an activated empty group as a terminal pane.
-  const targetGroupId =
-    existingSibling ??
-    (getRuntimeEnvironmentIdForWorktree(state, worktreeId)
-      ? state.createEmptySplitGroup(worktreeId, sourceGroupId, 'right', { activate: false })
-      : state.createEmptySplitGroup(worktreeId, sourceGroupId, 'right'))
+  const targetGroupId = resolveRightSplitTargetGroupId(state, worktreeId, params.sourceGroupId, {
+    activate: !getRuntimeEnvironmentIdForWorktree(state, worktreeId)
+  })
   if (!targetGroupId) {
     return
   }

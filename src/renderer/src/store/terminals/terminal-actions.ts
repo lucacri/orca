@@ -83,6 +83,8 @@ export type TerminalActions = {
       viewMode?: Tab['viewMode']
       startupCwd?: string
       forceHostRuntime?: boolean
+      /** This call's placement is already decided (reopen replay); never redirect it beside a lone pane. */
+      placementFixed?: boolean
     }
   ) => TerminalTab
   openNewTerminalTabInActiveWorkspace: (groupId: string) => Promise<void>
