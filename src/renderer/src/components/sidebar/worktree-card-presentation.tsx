@@ -211,10 +211,11 @@ export function buildWorktreeCardPresentation(card: WorktreeCardController) {
             issue={metaIssue}
             linearIssue={metaLinearIssue}
             jiraIssue={metaJiraIssue}
-            review={newCardStyle ? null : metaReview}
+            review={metaReview}
             comment={metaComment}
             automationProvenance={metaAutomationProvenance}
             cliProvenance={metaCliProvenance}
+            onOpenReviewInBrowser={metaReview?.url ? handleOpenReviewInBrowser : undefined}
             className="ml-0 pr-0"
           />
         )}

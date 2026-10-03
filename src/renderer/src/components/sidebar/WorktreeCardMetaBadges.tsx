@@ -1,5 +1,6 @@
 import React from 'react'
 import { CalendarClock, CircleDot, SquareTerminal, StickyNote } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { LinearIcon } from '@/components/icons/LinearIcon'
 import { JiraIcon } from '@/components/icons/JiraIcon'
@@ -13,6 +14,63 @@ import { translate } from '@/i18n/i18n'
 
 function hasComment(comment: string | null): boolean {
   return (comment ?? '').trim().length > 0
+}
+
+function ReviewNumberBadge({
+  review,
+  onOpenReviewInBrowser
+}: {
+  review: NonNullable<WorktreeCardMetaBadgesProps['review']>
+  onOpenReviewInBrowser?: (url: string) => void
+}) {
+  const label = translate(
+    'auto.components.sidebar.WorktreeCardMeta.3ea2702e62',
+    'Linked {{value0}} #{{value1}}',
+    { value0: getReviewLabel(review), value1: review.number }
+  )
+  const className =
+    'h-4 rounded-full border-worktree-sidebar-border bg-worktree-sidebar-accent/55 px-1.5 py-0 font-mono text-[10px] leading-none text-muted-foreground shadow-none hover:bg-worktree-sidebar-accent hover:text-foreground focus-visible:ring-1 focus-visible:ring-worktree-sidebar-ring'
+  const content = (
+    <>
+      <ReviewIcon review={review} className="size-3 shrink-0" />#{review.number}
+    </>
+  )
+
+  const { url } = review
+  if (url) {
+    return (
+      <Badge asChild variant="outline" className={className}>
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={label}
+          data-worktree-review-number=""
+          onClick={(event) => {
+            event.stopPropagation()
+            if (onOpenReviewInBrowser) {
+              // Why: keep href for copy/middle-click, but a plain click opens Orca's browser tab.
+              event.preventDefault()
+              onOpenReviewInBrowser(url)
+            }
+          }}
+        >
+          {content}
+        </a>
+      </Badge>
+    )
+  }
+
+  return (
+    <Badge
+      variant="outline"
+      className={className}
+      aria-label={label}
+      data-worktree-review-number=""
+    >
+      {content}
+    </Badge>
+  )
 }
 
 export function hasWorktreeCardDetails({
@@ -47,6 +105,7 @@ export const WorktreeCardMetaBadges = React.forwardRef<
     comment,
     automationProvenance,
     cliProvenance,
+    onOpenReviewInBrowser,
     className,
     ...props
   },
@@ -142,15 +201,7 @@ export const WorktreeCardMetaBadges = React.forwardRef<
         </MetaIconBadge>
       )}
       {review && (
-        <MetaIconBadge
-          label={translate(
-            'auto.components.sidebar.WorktreeCardMeta.3ea2702e62',
-            'Linked {{value0}} #{{value1}}',
-            { value0: getReviewLabel(review), value1: review.number }
-          )}
-        >
-          <ReviewIcon review={review} />
-        </MetaIconBadge>
+        <ReviewNumberBadge review={review} onOpenReviewInBrowser={onOpenReviewInBrowser} />
       )}
     </div>
   )
