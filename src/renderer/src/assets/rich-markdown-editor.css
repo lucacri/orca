@@ -1074,62 +1074,63 @@
   color: #0550ae;
 }
 
-.dark .rich-markdown-code-block-wrapper .hljs-keyword {
+/* Why: `:where` keeps specificity unchanged while skipping forced-light markdown surfaces. */
+.dark .rich-markdown-code-block-wrapper .hljs-keyword:where(:not(.markdown-force-light *)) {
   color: #ff7b72;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-string {
+.dark .rich-markdown-code-block-wrapper .hljs-string:where(:not(.markdown-force-light *)) {
   color: #a5d6ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-number {
+.dark .rich-markdown-code-block-wrapper .hljs-number:where(:not(.markdown-force-light *)) {
   color: #79c0ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-comment {
+.dark .rich-markdown-code-block-wrapper .hljs-comment:where(:not(.markdown-force-light *)) {
   color: #8b949e;
   font-style: italic;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-function {
+.dark .rich-markdown-code-block-wrapper .hljs-function:where(:not(.markdown-force-light *)) {
   color: #d2a8ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-title {
+.dark .rich-markdown-code-block-wrapper .hljs-title:where(:not(.markdown-force-light *)) {
   color: #d2a8ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-built_in {
+.dark .rich-markdown-code-block-wrapper .hljs-built_in:where(:not(.markdown-force-light *)) {
   color: #79c0ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-type {
+.dark .rich-markdown-code-block-wrapper .hljs-type:where(:not(.markdown-force-light *)) {
   color: #79c0ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-attr {
+.dark .rich-markdown-code-block-wrapper .hljs-attr:where(:not(.markdown-force-light *)) {
   color: #79c0ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-selector-class {
+.dark .rich-markdown-code-block-wrapper .hljs-selector-class:where(:not(.markdown-force-light *)) {
   color: #79c0ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-variable {
+.dark .rich-markdown-code-block-wrapper .hljs-variable:where(:not(.markdown-force-light *)) {
   color: #ffa657;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-meta {
+.dark .rich-markdown-code-block-wrapper .hljs-meta:where(:not(.markdown-force-light *)) {
   color: #8b949e;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-tag {
+.dark .rich-markdown-code-block-wrapper .hljs-tag:where(:not(.markdown-force-light *)) {
   color: #7ee787;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-name {
+.dark .rich-markdown-code-block-wrapper .hljs-name:where(:not(.markdown-force-light *)) {
   color: #7ee787;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-params {
+.dark .rich-markdown-code-block-wrapper .hljs-params:where(:not(.markdown-force-light *)) {
   color: #ffa657;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-literal {
+.dark .rich-markdown-code-block-wrapper .hljs-literal:where(:not(.markdown-force-light *)) {
   color: #79c0ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-regexp {
+.dark .rich-markdown-code-block-wrapper .hljs-regexp:where(:not(.markdown-force-light *)) {
   color: #a5d6ff;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-operator {
+.dark .rich-markdown-code-block-wrapper .hljs-operator:where(:not(.markdown-force-light *)) {
   color: #ff7b72;
 }
-.dark .rich-markdown-code-block-wrapper .hljs-property {
+.dark .rich-markdown-code-block-wrapper .hljs-property:where(:not(.markdown-force-light *)) {
   color: #79c0ff;
 }
 
@@ -1157,7 +1158,7 @@
   cursor: pointer;
 }
 
-.dark .rich-markdown-editor a {
+.dark .rich-markdown-editor a:where(:not(.markdown-force-light *)) {
   color: #58a6ff;
 }
 
@@ -1172,7 +1173,9 @@
   text-underline-offset: 2px;
 }
 
-.dark .rich-markdown-editor .rich-markdown-html-superscript-link {
+.dark
+  .rich-markdown-editor
+  .rich-markdown-html-superscript-link:where(:not(.markdown-force-light *)) {
   color: #58a6ff;
 }
 
@@ -1497,7 +1500,7 @@
   text-underline-offset: 2px;
 }
 
-.dark .rich-markdown-editor .rich-markdown-doc-link {
+.dark .rich-markdown-editor .rich-markdown-doc-link:where(:not(.markdown-force-light *)) {
   color: #58a6ff;
 }
 
@@ -1525,7 +1528,7 @@
   text-underline-offset: 2px;
 }
 
-.dark .rich-markdown-editor .rich-markdown-doc-link-preview {
+.dark .rich-markdown-editor .rich-markdown-doc-link-preview:where(:not(.markdown-force-light *)) {
   color: #58a6ff;
 }
 

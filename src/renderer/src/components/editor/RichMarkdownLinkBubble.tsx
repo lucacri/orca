@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import type { Editor } from '@tiptap/react'
 import { Copy, ExternalLink, Pencil, Unlink } from 'lucide-react'
 import { translate } from '@/i18n/i18n'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { addViewportSizeChangeListener } from '@/hooks/viewport-size-change-listener'
@@ -173,6 +174,8 @@ type RichMarkdownLinkBubbleProps = {
   onCopy: () => void
   ownerId?: string
   portalToDocument?: boolean
+  // Portaled out of the layout, so it must re-apply the surface's forced-light scope itself.
+  forceLight?: boolean
 }
 
 export function RichMarkdownLinkBubble({
@@ -187,7 +190,8 @@ export function RichMarkdownLinkBubble({
   onOpen,
   onCopy,
   ownerId,
-  portalToDocument = false
+  portalToDocument = false,
+  forceLight = false
 }: RichMarkdownLinkBubbleProps): React.JSX.Element {
   const bubbleRef = useRef<HTMLDivElement | null>(null)
   const onDismissRef = useRef(onDismiss)
@@ -285,7 +289,7 @@ export function RichMarkdownLinkBubble({
   const bubble = (
     <div
       ref={bubbleRef}
-      className="rich-markdown-link-bubble"
+      className={cn('rich-markdown-link-bubble', forceLight && 'markdown-force-light')}
       data-rich-markdown-link-bubble=""
       data-rich-markdown-link-bubble-owner={ownerId}
       style={positionStyle}
