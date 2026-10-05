@@ -58,6 +58,7 @@ import { resetDetectedReviewProvidersForTest } from './use-worktree-review-provi
 const REPO_ID = 'repo-1'
 const WORKTREE_ID = 'repo-1::/repo/worktrees/feature'
 
+// Why: the review field's placeholder appears only after provider detection, so lookups await it.
 const IME_FIELDS = [
   {
     placeholder: 'Notes about this worktree...',
@@ -70,7 +71,7 @@ const IME_FIELDS = [
     updates: { displayName: '日本語の名前' }
   },
   {
-    placeholder: 'Issue #, or a GitHub or Linear URL',
+    placeholder: 'Issue #, or a GitHub, GitLab or Linear URL',
     value: '42',
     updates: { linkedIssue: 42 }
   },
@@ -272,7 +273,7 @@ describe('WorktreeMetaDialog issue link row', () => {
     'ignores IME Enter and resets on blur in $placeholder',
     async ({ placeholder, value, updates }) => {
       openDialog(placeholder === 'MR ! or GitLab URL' ? { modalReviewProvider: 'gitlab' } : {})
-      const input = screen.getByPlaceholderText(placeholder)
+      const input = await screen.findByPlaceholderText(placeholder)
       fireEvent.change(input, { target: { value } })
       for (const marker of [{ isComposing: true, keyCode: 13 }, { keyCode: 229 }]) {
         expect(fireEvent.keyDown(input, { key: 'Enter', ...marker })).toBe(true)
@@ -300,7 +301,7 @@ describe('WorktreeMetaDialog issue link row', () => {
     'ignores the IME Enter redispatch $order in $placeholder',
     async ({ order, placeholder, value, updates }) => {
       openDialog(placeholder === 'MR ! or GitLab URL' ? { modalReviewProvider: 'gitlab' } : {})
-      const input = screen.getByPlaceholderText(placeholder)
+      const input = await screen.findByPlaceholderText(placeholder)
       const frames: FrameRequestCallback[] = []
       vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) =>
         frames.push(callback)
@@ -330,7 +331,7 @@ describe('WorktreeMetaDialog issue link row', () => {
     'expires an IME gesture without redispatch in $placeholder',
     async ({ placeholder }) => {
       openDialog(placeholder === 'MR ! or GitLab URL' ? { modalReviewProvider: 'gitlab' } : {})
-      const input = screen.getByPlaceholderText(placeholder)
+      const input = await screen.findByPlaceholderText(placeholder)
       const frames: FrameRequestCallback[] = []
       vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) =>
         frames.push(callback)
@@ -356,7 +357,7 @@ describe('WorktreeMetaDialog issue link row', () => {
     'allows a deliberate save after closing with $phase in $placeholder',
     async ({ phase, placeholder, value, updates }) => {
       openDialog(placeholder === 'MR ! or GitLab URL' ? { modalReviewProvider: 'gitlab' } : {})
-      const input = screen.getByPlaceholderText(placeholder)
+      const input = await screen.findByPlaceholderText(placeholder)
       const modalData = useAppStore.getState().modalData
       fireEvent.compositionStart(input)
       if (phase === 'pending confirmation') {
@@ -366,7 +367,7 @@ describe('WorktreeMetaDialog issue link row', () => {
       act(() => useAppStore.getState().closeModal())
       expect(screen.queryByPlaceholderText(placeholder)).toBeNull()
       act(() => useAppStore.setState({ activeModal: 'edit-meta', modalData }))
-      const reopenedInput = screen.getByPlaceholderText(placeholder)
+      const reopenedInput = await screen.findByPlaceholderText(placeholder)
       fireEvent.change(reopenedInput, { target: { value } })
       await act(async () => {
         fireEvent.keyDown(reopenedInput, { key: 'Enter', keyCode: 13 })
