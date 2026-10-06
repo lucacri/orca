@@ -48,7 +48,12 @@ export async function removeHostTree(targetPath: string): Promise<void> {
   const retryDelays = process.platform === 'win32' ? WINDOWS_REMOVE_RETRY_DELAYS_MS : []
   // Why: large Windows trees commonly surface transient ENOTEMPTY/EPERM while Node walks and
   // removes nested directories; Node's own retries absorb that before the loop below has to.
-  const rmOptions = transientLockRemovalOptions()
+  // Why darwin too: Finder rewrites `.DS_Store` into a folder it is showing while Node empties
+  // it, so the final rmdir sees ENOTEMPTY. Node's retry re-walks the tree and removes the newcomer.
+  const rmOptions =
+    process.platform === 'darwin'
+      ? { ...transientLockRemovalOptions(), maxRetries: 5, retryDelay: 100 }
+      : transientLockRemovalOptions()
   let attempt = 0
 
   while (true) {
