@@ -6640,6 +6640,12 @@
           "9b4d6e0a13": "Checking which provider this repository uses...",
           "e5f2a7c391": "{{providerName}} {{reviewLabel}} links can't be changed here yet.",
           "1d7b9c4f28": "Paste a {{reviewLabel}} URL, or enter a number. Leave blank to remove the link."
+        },
+        "WorktreeWorkspaceUrlField": {
+          "label": "Link",
+          "placeholder": "https://app.test/admin",
+          "hint": "Opened from the card, the status bar, and the Open Workspace Link shortcut.",
+          "invalid": "Enter a full http:// or https:// link."
         }
       },
       "shared": {
