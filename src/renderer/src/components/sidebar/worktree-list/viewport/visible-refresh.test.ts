@@ -3,7 +3,7 @@ import type { WorktreeItemRow } from '../listing/renderable-rows'
 import { makePRRefreshWorktree } from '@/store/slices/github-slice-test-harness'
 import { describe, expect, it } from 'vitest'
 
-import { visibleReviewCardIds } from './use-visible-review-refresh'
+import { isVisibleReviewRefreshEnabled, visibleReviewCardIds } from './use-visible-review-refresh'
 
 function row(id: string): WorktreeItemRow {
   return {
@@ -40,5 +40,15 @@ describe('actual visible review cards', () => {
         viewportHeight: 100
       })
     ).toEqual(['visible'])
+  })
+})
+
+describe('isVisibleReviewRefreshEnabled', () => {
+  it('refreshes new-style cards when only the PR property is visible', () => {
+    expect(isVisibleReviewRefreshEnabled('none', true, ['pr'])).toBe(true)
+    expect(isVisibleReviewRefreshEnabled('none', true, ['status'])).toBe(true)
+    expect(isVisibleReviewRefreshEnabled('none', true, ['ci'])).toBe(false)
+    expect(isVisibleReviewRefreshEnabled('none', false, ['ci'])).toBe(true)
+    expect(isVisibleReviewRefreshEnabled('pr-status', true, [])).toBe(true)
   })
 })
