@@ -4,6 +4,7 @@ import { makePRRefreshWorktree } from '@/store/slices/github-slice-test-harness'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   installWorktreeVisibleRefreshVisibilityListener,
+  isVisibleReviewRefreshEnabled,
   visibleReviewCardIds,
   installVisibleReviewCardScrollListener
 } from './use-visible-review-refresh'
@@ -135,5 +136,15 @@ describe('scrolling within one virtual lineage row', () => {
     expect(cancel).toHaveBeenCalledWith(1)
     expect(scroll.removeEventListener).toHaveBeenCalledWith('scroll', listener)
     vi.unstubAllGlobals()
+  })
+})
+
+describe('isVisibleReviewRefreshEnabled', () => {
+  it('refreshes new-style cards when only the PR property is visible', () => {
+    expect(isVisibleReviewRefreshEnabled('none', true, ['pr'])).toBe(true)
+    expect(isVisibleReviewRefreshEnabled('none', true, ['status'])).toBe(true)
+    expect(isVisibleReviewRefreshEnabled('none', true, ['ci'])).toBe(false)
+    expect(isVisibleReviewRefreshEnabled('none', false, ['ci'])).toBe(true)
+    expect(isVisibleReviewRefreshEnabled('pr-status', true, [])).toBe(true)
   })
 })
