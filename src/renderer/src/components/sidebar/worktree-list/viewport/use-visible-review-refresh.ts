@@ -65,6 +65,20 @@ export function visibleReviewCardIds(args: {
     .filter((id) => args.isOnScreen?.(id) ?? true)
 }
 
+export function isVisibleReviewRefreshEnabled(
+  groupBy: WorktreeGroupBy,
+  newCardStyle: boolean,
+  cardProps: readonly string[]
+): boolean {
+  return (
+    groupBy === 'pr-status' ||
+    // Why: new-style cards show the linked review number badge when only the PR property is on.
+    (newCardStyle
+      ? cardProps.includes('status') || cardProps.includes('pr')
+      : cardProps.includes('pr') || cardProps.includes('ci'))
+  )
+}
+
 export function useVisiblePrRefreshReporting(args: {
   currentWorktreeId: string | null
   worktreeMap: Map<string, Worktree>
@@ -76,11 +90,7 @@ export function useVisiblePrRefreshReporting(args: {
 }): void {
   const publish = useAppStore((s) => s.setVisibleReviewCardWorktreeIds)
   const cardProps = useAppStore((s) => s.worktreeCardProperties)
-  const enabled =
-    args.groupBy === 'pr-status' ||
-    (args.newCardStyle
-      ? cardProps.includes('status')
-      : cardProps.includes('pr') || cardProps.includes('ci'))
+  const enabled = isVisibleReviewRefreshEnabled(args.groupBy, args.newCardStyle, cardProps)
 
   useEffect(() => {
     const update = (): void => {
