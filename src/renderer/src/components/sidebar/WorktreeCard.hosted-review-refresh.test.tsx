@@ -158,7 +158,8 @@ describe('WorktreeCard hosted review refresh', () => {
     expect(fetchHostedReviewForBranch).not.toHaveBeenCalled()
   })
 
-  it('polls hosted reviews when only the PR link property is visible', async () => {
+  // Why: polling moved to the central visible-review scheduler; PR-only coverage lives in visible-refresh.test.ts.
+  it('leaves PR-only refresh to the central scheduler', async () => {
     worktreeCardProperties = ['pr']
     const { default: WorktreeCard } = await import('./WorktreeCard')
 
@@ -166,12 +167,10 @@ describe('WorktreeCard hosted review refresh', () => {
       root?.render(<WorktreeCard worktree={makeWorktree()} repo={makeRepo()} isActive={false} />)
     })
 
-    expect(fetchHostedReviewForBranch).toHaveBeenCalledTimes(1)
-
     act(() => {
       vi.advanceTimersByTime(60_000)
     })
 
-    expect(fetchHostedReviewForBranch).toHaveBeenCalledTimes(2)
+    expect(fetchHostedReviewForBranch).not.toHaveBeenCalled()
   })
 })
