@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { activateAndRevealWorkspace, activateAndRevealWorktree } from '@/lib/worktree-activation'
 import { getConnectionId } from '@/lib/connection-context'
@@ -397,6 +398,23 @@ describe('handleOscLink', () => {
         column: 3,
         matchLength: 0
       })
+    )
+  })
+})
+
+describe('placement of a clicked file', () => {
+  beforeEach(() => {
+    openFileMock.mockClear()
+    statMock.mockResolvedValue({ isDirectory: false })
+    storeState.openFiles = []
+  })
+
+  it('names no target group: the store decides beside-or-tab from the layout', async () => {
+    openDetectedFilePath('/tmp/src/a.ts', 12, 3, { ...deps, sourceTabId: 't1' })
+    await flushAsyncWork()
+    expect(openFileMock).toHaveBeenCalledWith(
+      expect.objectContaining({ filePath: '/tmp/src/a.ts', mode: 'edit' }),
+      { forceContentReload: true }
     )
   })
 })
