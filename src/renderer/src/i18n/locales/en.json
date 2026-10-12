@@ -7227,6 +7227,11 @@
           "refresh": "Refresh",
           "wsl1Hint": "WSL 1 distros can’t be hosts. Convert one in a Windows terminal with: wsl --set-version {{value0}} 2"
         },
+        "WorkspaceDeleteConfirmNotice": {
+          "press": "Press",
+          "again": "again to delete",
+          "againFolder": "again to remove from Orca"
+        },
         "wslHostRowStatus": {
           "connecting": "Starting",
           "reconnecting": "Reconnecting",
