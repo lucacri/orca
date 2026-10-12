@@ -13,9 +13,9 @@ import {
 } from '../components/sidebar/workspace-card/identity/child-workspaces-toggle-target'
 import { requestTerminalTabRename } from '../components/tab-bar/terminal-tab-rename-request'
 import {
-  deleteHoveredWorkspaceImmediately,
-  resolveHoveredWorkspaceDeleteTarget
-} from '../components/sidebar/workspace-actions/deletion/hovered-workspace-delete'
+  requestActiveWorkspaceDelete,
+  resolveActiveWorkspaceDeleteTarget
+} from '../components/sidebar/workspace-actions/deletion/active-workspace-delete'
 import { useAppStore } from '../store'
 import { claimOpenWorkspaceUrl } from './workspace-open-url-command'
 import type { usePluginCommands } from '@/store/plugin-panels'
@@ -231,12 +231,12 @@ export function createAppCommandHandlers(
           return false
         }
         const store = useAppStore.getState()
-        const target = resolveHoveredWorkspaceDeleteTarget(store)
+        const target = resolveActiveWorkspaceDeleteTarget(store)
         if (!target) {
           return false
         }
         return claim('workspace.delete', () => {
-          deleteHoveredWorkspaceImmediately(store, target)
+          requestActiveWorkspaceDelete(store, target)
         })
       }
     ],
