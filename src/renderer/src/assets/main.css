@@ -30,7 +30,7 @@
 
 /* A matching chat can use a different scheme from the document; portaled menus stay outside it.
    `dark:` utilities must also not fire inside a forced-light markdown surface. */
-@custom-variant dark (&:is(.dark *:not(:where([data-native-chat-scheme='light'], [data-native-chat-scheme='light'] *, .markdown-force-light, .markdown-force-light *)), [data-native-chat-scheme='dark'], [data-native-chat-scheme='dark'] *));
+@custom-variant dark (&:is(.dark *:not(:where([data-native-chat-scheme='light'], [data-native-chat-scheme='light'] *)):not(:where(.markdown-force-light, .markdown-force-light *)), [data-native-chat-scheme='dark'], [data-native-chat-scheme='dark'] *));
 
 /* Gate hover hiding behind can-hover so touch controls remain visible. */
 @custom-variant can-hover (@media (hover: hover));
