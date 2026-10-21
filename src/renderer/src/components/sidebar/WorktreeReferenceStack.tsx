@@ -101,6 +101,13 @@ function priority(item: WorkspaceAttachment, details: WorkspaceReferenceDetailsM
           : 4
 }
 
+export function orderWorkspaceReferences(
+  items: readonly WorkspaceAttachment[],
+  details: WorkspaceReferenceDetailsMap = EMPTY_DETAILS
+): WorkspaceAttachment[] {
+  return [...items].sort((a, b) => priority(a, details) - priority(b, details))
+}
+
 export function WorktreeReferenceStack({
   items,
   details = EMPTY_DETAILS
@@ -108,7 +115,7 @@ export function WorktreeReferenceStack({
   items: readonly WorkspaceAttachment[]
   details?: WorkspaceReferenceDetailsMap
 }): React.JSX.Element | null {
-  const ordered = [...items].sort((a, b) => priority(a, details) - priority(b, details))
+  const ordered = orderWorkspaceReferences(items, details)
   const front = ordered[0]
   if (!front) {
     return null
