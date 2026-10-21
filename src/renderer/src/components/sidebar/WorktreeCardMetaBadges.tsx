@@ -11,7 +11,9 @@ import type {
   WorktreeCardMetaBadgesRootProps
 } from './worktree-card-meta-types'
 import { translate } from '@/i18n/i18n'
-import { WorktreeReferenceStack } from './WorktreeReferenceStack'
+import { orderWorkspaceReferences, WorktreeReferenceStack } from './WorktreeReferenceStack'
+import { workspaceReferenceReview } from './workspace-reference-details'
+import { getWorkspaceAttachmentKey } from '../../../../shared/workspace-attachment-normalization'
 
 function hasComment(comment: string | null): boolean {
   return (comment ?? '').trim().length > 0
@@ -19,10 +21,12 @@ function hasComment(comment: string | null): boolean {
 
 function ReviewNumberBadge({
   review,
-  onOpenReviewInBrowser
+  onOpenReviewInBrowser,
+  hideIcon = false
 }: {
   review: NonNullable<WorktreeCardMetaBadgesProps['review']>
   onOpenReviewInBrowser?: (url: string) => void
+  hideIcon?: boolean
 }) {
   const label = translate(
     'auto.components.sidebar.WorktreeCardMeta.3ea2702e62',
@@ -33,7 +37,7 @@ function ReviewNumberBadge({
     'h-4 rounded-full border-worktree-sidebar-border bg-worktree-sidebar-accent/55 px-1.5 py-0 font-mono text-[10px] leading-none text-muted-foreground shadow-none hover:bg-worktree-sidebar-accent hover:text-foreground focus-visible:ring-1 focus-visible:ring-worktree-sidebar-ring'
   const content = (
     <>
-      <ReviewIcon review={review} className="size-3 shrink-0" />#{review.number}
+      {hideIcon ? null : <ReviewIcon review={review} className="size-3 shrink-0" />}#{review.number}
     </>
   )
 
@@ -133,6 +137,13 @@ export const WorktreeCardMetaBadges = React.forwardRef<
   }
 
   const reviewItems = referenceItems?.filter((item) => item.type !== 'issue') ?? []
+  const frontReviewItem = orderWorkspaceReferences(reviewItems, referenceDetails)[0]
+  const stackFrontReview = frontReviewItem
+    ? workspaceReferenceReview(
+        frontReviewItem,
+        referenceDetails?.[getWorkspaceAttachmentKey(frontReviewItem)]
+      )
+    : null
   const linearItems = referenceItems?.filter((item) => item.provider === 'linear') ?? []
   const jiraItems = referenceItems?.filter((item) => item.provider === 'jira') ?? []
   const issueItems =
@@ -234,6 +245,14 @@ export const WorktreeCardMetaBadges = React.forwardRef<
         >
           <WorktreeReferenceStack items={linearItems} details={referenceDetails} />
           <WorktreeReferenceStack items={reviewItems} details={referenceDetails} />
+          {/* Why: the stack already draws the review glyph, so add only its front number. */}
+          {stackFrontReview && (
+            <ReviewNumberBadge
+              review={stackFrontReview}
+              onOpenReviewInBrowser={onOpenReviewInBrowser}
+              hideIcon
+            />
+          )}
         </span>
       ) : (
         linearIssue && (
@@ -248,7 +267,7 @@ export const WorktreeCardMetaBadges = React.forwardRef<
           </MetaIconBadge>
         )
       )}
-      {review && (
+      {!reviewItems.length && review && (
         <ReviewNumberBadge review={review} onOpenReviewInBrowser={onOpenReviewInBrowser} />
       )}
     </div>
