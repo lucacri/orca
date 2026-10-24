@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { TabGroupLayoutNode } from '../../../shared/tab-types'
+import type { TabGroup, TabGroupLayoutNode } from '../../../shared/tab-types'
 import { makeTabGroup, makeUnifiedTab } from '../store/slices/store-test-helpers'
 import {
   findVisibleBrowserLinkTarget,
@@ -16,7 +16,11 @@ const split = (first: TabGroupLayoutNode, second: TabGroupLayoutNode): TabGroupL
 })
 
 /** left: browser a (focused at 10), right: browser b (focused at 20), bottom: terminal t (focused group). */
-function fixture(): VisibleBrowserLinkState {
+// Mutable groups so cases can swap one in place.
+type MutableLinkState = Omit<VisibleBrowserLinkState, 'groupsByWorktree'> & {
+  groupsByWorktree: Record<string, TabGroup[]>
+}
+function fixture(): MutableLinkState {
   const a = makeUnifiedTab({
     id: 'a',
     worktreeId: WT,

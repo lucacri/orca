@@ -1,7 +1,7 @@
 import type { AppState } from '@/store/types'
 import type { CreateBrowserTabOptions } from '@/store/slices/browser/browser-slice-contract'
 import type { TabSplitTarget } from '@/store/slices/tabs/tabs-slice-contract'
-import type { Tab, TabGroup } from '../../../shared/tab-types'
+import type { Tab, TabGroup, TabGroupLayoutNode } from '../../../shared/tab-types'
 import { liveLayoutGroupIds } from '@/store/slices/editor/tabs/editor-open-target-group'
 import { requestBrowserFocus } from '@/components/browser-pane/host-guest/browser-focus'
 import type { OpenWorkspaceBrowserTabRequest } from './workspace-browser-tab-open'
@@ -13,8 +13,11 @@ import { findVisibleBrowserLinkTarget } from './visible-browser-link-target'
 export type HttpLinkBrowserPlacement = { targetGroupId: string } | { split: TabSplitTarget }
 
 export type HttpLinkBrowserTabState = Partial<
-  Pick<AppState, 'layoutByWorktree' | 'activeGroupIdByWorktree' | 'activeView' | 'setActiveView'>
+  Pick<AppState, 'activeView' | 'setActiveView'>
 > & {
+  // Why optional values: link-router test fixtures and the visible-browser lookup allow unset entries.
+  layoutByWorktree?: Record<string, TabGroupLayoutNode | undefined>
+  activeGroupIdByWorktree?: Record<string, string | undefined>
   groupsByWorktree?: Record<string, readonly Pick<TabGroup, 'id' | 'activeTabId'>[]>
   unifiedTabsByWorktree?: Record<
     string,
