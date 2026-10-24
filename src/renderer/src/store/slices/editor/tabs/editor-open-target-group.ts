@@ -1,5 +1,10 @@
 import type { AppState } from '../../../types'
-import type { Tab, TabGroup, WorkspaceVisibleTabType } from '../../../../../../shared/tab-types'
+import type {
+  Tab,
+  TabGroup,
+  TabGroupLayoutNode,
+  WorkspaceVisibleTabType
+} from '../../../../../../shared/tab-types'
 import { editorTabContentTypeForMode, isEditorTabContentType } from './editor-tab-content-type'
 import type { OpenFile } from '../types/open-file'
 import { ownsGlobalSelection } from '../../../global-selection-owner'
@@ -120,7 +125,7 @@ export function captureEditorOpenLinkIntent(
 
 export function liveLayoutGroupIds(
   state: {
-    layoutByWorktree?: LinkPlacementState['layoutByWorktree']
+    layoutByWorktree?: Record<string, TabGroupLayoutNode | undefined>
     groupsByWorktree?: Record<string, readonly Pick<TabGroup, 'id'>[]>
   },
   worktreeId: string
