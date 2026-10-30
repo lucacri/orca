@@ -111,7 +111,8 @@ export function createMarkdownPreviewActions(
               file.operationProvenance ??
               source?.operationProvenance)
         const runtimeEnvironmentId = resolvedRuntimeEnvironmentId
-        const activeResult = buildEditorActiveResult(s, placementWorkspaceId, id)
+        const activeResult =
+          options?.selection === 'none' ? {} : buildEditorActiveResult(s, placementWorkspaceId, id)
 
         if (existing) {
           // Why: a fresh grant means the file was re-resolved; cached bytes may predate it.
@@ -188,7 +189,8 @@ export function createMarkdownPreviewActions(
           `${file.relativePath} (preview)`,
           'editor',
           false,
-          options?.targetGroupId
+          options?.targetGroupId,
+          options?.selection
         )
       )
     },
