@@ -70,6 +70,7 @@ export function collectRuntimeWorktreePtyAgentSources(args: {
       lastAssistantMessage: entry.lastAssistantMessage ?? null,
       toolName: entry.toolName ?? null,
       toolInput: entry.toolInput ?? null,
+      ...(entry.interactivePrompt ? { interactivePrompt: entry.interactivePrompt } : {}),
       interrupted: false,
       ...agentVerdictFields(entry),
       stateStartedAt: entry.stateStartedAt,

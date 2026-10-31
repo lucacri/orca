@@ -38,6 +38,8 @@ export type RuntimeWorktreeAgentRow = {
   lastAssistantMessage: string | null
   toolName: string | null
   toolInput: string | null
+  /** Full AskUserQuestion JSON while the agent waits on it, untruncated unlike toolInput. Old hosts omit it. */
+  interactivePrompt?: string
   interrupted: boolean
   /** Main-agent state/verdict/clock even while subagents keep the row working; old hosts omit it, falling back to interrupted. */
   mainAgent?: AgentMainAgentStatus
