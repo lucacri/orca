@@ -61,6 +61,7 @@ export function attachRuntimeWorktreeAgentRows(args: {
       lastAssistantMessage: source.lastAssistantMessage,
       toolName: source.toolName,
       toolInput: source.toolInput,
+      ...(source.interactivePrompt ? { interactivePrompt: source.interactivePrompt } : {}),
       interrupted: source.interrupted,
       ...(source.mainAgent ? { mainAgent: source.mainAgent } : {}),
       stateStartedAt: source.stateStartedAt,
