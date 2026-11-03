@@ -1,6 +1,6 @@
-import type { StatusBarItem } from '../../../../shared/ui-chrome-types'
+import type { StatusBarItem } from '../../../../../shared/ui-chrome-types'
 import { translate } from '@/i18n/i18n'
-import { translateSearchKeyword } from './settings-search-keywords'
+import { translateSearchKeyword } from '../search/settings-search-keywords'
 
 export function getCcflareStatusBarToggleSearchEntry(): {
   id: StatusBarItem
