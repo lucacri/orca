@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { RuntimeWorktreePsSummary } from '../../shared/runtime-types'
+import type { RuntimeWorktreePsSummary } from '../../../../shared/runtime-types'
 import { attachRuntimeWorktreeAgentRows } from './runtime-worktree-agent-rows'
 import type { RuntimeWorktreeAgentSource } from './runtime-worktree-agent-source'
 
