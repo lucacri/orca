@@ -202,7 +202,7 @@ export function StatusBarVisibilityMenu({
             onCheckedChange={() => toggleStatusBarItem('ccflare')}
           >
             <Gauge className="size-3.5" />
-            {translate('components.status.ccflare.title', 'better-ccflare')}
+            {t('components.status.ccflare.title', 'better-ccflare')}
           </DropdownMenuCheckboxItem>
         )}
       </DropdownMenuContent>
