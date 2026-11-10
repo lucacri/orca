@@ -26,11 +26,15 @@ function source(paneKey: string): RuntimeWorktreeAgentSource {
 
 describe('worktree ps agent row question', () => {
   it('passes the full question JSON through to the row', () => {
-    const summaries = new Map([[WORKTREE_ID, { worktreeId: WORKTREE_ID, agents: [] } as unknown as RuntimeWorktreePsSummary]])
+    const summaries = new Map([
+      [WORKTREE_ID, { worktreeId: WORKTREE_ID, agents: [] } as unknown as RuntimeWorktreePsSummary]
+    ])
     attachRuntimeWorktreeAgentRows({
       summaries,
       terminalTitleEvidenceByRow: new Map(),
-      rowSources: new Map([[PARENT, { ...source(PARENT), state: 'blocked', interactivePrompt: '{"questions":[]}' }]]),
+      rowSources: new Map([
+        [PARENT, { ...source(PARENT), state: 'blocked', interactivePrompt: '{"questions":[]}' }]
+      ]),
       orchestrationByPaneKey: null,
       getSummary: (id) => summaries.get(id) ?? null
     })
