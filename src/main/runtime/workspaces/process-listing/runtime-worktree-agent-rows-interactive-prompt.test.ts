@@ -29,7 +29,7 @@ describe('worktree ps agent row question', () => {
     const summaries = new Map([[WORKTREE_ID, { worktreeId: WORKTREE_ID, agents: [] } as unknown as RuntimeWorktreePsSummary]])
     attachRuntimeWorktreeAgentRows({
       summaries,
-      terminalTitleEvidenceByWorktreeId: new Map(),
+      terminalTitleEvidenceByRow: new Map(),
       rowSources: new Map([[PARENT, { ...source(PARENT), state: 'blocked', interactivePrompt: '{"questions":[]}' }]]),
       orchestrationByPaneKey: null,
       getSummary: (id) => summaries.get(id) ?? null
