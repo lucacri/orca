@@ -3,7 +3,9 @@ import type { AgentStatusIpcPayload } from '../../../../shared/agent-status/cont
 import { collectRuntimeWorktreePtyAgentSources } from './runtime-worktree-pty-agent-sources'
 
 const PANE = 'tab-1:11111111-1111-4111-8111-111111111111'
-const QUESTION = JSON.stringify({ questions: [{ question: 'Ship it?', options: [{ label: 'Yes' }] }] })
+const QUESTION = JSON.stringify({
+  questions: [{ question: 'Ship it?', options: [{ label: 'Yes' }] }]
+})
 
 function sourceFor(entry: Partial<AgentStatusIpcPayload>) {
   const [source] = collectRuntimeWorktreePtyAgentSources({
@@ -21,7 +23,11 @@ function sourceFor(entry: Partial<AgentStatusIpcPayload>) {
       } as AgentStatusIpcPayload
     ],
     mirroredWorktreeIdByTabId: new Map(),
-    connectedPtyEvidence: { tabIds: new Set(['tab-1']), paneKeys: new Set(), ptyIdByTerminalHandle: new Map() }
+    connectedPtyEvidence: {
+      tabIds: new Set(['tab-1']),
+      paneKeys: new Set(),
+      ptyIdByTerminalHandle: new Map()
+    }
   })
   return source
 }
