@@ -1,7 +1,7 @@
 import { useAppStore } from '../../store'
 import type { StatusBarItem } from '../../../../shared/ui-chrome-types'
 import { isStatusBarItemAvailable } from './status-bar-agent-gating'
-import { isPairedWebClientWindow } from '@/lib/desktop-window-chrome'
+import { isPairedWebClientWindow } from '@/app-shell/chrome/desktop-window-chrome'
 
 /** Keep CLI toggles visible until detection proves their agent missing. */
 export function useAvailableStatusBarToggles<T extends { id: StatusBarItem }>(
