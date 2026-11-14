@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { getWorktreeCardDetails } from '../../../../../../shared/worktree/card-properties'
+import { getWorktreeCardDetails } from '../../../../../../shared/worktree/row-display/card-properties'
 import type { WorktreeCardController } from '../controller/use-worktree-card-controller'
 import { buildWorktreeCardPresentation } from './worktree-card-presentation'
 
