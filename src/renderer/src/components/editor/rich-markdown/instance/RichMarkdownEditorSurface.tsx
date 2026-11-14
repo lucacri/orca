@@ -25,7 +25,7 @@ import type { RichMarkdownAnnotationTarget } from '../review/rich-markdown-revie
 import type { RichMarkdownReviewNotePosition } from '../review/rich-markdown-review-note-layout'
 import type { DiffComment } from '../../../../../../shared/diff-comment-types'
 import { focusRichMarkdownEditorFromSearch } from '../search/rich-markdown-search-focus'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { useMarkdownSurfaceForceLight } from '../../use-markdown-surface-is-dark'
 
 function shouldFocusEmptyEditorFromSurfaceClick(
