@@ -81,7 +81,7 @@ export function StatusBarSurface({
     showFloatingWorkspaceAttentionDot,
     showGitBlame,
     showPorts,
-    showCcflare,
+    statusBarItems,
     showResourceUsage,
     showSsh
   } = controller
@@ -127,7 +127,7 @@ export function StatusBarSurface({
           <React.Suspense fallback={null}>
             {petEnabled ? <PetStatusSegment /> : null}
             {showResourceUsage ? <ResourceUsageStatusSegment /> : null}
-            {showCcflare && !isPairedWebClientWindow() ? (
+            {statusBarItems.includes('ccflare') && !isPairedWebClientWindow() ? (
               // Why: upstream dropped live density switching (#44647), so the bar is always full-size.
               <CcflareStatusSegment compact={false} iconOnly={false} />
             ) : null}
