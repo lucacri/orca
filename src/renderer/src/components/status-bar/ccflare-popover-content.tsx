@@ -1,17 +1,17 @@
 import { Separator } from '@/components/ui/separator'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
-import { formatResetDuration } from '../../../../shared/rate-limit-reset-format'
+import { formatResetDuration } from '../../../../shared/agent-usage/rate-limits/rate-limit-reset-format'
 import {
   getDisplayedUsagePercentage,
   type UsagePercentageDisplay
-} from '../../../../shared/usage-percentage-display'
+} from '../../../../shared/agent-usage/display/usage-percentage-display'
 import type {
   CcflareAccount,
   CcflareSnapshot,
   CcflareUsageWindow
 } from '../../../../shared/ccflare-types'
-import { barColor } from './tooltip'
+import { usageBarClass } from './usage/usage-health-tone'
 import {
   ccflareUsageLevel,
   isCcflareAccountLimited,
@@ -41,7 +41,7 @@ function UsageCells({
       {/* Why: the bar always shows usage (longer = more risk); only the number follows the used/left setting. */}
       <span className="h-[4px] w-6 overflow-hidden rounded-full bg-muted">
         <span
-          className={cn('block h-full rounded-full', barColor(used))}
+          className={cn('block h-full rounded-full', usageBarClass(used))}
           style={{ width: `${Math.min(100, Math.max(0, used))}%` }}
         />
       </span>
