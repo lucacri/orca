@@ -20,7 +20,7 @@ import type { useMarkdownPreviewDocument } from '../document-worker/use-markdown
 import type { useMarkdownPreviewDocumentSearch } from '../search/use-markdown-preview-document-search'
 import type { Components } from 'react-markdown'
 import { useTranslate } from '@/i18n/use-translate'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { MarkdownTableOfContentsPanel } from '../../markdown/navigation/MarkdownTableOfContentsPanel'
 import { MarkdownPreviewBody } from '../render-tree/MarkdownPreviewBody'
 import { MarkdownPreviewReviewToolbar } from '../review/MarkdownPreviewReviewToolbar'
