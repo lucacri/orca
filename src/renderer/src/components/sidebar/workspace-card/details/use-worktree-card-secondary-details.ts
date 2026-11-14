@@ -39,6 +39,7 @@ export function useWorktreeCardSecondaryDetails({
   linkedBitbucketPR,
   linkedAzureDevOpsPR,
   linkedGiteaPR,
+  newCardStyle,
   compactCards,
   cardDetails,
   agentActivityDisplayMode,
