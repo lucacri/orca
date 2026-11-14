@@ -1,9 +1,10 @@
 import { translate } from '@/i18n/i18n'
+import { getUsageHealthTone } from './usage/usage-health-tone'
 import type { CcflareAccount, CcflareSnapshot } from '../../../../shared/ccflare-types'
 import {
   getDisplayedUsagePercentage,
   type UsagePercentageDisplay
-} from '../../../../shared/usage-percentage-display'
+} from '../../../../shared/agent-usage/display/usage-percentage-display'
 
 export type CcflareUsagePart = { label: string; used: number; shown: number }
 
@@ -19,9 +20,10 @@ export type CcflareStatusSummary = {
 
 export type CcflareUsageLevel = 'normal' | 'warning' | 'critical'
 
-// Why: same 60/80 thresholds as barColor() in tooltip.tsx, always judged on usage.
+// Why: same thresholds as the other usage bars, always judged on usage.
 export function ccflareUsageLevel(used: number): CcflareUsageLevel {
-  return used >= 80 ? 'critical' : used >= 60 ? 'warning' : 'normal'
+  const tone = getUsageHealthTone(used)
+  return tone === 'urgent' ? 'critical' : tone === 'warning' ? 'warning' : 'normal'
 }
 
 function timeOf(iso: string | null): number {

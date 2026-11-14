@@ -98,8 +98,8 @@ describe('summarizeCcflare', () => {
     ).toMatchObject({ label: 'offline', warning: true })
   })
 
-  it('colors usage with the same 60/80 thresholds as the other usage bars', () => {
-    expect([59, 60, 79, 80].map(ccflareUsageLevel)).toEqual([
+  it('colors usage with the same thresholds as the other usage bars', () => {
+    expect([79, 80, 89, 90].map(ccflareUsageLevel)).toEqual([
       'normal',
       'warning',
       'warning',

@@ -113,7 +113,7 @@ export function StatusBarSurface({
     showFloatingWorkspaceAttentionDot,
     showGitBlame,
     showPorts,
-    showCcflare,
+    statusBarItems,
     showResourceUsage,
     showSsh,
     statusBarUsageMode,
@@ -342,7 +342,7 @@ export function StatusBarSurface({
             {showResourceUsage ? (
               <ResourceUsageStatusSegment compact={compact} iconOnly={segmentsIconOnly} />
             ) : null}
-            {showCcflare && !isPairedWebClientWindow() ? (
+            {statusBarItems.includes('ccflare') && !isPairedWebClientWindow() ? (
               <CcflareStatusSegment compact={compact} iconOnly={segmentsIconOnly} />
             ) : null}
             {showPorts ? (
