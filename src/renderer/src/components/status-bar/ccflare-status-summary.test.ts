@@ -9,18 +9,24 @@ import {
 const account = (
   name: string,
   lastUsed: string | null,
-  five: number,
+  weekly: number,
   rateLimitedUntil: string | null = null
 ): CcflareAccount => ({
   name,
   paused: false,
   rateLimitedUntil,
   lastUsed,
-  fiveHour: { percent: five, resetsAt: null },
-  weekly: { percent: 10, resetsAt: null }
+  weekly: { percent: weekly, resetsAt: null },
+  modelLimits: []
 })
 
-const pool = { configured: 2, routable: 2, rateLimited: 0, nextAvailableAt: null }
+const pool = {
+  configured: 2,
+  routable: 2,
+  rateLimited: 0,
+  usageExhausted: 0,
+  nextAvailableAt: null
+}
 
 describe('summarizeCcflare', () => {
   it('shows the most recently used account and hides a healthy pool count', () => {
@@ -37,12 +43,12 @@ describe('summarizeCcflare', () => {
       },
       'used'
     )
-    expect(summary.label).toBe('b · 5h 4% · wk 10%')
+    expect(summary.label).toBe('b · wk 4%')
     expect(summary.activeAccount?.name).toBe('b')
     expect(summary.warning).toBe(false)
   })
 
-  it('honors the remaining display and drops the weekly part when compact', () => {
+  it('honors the remaining display', () => {
     const snapshot = {
       status: 'ok' as const,
       url: 'u',
@@ -50,8 +56,7 @@ describe('summarizeCcflare', () => {
       accounts: [account('a', null, 4)],
       totals: null
     }
-    expect(summarizeCcflare(snapshot, 'remaining').label).toBe('a · 5h 96% · wk 90%')
-    expect(summarizeCcflare(snapshot, 'used', true).label).toBe('a · 5h 4%')
+    expect(summarizeCcflare(snapshot, 'remaining').label).toBe('a · wk 96%')
   })
 
   it('compares lastUsed as time, not text', () => {
@@ -83,13 +88,25 @@ describe('summarizeCcflare', () => {
         {
           status: 'ok',
           url: 'u',
-          pool: { configured: 3, routable: 1, rateLimited: 2, nextAvailableAt: null },
+          pool: { ...pool, configured: 3, routable: 1, rateLimited: 2 },
           accounts: [account('a', null, 1)],
           totals: null
         },
         'used'
       )
-    ).toMatchObject({ label: '1/3 · a · 5h 1% · wk 10%', warning: true })
+    ).toMatchObject({ label: '1/3 · a · wk 1%', warning: true })
+    expect(
+      summarizeCcflare(
+        {
+          status: 'ok',
+          url: 'u',
+          pool: { ...pool, usageExhausted: 1 },
+          accounts: [account('a', null, 100)],
+          totals: null
+        },
+        'used'
+      ).warning
+    ).toBe(true)
     expect(
       summarizeCcflare({ status: 'ok', url: 'u', pool, accounts: [], totals: null }, 'used')
     ).toMatchObject({ label: 'no accounts', warning: true })
