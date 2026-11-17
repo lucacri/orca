@@ -71,7 +71,7 @@ export function CcflareStatusSegment({
     return () => clearInterval(timer)
   }, [open, refresh])
 
-  const summary = summarizeCcflare(snapshot, display, compact)
+  const summary = summarizeCcflare(snapshot, display)
   const ariaLabel = translate('components.status.ccflare.ariaLabel', 'better-ccflare: {{status}}', {
     status: summary.label
   })
@@ -101,7 +101,8 @@ export function CcflareStatusSegment({
                       <span className="font-normal opacity-50">·</span>
                     </>
                   ) : null}
-                  {summary.activeAccount ? (
+                  {/* Why: the name is the widest part; compact bars keep only the usage. */}
+                  {summary.activeAccount && !compact ? (
                     <span className="max-w-24 truncate text-foreground">
                       {summary.activeAccount.name}
                     </span>
