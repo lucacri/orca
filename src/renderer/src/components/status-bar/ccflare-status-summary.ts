@@ -1,6 +1,6 @@
 import { translate } from '@/i18n/i18n'
 import { getUsageHealthTone } from './usage/usage-health-tone'
-import type { CcflareAccount, CcflareSnapshot } from '../../../../shared/ccflare-types'
+import type { CcflareAccount, CcflarePool, CcflareSnapshot } from '../../../../shared/ccflare-types'
 import {
   getDisplayedUsagePercentage,
   type UsagePercentageDisplay
@@ -35,6 +35,18 @@ export function isCcflareAccountLimited(account: CcflareAccount, now = Date.now(
   return timeOf(account.rateLimitedUntil) > now
 }
 
+export function isCcflareAccountExhausted(account: CcflareAccount): boolean {
+  return (account.weekly?.percent ?? 0) >= 100
+}
+
+/** Pool problems worth a warning: unroutable, rate-limited or out of weekly usage. */
+export function isCcflarePoolDegraded(pool: CcflarePool | null): boolean {
+  return (
+    pool !== null &&
+    (pool.routable < pool.configured || pool.rateLimited > 0 || pool.usageExhausted > 0)
+  )
+}
+
 /** The account ccflare routed to most recently — its session strategy sticks to one. */
 export function pickActiveCcflareAccount(accounts: CcflareAccount[]): CcflareAccount | null {
   let active: CcflareAccount | null = null
@@ -48,8 +60,7 @@ export function pickActiveCcflareAccount(accounts: CcflareAccount[]): CcflareAcc
 
 export function summarizeCcflare(
   snapshot: CcflareSnapshot | null,
-  display: UsagePercentageDisplay,
-  compact = false
+  display: UsagePercentageDisplay
 ): CcflareStatusSummary {
   const empty = { pool: null, parts: [], activeAccount: null }
   if (!snapshot) {
@@ -74,15 +85,7 @@ export function summarizeCcflare(
   const poolText =
     pool && pool.routable < pool.configured ? `${pool.routable}/${pool.configured}` : null
   const parts: CcflareUsagePart[] = []
-  if (activeAccount?.fiveHour) {
-    const used = activeAccount.fiveHour.percent
-    parts.push({
-      label: translate('components.status.ccflare.fiveHourShort', '5h'),
-      used,
-      shown: getDisplayedUsagePercentage(used, display)
-    })
-  }
-  if (activeAccount?.weekly && !compact) {
+  if (activeAccount?.weekly) {
     const used = activeAccount.weekly.percent
     parts.push({
       label: translate('components.status.ccflare.weekShort', 'wk'),
@@ -98,7 +101,7 @@ export function summarizeCcflare(
     .filter(Boolean)
     .join(' · ')
   const warning =
-    (pool !== null && (pool.routable < pool.configured || pool.rateLimited > 0)) ||
+    isCcflarePoolDegraded(pool) ||
     snapshot.accounts.some((account) => isCcflareAccountLimited(account))
   return { label: text || 'ok', pool: poolText, parts, warning, activeAccount }
 }

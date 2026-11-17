@@ -22923,12 +22923,14 @@
         "routable": "{{routable}} of {{configured}} routable",
         "rateLimitedCount": " · {{count}} rate-limited",
         "routingTo": " · routing to {{name}}",
-        "fiveHourMode": "5h {{mode}}",
         "weekMode": "week {{mode}}",
+        "modelWeekMode": "{{model}} week {{mode}}",
+        "exhaustedCount": " · {{count}} out of usage",
+        "stateExhausted": "weekly limit reached",
+        "tagExhausted": "out of usage",
         "last24h": "Last 24h",
         "requests": "{{value}} req",
         "successRate": "{{value}}% ok",
-        "fiveHourShort": "5h",
         "weekShort": "wk"
       }
     },

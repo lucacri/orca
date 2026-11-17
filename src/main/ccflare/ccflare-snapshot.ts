@@ -1,6 +1,7 @@
 import { net } from 'electron'
 import type {
   CcflareAccount,
+  CcflareModelLimit,
   CcflarePool,
   CcflareSnapshot,
   CcflareTotals,
@@ -34,6 +35,27 @@ function parseWindow(value: unknown): CcflareUsageWindow | null {
   return percent === null ? null : { percent, resetsAt: str(window?.resets_at) }
 }
 
+function parseLimit(limit: Json): CcflareUsageWindow | null {
+  const percent = num(limit.percent)
+  return percent === null ? null : { percent, resetsAt: str(limit.resets_at) }
+}
+
+// Why: Claude dropped the 5-hour window; `limits` lists what applies now (overall weekly plus per-model weekly caps).
+function parseLimits(usage: Json | null): Pick<CcflareAccount, 'weekly' | 'modelLimits'> {
+  const limits = Array.isArray(usage?.limits) ? usage.limits.filter(isJson) : []
+  const overall = limits.find((limit) => limit.kind === 'weekly_all')
+  const modelLimits = limits.flatMap((limit): CcflareModelLimit[] => {
+    const model = str(asObject(asObject(limit.scope)?.model)?.display_name)
+    const window = limit.kind === 'weekly_scoped' && model ? parseLimit(limit) : null
+    return window && model ? [{ ...window, model }] : []
+  })
+  return {
+    // Older better-ccflare builds only report seven_day.
+    weekly: (overall && parseLimit(overall)) ?? parseWindow(usage?.seven_day),
+    modelLimits
+  }
+}
+
 export function parseCcflareAccounts(value: unknown): CcflareAccount[] {
   if (!Array.isArray(value)) {
     return []
@@ -51,8 +73,7 @@ export function parseCcflareAccounts(value: unknown): CcflareAccount[] {
         paused: account.paused === true,
         rateLimitedUntil: str(account.rateLimitedUntil),
         lastUsed: str(account.lastUsed),
-        fiveHour: parseWindow(usage?.five_hour),
-        weekly: parseWindow(usage?.seven_day)
+        ...parseLimits(usage)
       }
     ]
   })
@@ -69,6 +90,7 @@ export function parseCcflarePool(health: unknown): CcflarePool | null {
     configured,
     routable,
     rateLimited: num(pool?.rate_limited) ?? 0,
+    usageExhausted: num(pool?.usage_exhausted) ?? 0,
     nextAvailableAt: str(pool?.next_available_at)
   }
 }

@@ -8,14 +8,19 @@ export type CcflareAccount = {
   paused: boolean
   rateLimitedUntil: string | null
   lastUsed: string | null
-  fiveHour: CcflareUsageWindow | null
   weekly: CcflareUsageWindow | null
+  /** Weekly caps that apply to one model only, e.g. a share of the weekly limit. */
+  modelLimits: CcflareModelLimit[]
 }
+
+export type CcflareModelLimit = CcflareUsageWindow & { model: string }
 
 export type CcflarePool = {
   configured: number
   routable: number
   rateLimited: number
+  /** Accounts that hit their weekly usage cap. */
+  usageExhausted: number
   nextAvailableAt: string | null
 }
 

@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
@@ -14,7 +15,9 @@ import type {
 import { usageBarClass } from './usage/usage-health-tone'
 import {
   ccflareUsageLevel,
+  isCcflareAccountExhausted,
   isCcflareAccountLimited,
+  isCcflarePoolDegraded,
   type CcflareStatusSummary
 } from './ccflare-status-summary'
 
@@ -65,22 +68,34 @@ function UsageCells({
 function AccountRow({
   account,
   active,
+  models,
   display,
   now
 }: {
   account: CcflareAccount
   active: boolean
+  models: string[]
   display: UsagePercentageDisplay
   now: number
 }): React.JSX.Element {
   const limited = isCcflareAccountLimited(account, now)
+  const exhausted = isCcflareAccountExhausted(account)
+  const tag = limited
+    ? translate('components.status.ccflare.tagLimited', 'limited')
+    : exhausted
+      ? translate('components.status.ccflare.tagExhausted', 'out of usage')
+      : account.paused
+        ? translate('components.status.ccflare.tagPaused', 'paused')
+        : null
   const state = limited
     ? translate('components.status.ccflare.stateLimited', 'rate-limited')
-    : account.paused
-      ? translate('components.status.ccflare.statePaused', 'paused')
-      : active
-        ? translate('components.status.ccflare.stateActive', 'in use')
-        : translate('components.status.ccflare.stateIdle', 'idle')
+    : exhausted
+      ? translate('components.status.ccflare.stateExhausted', 'weekly limit reached')
+      : account.paused
+        ? translate('components.status.ccflare.statePaused', 'paused')
+        : active
+          ? translate('components.status.ccflare.stateActive', 'in use')
+          : translate('components.status.ccflare.stateIdle', 'idle')
   return (
     <>
       <span
@@ -89,7 +104,7 @@ function AccountRow({
         title={state}
         className={cn(
           'size-1.5 rounded-full',
-          limited
+          limited || exhausted
             ? 'bg-destructive'
             : account.paused
               ? 'border-[1.5px] border-muted-foreground'
@@ -102,27 +117,33 @@ function AccountRow({
         <span
           className={cn(
             'shrink-0 truncate',
-            (account.paused || limited) && 'text-muted-foreground'
+            (account.paused || limited || exhausted) && 'text-muted-foreground'
           )}
         >
           {account.name}
         </span>
-        {limited || account.paused ? (
+        {tag ? (
           <span
             className={cn(
               'min-w-0 truncate text-[11px] font-normal',
-              limited ? 'text-destructive' : 'text-muted-foreground'
+              limited || exhausted ? 'text-destructive' : 'text-muted-foreground'
             )}
           >
-            {limited
-              ? translate('components.status.ccflare.tagLimited', 'limited')
-              : translate('components.status.ccflare.tagPaused', 'paused')}
+            {tag}
           </span>
         ) : null}
       </span>
-      <UsageCells window={account.fiveHour} display={display} now={now} />
-      <span />
       <UsageCells window={account.weekly} display={display} now={now} />
+      {models.map((model) => (
+        <Fragment key={model}>
+          <span />
+          <UsageCells
+            window={account.modelLimits.find((limit) => limit.model === model) ?? null}
+            display={display}
+            now={now}
+          />
+        </Fragment>
+      ))}
     </>
   )
 }
@@ -179,7 +200,12 @@ export function CcflarePopoverContent({
     )
   }
   const { pool, totals } = snapshot
-  const degraded = pool !== null && (pool.routable < pool.configured || pool.rateLimited > 0)
+  const degraded = isCcflarePoolDegraded(pool)
+  // Why: one column per model cap, in first-seen order, so rows stay aligned even when an account lacks one.
+  const models = [
+    ...new Set(snapshot.accounts.flatMap((a) => a.modelLimits.map((limit) => limit.model)))
+  ]
+  const columns = ['24px 5ch 6ch', ...models.map(() => '0 24px 5ch 6ch')].join(' ')
   const mode =
     display === 'used'
       ? translate('components.status.ccflare.modeUsed', 'used')
@@ -220,6 +246,11 @@ export function CcflarePopoverContent({
                   }
                 )
               : ''}
+            {pool && pool.usageExhausted > 0
+              ? translate('components.status.ccflare.exhaustedCount', ' · {{count}} out of usage', {
+                  count: pool.usageExhausted
+                })
+              : ''}
             {summary.activeAccount
               ? translate('components.status.ccflare.routingTo', ' · routing to {{name}}', {
                   name: summary.activeAccount.name
@@ -231,21 +262,32 @@ export function CcflarePopoverContent({
       <Separator className="mx-2 my-1" />
       <div className="px-2 py-1.5">
         {/* Why: one grid across all rows keeps every % and reset column aligned. */}
-        <div className="grid grid-cols-[6px_minmax(0,1fr)_24px_5ch_6ch_0_24px_5ch_6ch] grid-rows-[16px] auto-rows-[22px] items-center gap-x-1 whitespace-nowrap tabular-nums">
+        <div
+          className="grid grid-rows-[16px] auto-rows-[22px] items-center gap-x-1 whitespace-nowrap tabular-nums"
+          style={{ gridTemplateColumns: `6px minmax(0,1fr) ${columns}` }}
+        >
           <span />
-          <span />
-          <span className="col-span-3 text-[11px] text-muted-foreground">
-            {translate('components.status.ccflare.fiveHourMode', '5h {{mode}}', { mode })}
-          </span>
           <span />
           <span className="col-span-3 text-[11px] text-muted-foreground">
             {translate('components.status.ccflare.weekMode', 'week {{mode}}', { mode })}
           </span>
+          {models.map((model) => (
+            <Fragment key={model}>
+              <span />
+              <span className="col-span-3 truncate text-[11px] text-muted-foreground">
+                {translate('components.status.ccflare.modelWeekMode', '{{model}} week {{mode}}', {
+                  model,
+                  mode
+                })}
+              </span>
+            </Fragment>
+          ))}
           {snapshot.accounts.map((account) => (
             <AccountRow
               key={account.name}
               account={account}
               active={account === summary.activeAccount}
+              models={models}
               display={display}
               now={now}
             />
