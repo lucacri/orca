@@ -26,7 +26,8 @@ function sourceFor(entry: Partial<AgentStatusIpcPayload>) {
     connectedPtyEvidence: {
       tabIds: new Set(['tab-1']),
       paneKeys: new Set(),
-      ptyIdByTerminalHandle: new Map()
+      ptyIdByTerminalHandle: new Map(),
+      terminalHandleByPaneKey: new Map()
     }
   })
   return source
