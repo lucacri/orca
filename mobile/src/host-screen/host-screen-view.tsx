@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { PageTitle, useCollapsingTitle } from '../components/nav-bar/PageTitle'
+import { TransientToast, useTransientToast } from '../components/feedback/TransientToast'
 import { useMobileColorScheme } from '../theme/use-mobile-color-scheme'
 import { hostScreenStyles as styles } from './host-screen-styles'
 import { HostBottomBar } from './host-bottom-bar'
@@ -13,6 +14,7 @@ import type { HostScreenController } from './use-host-screen-controller'
 export function HostScreenView({ controller }: { controller: HostScreenController }) {
   useMobileColorScheme()
   const [bottomBarHeight, setBottomBarHeight] = useState(0)
+  const toast = useTransientToast()
   const listRef = controller.activeWorktreeScroll.sectionListRef
   const scrollTo = useCallback(
     (offset: number) =>
@@ -31,7 +33,11 @@ export function HostScreenView({ controller }: { controller: HostScreenControlle
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.topChromeSafeArea} edges={['top']}>
-        <HostScreenHeader controller={controller} collapsingTitle={collapsingTitle} />
+        <HostScreenHeader
+          controller={controller}
+          collapsingTitle={collapsingTitle}
+          showToast={toast.showToast}
+        />
       </SafeAreaView>
       <HostWorkspaceList
         controller={controller}
@@ -49,6 +55,7 @@ export function HostScreenView({ controller }: { controller: HostScreenControlle
       />
       <HostBottomBar controller={controller} onCoveredHeightChange={setBottomBarHeight} />
       <HostScreenOverlays controller={controller} />
+      <TransientToast message={toast.message} bottomInset={bottomBarHeight} />
     </View>
   )
 }

@@ -860,6 +860,9 @@
   },
   "hostScreen": {
     "hostListActionSheetActions": {
+      "copyConnectionId": "Copy connection ID",
+      "copied": "Copied",
+      "copyFailed": "Couldn’t copy the ID",
       "reconnect": "Reconnect",
       "connect": "Connect",
       "disconnect": "Disconnect",
