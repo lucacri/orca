@@ -11,7 +11,12 @@ import {
   UserCircle
 } from 'lucide-react-native'
 import type { ActionSheetAction } from '../components/sheets/ActionSheetModal'
-import { hostDiagnosticsAction, hostEditAction } from '../host-list-action-sheet-actions'
+import {
+  hostCopyConnectionIdActions,
+  hostDiagnosticsAction,
+  hostEditAction
+} from '../host-list-action-sheet-actions'
+import { useClipboardWriter } from '../platform/clipboard/clipboard'
 import { NavBar, NavBarSubtitleText } from '../components/nav-bar/NavBar'
 import type { CollapsingTitle } from '../components/nav-bar/PageTitle'
 import { NavBarButton } from '../components/nav-bar/NavBarButton'
@@ -80,9 +85,11 @@ export function HostConnectionStatus({ controller }: { controller: HostScreenCon
 
 export function HostScreenHeader({
   controller,
-  collapsingTitle
+  collapsingTitle,
+  showToast
 }: {
   controller: HostScreenController
+  showToast: (message: string) => void
   /** Set when the list shows the host name as its PageTitle; the bar then shows it only once scrolled. */
   collapsingTitle?: CollapsingTitle
 }) {
@@ -98,6 +105,7 @@ export function HostScreenHeader({
     onHideSidebar,
     router
   } = controller
+  const clipboard = useClipboardWriter()
   const moreRef = useRef<HostInstance>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [sharedLinksOpen, setSharedLinksOpen] = useState(false)
@@ -162,7 +170,8 @@ export function HostScreenHeader({
   // Unlike the screens above, these work on the saved host, so they stay offered while disconnected.
   const hostGroup: ActionSheetAction[] = [
     hostEditAction(() => actions.navigateFromHostList(`${hostPath}/edit`)),
-    hostDiagnosticsAction(() => router.push({ pathname: '/connection-log', params: { hostId } }))
+    hostDiagnosticsAction(() => router.push({ pathname: '/connection-log', params: { hostId } })),
+    ...hostCopyConnectionIdActions(hostId, clipboard.writeText, showToast)
   ]
   return (
     <>

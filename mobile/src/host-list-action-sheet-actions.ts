@@ -1,4 +1,4 @@
-import { Activity, Edit3, PowerOff, RefreshCw } from 'lucide-react-native'
+import { Activity, Copy, Edit3, PowerOff, RefreshCw } from 'lucide-react-native'
 import type { ActionSheetAction } from './components/sheets/ActionSheetModal'
 import type { ConnectionState } from './transport/connection/connection-state'
 import type { HostProfile } from './host-catalog/host-profile'
@@ -91,4 +91,34 @@ export function hostEditAction(onPress: () => void): ActionSheetAction {
     closeBeforePress: true,
     onPress
   }
+}
+
+// The phone mints this id at pairing and never tells the desktop, so orca:///h/<id>/… links need it copied from here.
+export function hostCopyConnectionIdActions(
+  hostId: string,
+  writeText: (value: string) => Promise<void>,
+  showToast: (message: string) => void
+): ActionSheetAction[] {
+  if (!hostId) {
+    return []
+  }
+  return [
+    {
+      id: 'copyConnectionId',
+      label: translate(
+        'hostScreen.hostListActionSheetActions.copyConnectionId',
+        'Copy connection ID'
+      ),
+      icon: Copy,
+      closeBeforePress: true,
+      onPress: () =>
+        void writeText(hostId).then(
+          () => showToast(translate('hostScreen.hostListActionSheetActions.copied', 'Copied')),
+          () =>
+            showToast(
+              translate('hostScreen.hostListActionSheetActions.copyFailed', 'Couldn’t copy the ID')
+            )
+        )
+    }
+  ]
 }
