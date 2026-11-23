@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { getWorktreeCardDetails } from '../../../../../../shared/worktree/row-display/card-properties'
 import type { WorktreeCardController } from '../controller/use-worktree-card-controller'
-import { buildWorktreeCardPresentation } from './worktree-card-presentation'
+import { renderWorktreeCardIndicators } from './worktree-card-details-items'
 
 function makeCard(overrides: Partial<WorktreeCardController> = {}): WorktreeCardController {
   return {
@@ -55,10 +55,9 @@ function makeCard(overrides: Partial<WorktreeCardController> = {}): WorktreeCard
   } as WorktreeCardController
 }
 
-describe('worktree card review number presentation', () => {
-  it('renders the selected review link in the new-style title row', () => {
-    const presentation = buildWorktreeCardPresentation(makeCard())
-    const markup = renderToStaticMarkup(<>{presentation.titleRowIndicators}</>)
+describe('worktree card review number indicators', () => {
+  it('renders the selected review link in the card indicators', () => {
+    const markup = renderToStaticMarkup(<>{renderWorktreeCardIndicators(makeCard())}</>)
 
     expect(markup).toContain('data-worktree-review-number=""')
     expect(markup).toContain('href="https://github.com/acme/orca/pull/456"')
@@ -67,10 +66,9 @@ describe('worktree card review number presentation', () => {
   })
 
   it('keeps the review number out of the card when the property is hidden', () => {
-    const presentation = buildWorktreeCardPresentation(
-      makeCard({ hasDetails: false, metaReview: null })
+    const markup = renderToStaticMarkup(
+      <>{renderWorktreeCardIndicators(makeCard({ hasDetails: false, metaReview: null }))}</>
     )
-    const markup = renderToStaticMarkup(<>{presentation.titleRowIndicators}</>)
 
     expect(markup).not.toContain('data-worktree-review-number')
     expect(markup).not.toContain('#456')
